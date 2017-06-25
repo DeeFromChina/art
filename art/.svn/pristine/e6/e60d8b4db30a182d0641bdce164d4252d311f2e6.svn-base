@@ -1,0 +1,434 @@
+package com.golead.art.auction;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsStatics;
+
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.artist.service.ArtArtistService;
+import com.golead.art.auction.model.ArtAuction;
+import com.golead.art.auction.model.ArtAuctionHouses;
+import com.golead.art.auction.service.ArtAuctionHousesService;
+import com.golead.art.auction.service.ArtAuctionService;
+import com.golead.art.utils.PrintExcel;
+import com.golead.art.utils.PrintPoint;
+import com.golead.art.works.model.ArtWorks;
+import com.golead.art.works.model.ArtWorksStyle;
+import com.golead.art.works.service.ArtWorksService;
+import com.golead.art.works.service.ArtWorksStyleService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtAuctionAction extends BaseAction {
+
+   private Log              log           = LogFactory.getLog(ArtAuctionAction.class);
+
+   private SimpleDateFormat dateFormate   = new SimpleDateFormat("yyyy-MM-dd");
+
+   private DecimalFormat    decimalFormat = new DecimalFormat("#,###,###,###.##");
+
+   @Override
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = getForm().getAction();
+      if (action == null) action = LIST;
+      if (log.isDebugEnabled()) log.debug("action" + action);
+      try {
+         if (LIST.equalsIgnoreCase(action)) forward = LIST;
+         else if (PAGE.equalsIgnoreCase(action)) forward = pageAuction();
+         else if (ADD.equalsIgnoreCase(action)) forward = addAuction();
+         else if (SAVE.equalsIgnoreCase(action)) forward = saveAuction();
+         else if (EDIT.equalsIgnoreCase(action)) forward = editAuction();
+         else if (UPDATE.equalsIgnoreCase(action)) forward = updateAuction();
+         else if (DELETE.equalsIgnoreCase(action)) forward = deleteAuction();
+         else if (VIEW.equalsIgnoreCase(action)) forward = viewAuction();
+         else if ("EXPORT".equalsIgnoreCase(action)) forward = export();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   public String pageAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'pageAuction' method");
+      try {
+         initForm();
+         PageQuery pq = getForm().getQuery();
+         pq = artAuctionService.queryArtAuction(pq);
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         for (Map<String, Object> item : pq.getRecordSet()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", item.get("id"));
+            String link = "^javascript:view(" + item.get("id") + ");^_self";
+            String cTranPrice = item.get("cTranPrice") == null ? "" : decimalFormat.format(item.get("cTranPrice"));
+            String cTradePrice = item.get("cTradePrice") == null ? "" : decimalFormat.format(item.get("cTradePrice"));
+            String cLowestPrice = item.get("cLowestPrice") == null ? "" : decimalFormat.format(item.get("cLowestPrice"));
+            String cHighestPrice = item.get("cHighestPrice") == null ? "" : decimalFormat.format(item.get("cHighestPrice"));
+            String imageUrl = item.get("imageUrl") == null ? "" : item.get("imageUrl").toString();
+            String eName = item.get("folderName") == null ? "" : item.get("folderName").toString();
+            String worksCategory = "";
+            if (item.get("worksCategory") != null) {
+               String category = item.get("worksCategory").toString();
+               String[] categorys = category.split(";");
+               for (int i = 0; i < categorys.length; i++) {
+                  if (findCodeName(form, "STYLE", categorys[i]) != null) {
+                     if (!worksCategory.trim().equals("")) {
+                        worksCategory += ",";
+                     }
+                     worksCategory += findCodeName(form, "STYLE", categorys[i]);
+                  }
+               }
+            }
+            if (!imageUrl.equals("")) {
+               imageUrl = request.get("CONTEXT_PATH") + "/upload/auction/" + eName + File.separator + "thumbnail" + File.separator + imageUrl;
+            }
+            String autionSeason = findCodeName(getForm(), "AUCTION_SEASON", item.get("autionSeason") + "");
+            map.put("data",
+                  new Object[] { "", imageUrl, item.get("auctionNo"), item.get("worksCName") + link, item.get("cName"), item.get("sizeCm"),
+                        item.get("createYear"), item.get("auctionHouse"), item.get("auction"), item.get("saleName"), formateDate(item.get("auctionTime")),
+                        worksCategory, autionSeason, cTranPrice, cHighestPrice, cLowestPrice });
+            list.add(map);
+         }
+         String res = genGridJson(pq, list);
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+
+   public String addAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'addAuction' method");
+      try {
+         initForm();
+         return ADD;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+   }
+   
+   private String decimalFormatString(String d){
+      if("".equals(d)){
+         return "";
+      }
+      return decimalFormat.format(Double.valueOf(d));
+   }
+
+   public String saveAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'saveAuction' method");
+      try {
+         ArtAuction artAuction = new ArtAuction();
+         ConvertUtil.mapToObject(artAuction, getForm().getRecord(), false);
+         ArtWorks works = artWorksService1.getArtWorks(artAuction.getWorksId());
+         ArtArtist artist = artArtistService.getArtArtist(works.getArtistId());
+         String author = artist.getCname();
+         if (author == null || "".equals(author)) author = artist.getEname();
+         String sizeCmWidth = decimalFormatString(works.getSizeCmWidth() == null ? "" : works.getSizeCmWidth().toString());
+         String sizeCmHeight = decimalFormatString(works.getSizeCmHeight() == null ? "" : works.getSizeCmHeight().toString());
+         String sizeCmLength = decimalFormatString(works.getSizeCmLength() == null ? "" : works.getSizeCmLength().toString());
+         String sizeCm = sizeCmLength + ("".equals(sizeCmWidth) ? "" : "X") + sizeCmWidth + ("".equals(sizeCmHeight) ? "" : "X") + sizeCmHeight;
+         String sizeInWidth = decimalFormatString(works.getSizeInWidth() == null ? "" : works.getSizeInWidth().toString());
+         String sizeInHeight = decimalFormatString(works.getSizeInHeight() == null ? "" : works.getSizeInHeight().toString());
+         String sizeInLength = decimalFormatString(works.getSizeInLength() == null ? "" : works.getSizeInLength().toString());
+         String sizeIn = sizeInLength + ("".equals(sizeInWidth) ? "" : "X") + sizeInWidth + ("".equals(sizeInHeight) ? "" : "X") + sizeInHeight;
+         String sizeRuleWidth = decimalFormatString(works.getSizeRuleWidth() == null ? "" : works.getSizeRuleWidth().toString());
+         String sizeRuleHeight = decimalFormatString(works.getSizeRuleHeight() == null ? "" : works.getSizeRuleHeight().toString());
+         String sizeRuleLength = decimalFormatString(works.getSizeRuleLength() == null ? "" : works.getSizeRuleLength().toString());
+         String sizeRule = sizeRuleLength + ("".equals(sizeRuleWidth) ? "" : "X") + sizeRuleWidth + ("".equals(sizeRuleHeight) ? "" : "X") + sizeRuleHeight;
+         artAuction.setSizeCm(sizeCm);
+         artAuction.setSizeIn(sizeIn);
+         artAuction.setSizeRule(sizeRule);
+         artAuction.setArtId(works.getArtistId());
+         artAuction.setImageUrl(works.getThumbnail());
+         artAuction.setAuthor(author);
+         artAuction.setCnName(works.getWorksCName());
+         artAuction.setEnName(works.getWorksEName());
+         artAuction.setWorksCategory(works.getStyleType());
+         artAuctionService.createArtAuction(artAuction);
+         ids = artAuction.getId().toString();
+         return editAuction();
+      }
+      catch (Exception e) {
+         addMessage(getForm(), e.getMessage());
+         initForm();
+         return ADD;
+      }
+   }
+
+   public String editAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'editAuction' method");
+      try {
+         initForm();
+         int id = Integer.valueOf(ids);
+         ArtAuction artAuction = artAuctionService.getArtAuction(id);
+         ConvertUtil.objectToMap(form.getRecord(), artAuction);
+         setPriceToMap(artAuction);
+         Integer worksId = artAuction.getWorksId();
+         if (worksId != null) {
+            ArtWorks artWorks = artWorksService1.getArtWorks(worksId);
+            if (artWorks != null) {
+               form.getRecord().put("worksName", artWorks.getWorksCName());
+            }
+         }
+         Integer auctionHousesId = artAuction.getAuctionHousesId();
+         if (auctionHousesId != null) {
+            ArtAuctionHouses artAuctionHouses = artAuctionHousesService.getArtAuctionHouses(auctionHousesId);
+            if (artAuctionHouses != null) {
+               form.getRecord().put("housesName", artAuctionHouses.getAuctionHouse());
+            }
+         }
+         return EDIT;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+   }
+
+   private void setPriceToMap(ArtAuction artAuction) {
+      form.getRecord().put("cTranPrice", artAuction.getCtranPrice() == null ? null : artAuction.getCtranPrice().toString());
+      form.getRecord().put("cTradePrice", artAuction.getCtradePrice() == null ? null : artAuction.getCtradePrice().toString());
+      form.getRecord().put("cHighestPrice", artAuction.getChighestPrice() == null ? null : artAuction.getChighestPrice().toString());
+      form.getRecord().put("cLowestPrice", artAuction.getClowestPrice() == null ? null : artAuction.getClowestPrice().toString());
+
+      form.getRecord().put("eTranPrice", artAuction.getEtranPrice() == null ? null : artAuction.getEtranPrice().toString());
+      form.getRecord().put("eTradePrice", artAuction.getEtradePrice() == null ? null : artAuction.getEtradePrice().toString());
+      form.getRecord().put("eHighestPrice", artAuction.getEhighestPrice() == null ? null : artAuction.getEhighestPrice().toString());
+      form.getRecord().put("eLowestPrice", artAuction.getElowestPrice() == null ? null : artAuction.getElowestPrice().toString());
+
+      form.getRecord().put("dTranPrice", artAuction.getDtranPrice() == null ? null : artAuction.getDtranPrice().toString());
+      form.getRecord().put("dTradePrice", artAuction.getDtradePrice() == null ? null : artAuction.getDtradePrice().toString());
+      form.getRecord().put("dHighestPrice", artAuction.getDhighestPrice() == null ? null : artAuction.getDhighestPrice().toString());
+      form.getRecord().put("dLowestPrice", artAuction.getDlowestPrice() == null ? null : artAuction.getDlowestPrice().toString());
+
+      form.getRecord().put("pTranPrice", artAuction.getPtranPrice() == null ? null : artAuction.getPtranPrice().toString());
+      form.getRecord().put("pTradePrice", artAuction.getPtradePrice() == null ? null : artAuction.getPtradePrice().toString());
+      form.getRecord().put("pHighestPrice", artAuction.getPhighestPrice() == null ? null : artAuction.getPhighestPrice().toString());
+      form.getRecord().put("pLowestPrice", artAuction.getPlowestPrice() == null ? null : artAuction.getPlowestPrice().toString());
+
+   }
+
+   public String updateAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'updateAuction' method");
+      try {
+         artAuctionService.updateArtAuction(getForm().getRecord());
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return EDIT;
+      }
+   }
+
+   public String deleteAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'deleteAuction' method");
+      try {
+         String[] id = ids.split(",");
+         Integer[] del_ids = new Integer[id.length];
+         for (int i = 0; i < del_ids.length; i++) {
+            del_ids[i] = Integer.valueOf(id[i]);
+         }
+         artAuctionService.deleteArtAuctions(del_ids);
+         setResponse("{exit:0}");
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         setResponse("{exit:1,message:\"删除操作失败!\"}");
+      }
+      return null;
+
+   }
+
+   public String viewAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'viewAuction' method");
+      try {
+         initForm();
+         ArtAuction artAuction = artAuctionService.getArtAuction(Integer.valueOf(ids));
+         ConvertUtil.objectToMap(form.getRecord(), artAuction);
+         setPriceToMap(artAuction);
+         form.getRecord().put("autionSeason", findCodeName(form, "AUCTION_SEASON", artAuction.getAutionSeason()));
+         Integer worksId = artAuction.getWorksId();
+         if (worksId != null) {
+            ArtWorks artWorks = artWorksService1.getArtWorks(worksId);
+            if (artWorks != null) {
+               form.getRecord().put("worksName", artWorks.getWorksCName());
+            }
+         }
+         Integer auctionHousesId = artAuction.getAuctionHousesId();
+         if (auctionHousesId != null) {
+            ArtAuctionHouses artAuctionHouses = artAuctionHousesService.getArtAuctionHouses(auctionHousesId);
+            if (artAuctionHouses != null) {
+               form.getRecord().put("housesName", artAuctionHouses.getAuctionHouse());
+            }
+         }
+         return VIEW;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+   }
+
+   public String downloadTemplate() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'downloadTemplate' method");
+      try {
+         HttpServletResponse response = (HttpServletResponse) ctx.get(StrutsStatics.HTTP_RESPONSE);
+         response.setContentType("APPLICATION/DOWNLOAD");
+         response.setContentType("application/octed-stream,charset=gb2312");
+         response.setHeader("Content-Disposition", "attachment;filename=" + new String("作品拍卖导入模板.xls".getBytes("gb2312"), "ISO-8859-1"));
+         String templatePath = ServletActionContext.getServletContext().getRealPath("/template/works/art_works_auction.xls");
+         File templateFile = new File(templatePath);
+         PrintExcel printExcel = new PrintExcel();
+         InputStream inputStream = new FileInputStream(templateFile);
+         HSSFWorkbook hssfWorkbook = null;
+         POIFSFileSystem poifsFileSystem = new POIFSFileSystem(inputStream);
+         hssfWorkbook = new HSSFWorkbook(poifsFileSystem);
+
+         HSSFDataFormat format = hssfWorkbook.createDataFormat();
+
+         HSSFCellStyle csString = hssfWorkbook.createCellStyle();
+         csString.setBorderLeft(CellStyle.BORDER_THIN);
+         csString.setBorderRight(CellStyle.BORDER_THIN);
+         csString.setBorderTop(CellStyle.BORDER_THIN);
+         csString.setBorderBottom(CellStyle.BORDER_THIN);
+         csString.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+         csString.setDataFormat(format.getFormat("@"));
+
+         HSSFCellStyle csDecimal = hssfWorkbook.createCellStyle();
+         csDecimal.setBorderLeft(CellStyle.BORDER_THIN);
+         csDecimal.setBorderRight(CellStyle.BORDER_THIN);
+         csDecimal.setBorderTop(CellStyle.BORDER_THIN);
+         csDecimal.setBorderBottom(CellStyle.BORDER_THIN);
+         csDecimal.setDataFormat(HSSFDataFormat.getBuiltinFormat("0.00"));
+
+         HSSFCellStyle csDecimal1 = hssfWorkbook.createCellStyle();
+         csDecimal1.setBorderLeft(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderRight(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderTop(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderBottom(CellStyle.BORDER_THIN);
+         HSSFDataFormat csformat = hssfWorkbook.createDataFormat();
+         csDecimal1.setDataFormat(csformat.getFormat("0.000"));
+
+         List<PrintPoint> printPoints = new ArrayList<PrintPoint>();
+
+         printExcel.setPrintPointList(printPoints);// 填写数据
+         printExcel.doFillSheet(hssfWorkbook, 0);// 写入workbook的第一页
+         printExcel.doPrint(response, templateFile, hssfWorkbook);// workbook输出到response中。
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+
+   public String export() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'export()' method");
+      try {
+         initForm();
+         HttpServletResponse response = (HttpServletResponse) ctx.get(StrutsStatics.HTTP_RESPONSE);
+         response.setContentType("APPLICATION/DOWNLOAD");
+         response.setContentType("application/octed-stream,charset=gb2312");
+         response.setHeader("Content-Disposition", "attachment;filename=" + new String("作品拍卖导出数据.xls".getBytes("gb2312"), "ISO-8859-1"));
+         PageQuery pq = form.getQuery();
+         HSSFWorkbook hssfWorkbook = artAuctionService.export(form, pq);
+         
+         PrintExcel printExcel = new PrintExcel();
+         
+         HSSFDataFormat format = hssfWorkbook.createDataFormat();
+         
+         HSSFCellStyle csString = hssfWorkbook.createCellStyle();
+         csString.setBorderLeft(CellStyle.BORDER_THIN);
+         csString.setBorderRight(CellStyle.BORDER_THIN);
+         csString.setBorderTop(CellStyle.BORDER_THIN);
+         csString.setBorderBottom(CellStyle.BORDER_THIN);
+         csString.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+         csString.setDataFormat(format.getFormat("@"));
+         
+         HSSFCellStyle csDecimal = hssfWorkbook.createCellStyle();
+         csDecimal.setBorderLeft(CellStyle.BORDER_THIN);
+         csDecimal.setBorderRight(CellStyle.BORDER_THIN);
+         csDecimal.setBorderTop(CellStyle.BORDER_THIN);
+         csDecimal.setBorderBottom(CellStyle.BORDER_THIN);
+         csDecimal.setDataFormat(HSSFDataFormat.getBuiltinFormat("0.00"));
+         
+         HSSFCellStyle csDecimal1 = hssfWorkbook.createCellStyle();
+         csDecimal1.setBorderLeft(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderRight(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderTop(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderBottom(CellStyle.BORDER_THIN);
+         HSSFDataFormat csformat = hssfWorkbook.createDataFormat();
+         csDecimal1.setDataFormat(csformat.getFormat("0.000"));
+         
+         List<PrintPoint> printPoints = new ArrayList<PrintPoint>();
+         
+         printExcel.setPrintPointList(printPoints);// 填写数据
+         printExcel.doFillSheet(hssfWorkbook, 0);// 写入workbook的第一页
+         printExcel.doPrint(response, null, hssfWorkbook);// workbook输出到response中。
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+
+   public void initForm() throws Exception {
+      setCode(getForm(), "AUCTION_SEASON");
+      List<ArtWorksStyle> artWorksStyles = artWorksStyleService.findAll();
+      setCode(form, "STYLE", artWorksStyles, ArtWorksStyle.PROP_STYLE_NAME, ArtWorksStyle.PROP_ID, false);
+   }
+
+   private String formateDate(Object obj) {
+      if (obj == null) return "";
+      return dateFormate.format(obj);
+   }
+
+   @Resource
+   private ArtAuctionService       artAuctionService;
+
+   @Resource
+   private ArtAuctionHousesService artAuctionHousesService;
+
+   @Resource
+   private ArtWorksService         artWorksService1;
+
+   @Resource
+   private ArtWorksStyleService    artWorksStyleService;
+
+   @Resource
+   private ArtArtistService        artArtistService;
+
+}

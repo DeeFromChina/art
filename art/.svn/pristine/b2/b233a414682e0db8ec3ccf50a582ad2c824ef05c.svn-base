@@ -1,0 +1,258 @@
+<%@page language="java" pageEncoding="UTF-8"%>
+<%@taglib uri="/struts-tags" prefix="s" %>
+<%@taglib uri="/WEB-INF/tag/gl-tag.tld" prefix="gl"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<%@include file="/common/header.jsp" %>
+<script language="javascript">		
+	var contextpath = "<%=CONTEXT_PATH%>";
+	var fulllink = contextpath + "works/artPublication.do";	
+	var contentlink = contextpath + "works/artPublicationContent.do";	
+	var cataloglink = contextpath + "works/artPublicationCatalog.do";	
+	var partSize;
+	var i = 0;
+	var ret=new Object();
+
+	function goCancel(){
+		parent.closedialog('true');
+	}
+
+	function goSubmit() {
+		if(checkFormInput()){
+		    var url =fulllink+"?action=UPDATE";
+		  	document.forms[0].action=url;
+			document.forms[0].submit();
+		} 
+		/* var fileName = document.getElementById('file').value;
+		var format = fileName.split(".");
+		var i = format.length;
+		if(format[i-1] != "jpg" && format[i-1] != "jpeg" && format[i-1] != "gif" && format[i-1] != "png"){
+			alert("只能上传图片格式！");
+		} */
+	}
+	
+	function checkFormInput(){
+		if(!checkString(getElement('record.isbn'),"书号",30,true)) return;
+		if(!checkString(getElement('record.artArtistName'),"作者",30,true)) return;
+		if(!checkString(getElement('record.title'), "书名", 30, true)) return;
+		if(!checkString(getElement('record.press'),"出版社",30,true)) return;
+		if(!checkString(getElement('record.albumCName'),"画册中文名",30,true)) return; 
+		if(!checkString(getElement('record.albumEName'),"画册英文名",30,true)) return;
+		if(!checkString(getElement('record.editor'), "主编", 30, true)) return;
+		if(!checkString(getElement('record.chargeEditor'),"责任编辑",30,true)) return;
+		if(!checkString(getElement('record.coverDesign'),"封面设计",30,true)) return;
+		if(!checkString(getElement('record.wholeDesign'),"整体设计",30,true)) return; 
+		if(!checkString(getElement('record.proofReader'),"责任校对",30,true)) return;
+		if(!checkString(getElement('record.respPrint'),"责任印制",30,true)) return;
+		if(!checkString(getElement('record.producer'),"监制",30,true)) return; 
+		if(!checkString(getElement('record.telephone'),"电话",30,true)) return; 
+		if(!checkString(getElement('record.printing'),"印刷",30,true)) return; 
+		if(!checkString(getElement('record.folio'),"开本",30,true)) return;
+		if(!checkString(getElement('record.sheet'),"印张",30,true)) return; 
+		if(!checkString(getElement('record.printRun'),"印数",30,true)) return; 
+		if(!checkString(getElement('record.revision'),"版次",30,true)) return; 
+		if(!checkString(getElement('record.impression'),"印次",30,true)) return; 
+		if(!checkNumeric(getElement('record.price'),"定价(元)",30,true)) return;
+		if(!checkNumeric(getElement('record.worksNumber'),"收录作品件数（篇）",30,true,true)) return;
+		if(!checkNumeric(getElement('record.articlesNumber'),"收录文章数量（件）",30,true,true)) return;
+		if(!checkNumeric(getElement('record.personalPhotos'),"个人照片数量（张）",30,true,true)) return; 
+		if(!checkString(getElement('record.publicationType'),"出版物类型",30,true)) return;
+		return true;
+	}
+	
+	function closedialog(ret) {
+		var res=ret['ret'];
+	     if(res==true) {
+	    	 getElement('record.artistId').value=ret['str'];
+	    	 getElement('record.artArtistName').value=ret['str1'];
+	     }
+		if(ret=='true') {
+			goSearch();
+		}
+		editMode="";
+	}
+
+	function hidebtn(){
+		$(".dhxtabbar_tab_text").each(function(){
+			this.addEventListener('click',function(){
+				if(this.innerHTML != "出版物信息"){
+					document.getElementById("save").style.display="none";
+				}else{
+					document.getElementById("save").style.display="";
+				}
+			});
+		});
+	}
+	
+	function init(){
+		showMessage('<s:property value="errorMessage" escape="false"/>');
+		hidebtn();
+	}
+	
+	function goArtArtist(){
+		var url_link=contextpath+'works/artWorks.do?action=ARTIST&ids='+$$("artPublicationForm_record_artistId").value;
+	    openWindow("选择作者",url_link,200,300);	
+	}
+	
+	</script>
+<style type="text/css"> 
+   html, body {width:100%; height:100%; margin:0px; padding:0px; overflow:hidden;}
+</style>
+</head>
+ 
+<body onload="init()">
+	<s:form action="artPublication" id="artPublicationForm" method="post" namespace="/works">
+			<s:hidden name="record.id"/>
+			<s:hidden name="record.next" id="next"/>
+			<div id="tblForm"></div>
+			<div id="page_0" style="width:100%;">
+			<div id="formDiv" class="formDiv" style="padding:0px;">
+			<table cellpadding="0" cellspacing="0" class="formTable" width="100%">
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>书号：</td>
+					<td width="35%"><s:textfield name="record.isbn"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>书名：</td>
+					<td width="35%"><s:textfield name="record.title"/></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>出版社：</td>
+					<td width="35%"><s:textfield name="record.press"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>作者：</td>
+					<td width="35%" class="textL">
+							<s:textfield readonly="true" name="record.artArtistName" style="width:80%;" />
+  	                        <s:hidden name="record.artistId" />
+  	                        <gl:button name="btnArtArtist" styleClass="btnFormStyle" onClick="goArtArtist()">角色</gl:button>
+  	                </td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>画册中文名：</td>
+					<td width="35%"><s:textfield name="record.albumCName"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>画册英文名：</td>
+					<td width="35%"><s:textfield name="record.albumEName"/></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>主编：</td>
+					<td width="35%"><s:textfield name="record.editor"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>责任编辑：</td>
+					<td width="35%"><s:textfield name="record.chargeEditor"/></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>封面设计：</td>
+					<td width="35%"><s:textfield name="record.coverDesign"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>整体设计：</td>
+					<td width="35%"><s:textfield name="record.wholeDesign" /></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>责任校对：</td>
+					<td width="35%"><s:textfield name="record.proofReader"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>责任印制：</td>
+					<td width="35%"><s:textfield name="record.respPrint"/></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>监制：</td>
+					<td width="35%"><s:textfield name="record.producer"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>电话：</td>
+					<td width="35%"><s:textfield name="record.telephone"/></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>印刷：</td>
+					<td width="35%"><s:textfield name="record.printing"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>开本：</td>
+					<td width="35%"><s:textfield name="record.folio"/></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>印张：</td>
+					<td width="35%"><s:textfield name="record.sheet"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>印数：</td>
+					<td width="35%"><s:textfield name="record.printRun"/></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>版次：</td>
+					<td width="35%"><s:textfield name="record.revision"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>印次：</td>
+					<td width="35%"><s:textfield name="record.impression"/></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>定价(元)：</td>
+					<td width="35%"><s:textfield name="record.price"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>收录作品件数（篇）：</td>
+					<td width="35%"><s:textfield name="record.worksNumber"/></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>收录文章数量（件）：</td>
+					<td width="35%"><s:textfield name="record.articlesNumber"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>个人照片数量（张）：</td>
+					<td width="35%"><s:textfield name="record.personalPhotos"/></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>出版物类型：</td>
+					<td width="35%"><s:select list="codeSets.PUBLI_TYPE" listKey="value" listValue="codeName" name="record.publicationType"></s:select></td>
+					<td></td><td></td>
+				</tr>
+		 	</table>
+		 	<br></br>
+		 	<br></br>
+		 </div>
+		 </div>
+		 <iframe  id="page_1" width="100%" height="100%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_2" width="100%" height="100%" scrolling="no" frameborder="0"></iframe> 
+</s:form>
+
+<div id="btnDiv" class="btnDiv">
+	<gl:button name="btnAdd" onClick="goSubmit()" id="save">保存</gl:button>
+     &nbsp;
+	 <gl:button name="btnAdd" onClick="goCancel()" >关闭</gl:button>
+</div>
+
+<script type="text/javascript"> 
+ 
+</script>
+
+<%@include file="/common/dialog.jsp"%>
+<script type="text/javascript"> 
+var mainbody=window.document.body;
+if(window.addEventListener) {
+	     window.addEventListener("resize",goResize,false); 
+}
+else {
+	     window.attachEvent('onresize',goResize);
+}
+
+var fDiv=window.document.getElementById('formDiv');
+var bDiv=window.document.getElementById('btnDiv');
+var btbl=window.document.getElementById('tblForm');
+
+function goResize(){
+   fDiv.style.width=mainbody.offsetWidth-fDiv.offsetLeft*2+"px";
+   bDiv.style.width=mainbody.offsetWidth-bDiv.offsetLeft*2+"px";
+   fDiv.style.height=mainbody.offsetHeight-bDiv.offsetHeight-fDiv.offsetTop*2+10+"px";
+   bDiv.style.top=fDiv.offsetHeight+fDiv.offsetTop*2-5+"px";
+   if(btbl){
+	   btbl.style.width=fDiv.offsetWidth-fDiv.offsetLeft-9+"px";
+	   btbl.style.height=fDiv.offsetHeight-fDiv.offsetTop-12+"px";
+   }
+}
+goResize();  
+
+var tabbar = new dhtmlXTabBar("tblForm", "top");
+tabbar.setSkin('dhx_terrace');
+tabbar.setArrowsMode("auto");
+tabbar.addTab("a0", "出版物信息", "120px");
+tabbar.addTab("a1", "收录文章标题及作者", "180px");
+tabbar.addTab("a2", "出版物目录", "120px");
+tabbar.tabs("a0").attachObject("formDiv");
+tabbar.tabs("a0").setActive();
+if(document.getElementById('next').value=="true"){
+	tabbar.tabs("a1").setActive();
+	document.getElementById("save").style.display="none";
+} 
+tabbar.tabs("a1").attachObject("page_1");
+tabbar.tabs("a2").attachObject("page_2");
+tabbar.enableAutoReSize(true);
+tabbar.enableTabCloseButton(true);
+window.frames["page_1"].location.href=contentlink+'?action=LIST&record.id='+$$('artPublicationForm_record_id').value;
+window.frames["page_2"].location.href=cataloglink+'?action=LIST&record.id='+$$('artPublicationForm_record_id').value;
+</script>
+</body>
+</html>

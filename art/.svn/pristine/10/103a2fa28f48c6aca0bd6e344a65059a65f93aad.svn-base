@@ -1,0 +1,65 @@
+/*添加的样式 wangchuan*/
+div.gridbox.gridbox_dhx_terrace table.obj tr td{ border-width: 0px 0px 1px 0px!important; border-color: #e0e9ff;}
+div.gridbox_dhx_terrace table.obj tr td a {color:#4169a0;text-decoration:none;}
+div.gridbox_dhx_terrace table.obj tr td a:visited {color:#4169a0;}
+div.gridbox_dhx_terrace table.obj tr td a:hover {color:#a04169;}
+div.gridbox.gridbox_dhx_terrace .odd_dhx_terrace {background-color:#ffffff;}
+.dhx_tab_element{font-size:12px;}
+
+div.gridbox.gridbox_dhx_terrace table.hdr td {
+	font-size:12px;font-weight:bold;border-width: 0px 1px 1px 0px!important;
+	padding-bottom:5px!important;padding-top:5px!important;
+}
+div.gridbox.gridbox_dhx_terrace table.hdr td div.hdrcell{line-height:15px;}
+
+.dhxwins_vp_dhx_terrace div.dhxwin_active div.dhxwin_hdr div.dhxwin_btns div.dhxwin_button:hover {
+	background-color:#d04149!important;color:white;
+}
+
+.dhtmlxcalendar_dhx_terrace div.dhtmlxcalendar_dates_cont ul.dhtmlxcalendar_line { height:24px; }
+.dhtmlxcalendar_dhx_terrace div.dhtmlxcalendar_dates_cont ul.dhtmlxcalendar_line li { height:24px;line-height:24px; }
+
+div.gridbox_report1 { border: 2px solid #666666;}
+div.gridbox_report1 .dhx_sub_row { background-color: transparent; }
+div.gridbox_report1 .xhdr { background-color: white!import;}
+div.gridbox_report1 .xhdr_last { border: 0px; border-bottom: 1px solid #d3d3d3; border-left: 1px solid #d3d3d3;}
+div.gridbox_report1 table.hdr td { color: #111111; border: 0px; background-color: #f4f4f4; border-bottom: 1px solid #333333;
+    border-right: 1px solid #333333; text-align: center; margin: 0px; padding: 0px 0px 0px 0px;
+    -moz-user-select: none; -moz-user-select: -moz-none; overflow: hidden;
+}
+div.gridbox_report1 table.hdr td { height: 28px;word-wrap: break-word;word-break:break-all;padding:2px;}
+div.gridbox_report1 table.hdr td div.hdrcell { white-space: nowrap; font-family: Verdana; font-size: 12px;font-weight: bold;}
+div.gridbox_report1 table.obj td { border: 0px; border-bottom: 1px solid #333333; border-right: 1px solid #333333;
+    font-family: Verdana; font-size: 12px; -moz-user-select: none; -moz-user-select: -moz-none;
+    overflow: hidden; padding-top: 0px; padding-bottom: 0px; vertical-align: middle;
+}
+div.gridbox_report1 table.obj tr.rowselected td { background-color: #D6D3FA; color: #0000cc;font-weight:bold;}
+div.gridbox_report1 table.obj tr.rowselected td.cellselected, div.gridbox table.obj td.cellselected {color: #0000cc;background-color: #D6D3FA; }
+div.gridbox_report1 table.row20px tr td {height: 28px; white-space: nowrap; padding: 1px;}
+div.gridbox_report1 table.obj tr td a {color:blue;text-decoration:none;}
+div.gridbox_report1 table.obj tr td a:visited {color:blue;}
+div.gridbox_report1 table.hdr tr td a {color:blue;text-decoration:none;}
+div.gridbox_report1 table.hdr tr td a:visited {color:blue;}
+
+
+div.gridbox_report { border: 2px solid #666666;}
+div.gridbox_report .dhx_sub_row { background-color: transparent; }
+div.gridbox_report .xhdr { background-color: white!import;}
+div.gridbox_report .xhdr_last { border: 0px; border-bottom: 1px solid #d3d3d3; border-left: 1px solid #d3d3d3;}
+div.gridbox_report table.hdr td { color: #111111; border: 0px; background-color: #f4f4f4; border-bottom: 1px solid #333333;
+    border-right: 1px solid #333333; text-align: center; margin: 0px; padding: 0px 0px 0px 0px; 
+    -moz-user-select: none; -moz-user-select: -moz-none; overflow: hidden;
+}
+div.gridbox_report table.hdr td { height: 28px;word-wrap: break-word;word-break:break-all;padding-left:2px;padding-right:2px;padding-top:5px;padding-bottom:5px;}
+div.gridbox_report table.hdr td div.hdrcell { white-space: nowrap; font-family: Verdana; font-size: 12px;font-weight: bold;}
+div.gridbox_report table.obj td { border: 0px; border-bottom: 1px solid #333333; border-right: 1px solid #333333;
+    font-family: Verdana; font-size: 12px; -moz-user-select: none; -moz-user-select: -moz-none;
+    overflow: hidden; padding-top: 0px; padding-bottom: 0px; vertical-align: middle;
+}
+div.gridbox_report table.obj tr.rowselected td { background-color: #D6D3FA; color: #0000cc;font-weight:bold;}
+div.gridbox_report table.obj tr.rowselected td.cellselected, div.gridbox table.obj td.cellselected {color: #0000cc;background-color: #D6D3FA; }
+div.gridbox_report table.row20px tr td {height: 28px; white-space: nowrap; padding: 1px;}
+div.gridbox_report table.obj tr td a {color:blue;text-decoration:none;}
+div.gridbox_report table.obj tr td a:visited {color:blue;}
+div.gridbox_report table.hdr tr td a {color:blue;text-decoration:none;}
+div.gridbox_report table.hdr tr td a:visited {color:blue;}

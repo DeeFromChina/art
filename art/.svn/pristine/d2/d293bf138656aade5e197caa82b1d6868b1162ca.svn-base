@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+	<sql id="artAuctionHousesList" orderBy="aah.ID DESC">
+		SELECT aah.ID AS id,
+		AUCTION_HOUSE AS auctionHouse,
+		NATIONALITY AS nationality,
+		ADDR AS addr,
+		REMARK AS remark,
+		WEBSITE AS website
+		FROM ART_AUCTION_HOUSES aah
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+</sqls>

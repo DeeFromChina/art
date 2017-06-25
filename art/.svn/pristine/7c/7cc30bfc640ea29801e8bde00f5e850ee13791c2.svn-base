@@ -1,0 +1,52 @@
+package com.golead.art.auction.dao.impl;
+
+import java.io.Serializable;
+import com.golead.core.exception.DAOException;
+import com.golead.core.dao.impl.HibernateDaoImpl;
+import com.golead.art.auction.model.ArtAuctionTempVideo;
+import com.golead.art.auction.dao.ArtAuctionTempVideoDao;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ArtAuctionTempVideoDaoImpl extends HibernateDaoImpl<ArtAuctionTempVideo> implements ArtAuctionTempVideoDao {
+
+	public Class getReferenceClass() {
+		return ArtAuctionTempVideo.class;
+	}
+
+	public ArtAuctionTempVideo cast(Object object) {
+		return (ArtAuctionTempVideo) object;
+	}
+
+	public ArtAuctionTempVideo get(Serializable id)  throws DAOException{
+		return (ArtAuctionTempVideo) super.get(id);
+	}
+
+	public ArtAuctionTempVideo load(Serializable id)  throws DAOException{
+		return (ArtAuctionTempVideo) super.load(id);
+	}
+
+	public Serializable save(ArtAuctionTempVideo artAuctionTempVideo)  throws DAOException{
+		return super.save(artAuctionTempVideo);
+	}
+
+	public void saveOrUpdate(ArtAuctionTempVideo artAuctionTempVideo)  throws DAOException{
+		super.saveOrUpdate(artAuctionTempVideo);
+	}
+
+	public void update(ArtAuctionTempVideo artAuctionTempVideo)  throws DAOException{
+		super.update(artAuctionTempVideo);
+	}
+
+	public void delete(ArtAuctionTempVideo artAuctionTempVideo)  throws DAOException{
+		super.delete(artAuctionTempVideo);
+	}
+
+	public void refresh(ArtAuctionTempVideo artAuctionTempVideo)  throws DAOException{
+		super.refresh(artAuctionTempVideo);
+	}
+
+	public String getTableName() {
+		return ArtAuctionTempVideo.REF_TABLE;
+	}
+}

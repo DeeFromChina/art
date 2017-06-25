@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="manager" extends="default" namespace="/appManager">
+		<!-- App用户管理 -->
+		<action name="appUserManager" class="com.golead.art.appManager.AppUserManagerAction">
+			<result name="LIST">/jsp/appManager/appUserManageer/listAppUser.jsp</result>
+			<result name="TO_PROHIBITION">/jsp/appManager/appUserManageer/prohibitionUser.jsp</result>
+			<result name="TO_USER_DISABLE">/jsp/appManager/appUserManageer/disableUser.jsp</result>
+		</action>
+		<!-- 用户留言管理 -->
+		<action name="appCommentaryManager" class="com.golead.art.appManager.AppCommentaryAction">
+			<result name="LIST">/jsp/appManager/appCommentary/listAppCommentary.jsp</result>
+		</action>
+		<!-- 用户意见反馈 -->
+		<action name="appFeedbackManager" class="com.golead.art.appManager.AppFeedbackAction">
+			<result name="LIST">/jsp/appManager/appFeedback/listAppFeedback.jsp</result>
+		</action>
+		<!-- 艺术品关注 -->
+		<action name="appWorksFollowManager" class="com.golead.art.appManager.AppWorksFollowAction">
+			<result name="LIST">/jsp/appManager/appFollow/listAppWorksFollow.jsp</result>
+		</action>
+		<!-- 艺术家关注 -->
+		<action name="appArtistFollowManager" class="com.golead.art.appManager.AppArtistFollowAction">
+			<result name="LIST">/jsp/appManager/appFollow/listAppArtistFollow.jsp</result>
+		</action>
+		
+		<!-- 主页设置 -->
+		<action name="appHomePageManager" class="com.golead.art.appManager.AppHomePageAction">
+			<result name="LIST">/jsp/appManager/homePage/listAppArtistHomePage.jsp</result>
+			<result name="ADD">/jsp/appManager/homePage/addAppArtistHomePage.jsp</result>
+			<result name="EDIT">/jsp/appManager/homePage/editAppArtistHomePage.jsp</result>
+		</action>
+		
+		<!-- 艺术家首页设置 -->
+		<action name="appArtistPageManager" class="com.golead.art.appManager.AppArtistPageAction">
+			<result name="ARTIST_LIST">/jsp/appManager/appArtistPage/listAppArtist.jsp</result>
+			<result name="LIST">/jsp/appManager/appArtistPage/listAppArtistPage.jsp</result>
+			<result name="ADD">/jsp/appManager/appArtistPage/addAppArtistPage.jsp</result>
+			<result name="EDIT">/jsp/appManager/appArtistPage/editAppArtistPage.jsp</result>
+		</action>
+	</package>
+</struts>

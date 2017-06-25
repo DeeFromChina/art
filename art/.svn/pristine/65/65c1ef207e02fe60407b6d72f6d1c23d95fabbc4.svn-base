@@ -1,0 +1,482 @@
+package com.golead.art.works.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_publication table.
+ */
+@Entity  
+@Table(name="art_publication")  
+public class ArtPublication implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+   @Column(name = "press")
+   private java.lang.String press;   // 出版社
+
+   @Column(name = "whole_design")
+   private java.lang.String wholeDesign;   //  
+
+
+   @Column(name = "revision")
+   private java.lang.String revision;   // 版次
+
+   @Column(name = "articles_number")
+   private java.lang.Integer articlesNumber;   // 收录文章数量（件）
+
+   @Column(name = "title")
+   private java.lang.String title;   // 书名
+
+   @Column(name = "cover")
+   private java.lang.String cover;   // 封面
+
+   @Column(name = "isbn")
+   private java.lang.String isbn;   // 书号
+
+   @Column(name = "sheet")
+   private java.lang.String sheet;   // 印张
+
+   @Column(name = "album_c_name")
+   private java.lang.String albumCName;   // 画册中文名
+
+   @Column(name = "spine")
+   private java.lang.String spine;   // 书脊
+
+   @Column(name = "impression")
+   private java.lang.String impression;   // 印次
+
+   @Column(name = "printing")
+   private java.lang.String printing;   // 印刷
+
+   @Column(name = "artist_id")
+   private java.lang.Integer artistId;   // 艺术家id
+
+   @Column(name = "cover_design")
+   private java.lang.String coverDesign;   // 封面设计
+
+   @Column(name = "works_number")
+   private java.lang.Integer worksNumber;   // 收录作品件数（篇）
+
+   @Column(name = "editor")
+   private java.lang.String editor;   // 主编
+
+   @Column(name = "personal_photos")
+   private java.lang.Integer personalPhotos;   // 个人照片数量（张）
+
+   @Column(name = "charge_editor")
+   private java.lang.String chargeEditor;   // 责任编辑
+
+   @Column(name = "price")
+   private java.lang.Double price;   // 定价(元)
+
+   @Column(name = "album_e_name")
+   private java.lang.String albumEName;   // 画册英文名
+
+   @Column(name = "folio")
+   private java.lang.String folio;   // 开本
+
+   @Column(name = "print_run")
+   private java.lang.String printRun;   // 印数
+
+   @Column(name = "back_cover")
+   private java.lang.String backCover;   // 封底
+
+   @Column(name = "producer")
+   private java.lang.String producer;   // 监制
+
+   @Column(name = "proof_reader")
+   private java.lang.String proofReader;   // 责任校对
+
+   @Column(name = "resp_print")
+   private java.lang.String respPrint;   // 责任印制
+
+   @Column(name = "telephone")
+   private java.lang.String telephone;   // 电话
+
+   // Constructors
+   public ArtPublication() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.String getPress() { 
+      return this.press; 
+   }
+   public void setPress(java.lang.String press) { 
+      this.press = press; 
+   }
+
+
+   public java.lang.String getWholeDesign() { 
+      return this.wholeDesign; 
+   }
+   public void setWholeDesign(java.lang.String wholeDesign) { 
+      this.wholeDesign = wholeDesign; 
+   }
+
+
+   public java.lang.String getRevision() { 
+      return this.revision; 
+   }
+   public void setRevision(java.lang.String revision) { 
+      this.revision = revision; 
+   }
+
+
+   public java.lang.Integer getArticlesNumber() { 
+      return this.articlesNumber; 
+   }
+   public void setArticlesNumber(java.lang.Integer articlesNumber) { 
+      this.articlesNumber = articlesNumber; 
+   }
+
+
+   public java.lang.String getTitle() { 
+      return this.title; 
+   }
+   public void setTitle(java.lang.String title) { 
+      this.title = title; 
+   }
+
+
+   public java.lang.String getCover() { 
+      return this.cover; 
+   }
+   public void setCover(java.lang.String cover) { 
+      this.cover = cover; 
+   }
+
+
+   public java.lang.String getIsbn() { 
+      return this.isbn; 
+   }
+   public void setIsbn(java.lang.String isbn) { 
+      this.isbn = isbn; 
+   }
+
+
+   public java.lang.String getSheet() { 
+      return this.sheet; 
+   }
+   public void setSheet(java.lang.String sheet) { 
+      this.sheet = sheet; 
+   }
+
+
+   public java.lang.String getAlbumCName() { 
+      return this.albumCName; 
+   }
+   public void setAlbumCName(java.lang.String albumCName) { 
+      this.albumCName = albumCName; 
+   }
+
+
+   public java.lang.String getSpine() { 
+      return this.spine; 
+   }
+   public void setSpine(java.lang.String spine) { 
+      this.spine = spine; 
+   }
+
+
+   public java.lang.String getImpression() { 
+      return this.impression; 
+   }
+   public void setImpression(java.lang.String impression) { 
+      this.impression = impression; 
+   }
+
+
+   public java.lang.String getPrinting() { 
+      return this.printing; 
+   }
+   public void setPrinting(java.lang.String printing) { 
+      this.printing = printing; 
+   }
+
+
+   public java.lang.Integer getArtistId() { 
+      return this.artistId; 
+   }
+   public void setArtistId(java.lang.Integer artistId) { 
+      this.artistId = artistId; 
+   }
+
+
+   public java.lang.String getCoverDesign() { 
+      return this.coverDesign; 
+   }
+   public void setCoverDesign(java.lang.String coverDesign) { 
+      this.coverDesign = coverDesign; 
+   }
+
+
+   public java.lang.Integer getWorksNumber() { 
+      return this.worksNumber; 
+   }
+   public void setWorksNumber(java.lang.Integer worksNumber) { 
+      this.worksNumber = worksNumber; 
+   }
+
+
+   public java.lang.String getEditor() { 
+      return this.editor; 
+   }
+   public void setEditor(java.lang.String editor) { 
+      this.editor = editor; 
+   }
+
+
+   public java.lang.Integer getPersonalPhotos() { 
+      return this.personalPhotos; 
+   }
+   public void setPersonalPhotos(java.lang.Integer personalPhotos) { 
+      this.personalPhotos = personalPhotos; 
+   }
+
+
+   public java.lang.String getChargeEditor() { 
+      return this.chargeEditor; 
+   }
+   public void setChargeEditor(java.lang.String chargeEditor) { 
+      this.chargeEditor = chargeEditor; 
+   }
+
+
+   public java.lang.Double getPrice() { 
+      return this.price; 
+   }
+   public void setPrice(java.lang.Double price) { 
+      this.price = price; 
+   }
+
+
+   public java.lang.String getAlbumEName() { 
+      return this.albumEName; 
+   }
+   public void setAlbumEName(java.lang.String albumEName) { 
+      this.albumEName = albumEName; 
+   }
+
+
+   public java.lang.String getFolio() { 
+      return this.folio; 
+   }
+   public void setFolio(java.lang.String folio) { 
+      this.folio = folio; 
+   }
+
+
+   public java.lang.String getPrintRun() { 
+      return this.printRun; 
+   }
+   public void setPrintRun(java.lang.String printRun) { 
+      this.printRun = printRun; 
+   }
+
+
+   public java.lang.String getBackCover() { 
+      return this.backCover; 
+   }
+   public void setBackCover(java.lang.String backCover) { 
+      this.backCover = backCover; 
+   }
+
+
+   public java.lang.String getProducer() { 
+      return this.producer; 
+   }
+   public void setProducer(java.lang.String producer) { 
+      this.producer = producer; 
+   }
+
+
+   public java.lang.String getProofReader() { 
+      return this.proofReader; 
+   }
+   public void setProofReader(java.lang.String proofReader) { 
+      this.proofReader = proofReader; 
+   }
+
+
+   public java.lang.String getRespPrint() { 
+      return this.respPrint; 
+   }
+   public void setRespPrint(java.lang.String respPrint) { 
+      this.respPrint = respPrint; 
+   }
+
+
+   public java.lang.String getTelephone() { 
+      return this.telephone; 
+   }
+   public void setTelephone(java.lang.String telephone) { 
+      this.telephone = telephone; 
+   }
+
+
+   public static String REF_CLASS = "ArtPublication";
+   public static String PROP_PRESS = "press";
+   public static String PROP_WHOLE_DESIGN = "wholeDesign";
+   public static String PROP_ID = "id";
+   public static String PROP_REVISION = "revision";
+   public static String PROP_ARTICLES_NUMBER = "articlesNumber";
+   public static String PROP_TITLE = "title";
+   public static String PROP_COVER = "cover";
+   public static String PROP_ISBN = "isbn";
+   public static String PROP_SHEET = "sheet";
+   public static String PROP_ALBUM_C_NAME = "albumCName";
+   public static String PROP_SPINE = "spine";
+   public static String PROP_IMPRESSION = "impression";
+   public static String PROP_PRINTING = "printing";
+   public static String PROP_ARTIST_ID = "artistId";
+   public static String PROP_COVER_DESIGN = "coverDesign";
+   public static String PROP_WORKS_NUMBER = "worksNumber";
+   public static String PROP_EDITOR = "editor";
+   public static String PROP_PERSONAL_PHOTOS = "personalPhotos";
+   public static String PROP_CHARGE_EDITOR = "chargeEditor";
+   public static String PROP_PRICE = "price";
+   public static String PROP_ALBUM_E_NAME = "albumEName";
+   public static String PROP_FOLIO = "folio";
+   public static String PROP_PRINT_RUN = "printRun";
+   public static String PROP_BACK_COVER = "backCover";
+   public static String PROP_PRODUCER = "producer";
+   public static String PROP_PROOF_READER = "proofReader";
+   public static String PROP_RESP_PRINT = "respPrint";
+   public static String PROP_TELEPHONE = "telephone";
+
+   public static String REF_TABLE = "art_publication";
+   public static String COL_PRESS = "press";
+   public static String COL_WHOLE_DESIGN = "whole_design";
+   public static String COL_ID = "id";
+   public static String COL_REVISION = "revision";
+   public static String COL_ARTICLES_NUMBER = "articles_number";
+   public static String COL_TITLE = "title";
+   public static String COL_COVER = "cover";
+   public static String COL_ISBN = "isbn";
+   public static String COL_SHEET = "sheet";
+   public static String COL_ALBUM_C_NAME = "album_c_name";
+   public static String COL_SPINE = "spine";
+   public static String COL_IMPRESSION = "impression";
+   public static String COL_PRINTING = "printing";
+   public static String COL_ARTIST_ID = "artist_id";
+   public static String COL_COVER_DESIGN = "cover_design";
+   public static String COL_WORKS_NUMBER = "works_number";
+   public static String COL_EDITOR = "editor";
+   public static String COL_PERSONAL_PHOTOS = "personal_photos";
+   public static String COL_CHARGE_EDITOR = "charge_editor";
+   public static String COL_PRICE = "price";
+   public static String COL_ALBUM_E_NAME = "album_e_name";
+   public static String COL_FOLIO = "folio";
+   public static String COL_PRINT_RUN = "print_run";
+   public static String COL_BACK_COVER = "back_cover";
+   public static String COL_PRODUCER = "producer";
+   public static String COL_PROOF_READER = "proof_reader";
+   public static String COL_RESP_PRINT = "resp_print";
+   public static String COL_TELEPHONE = "telephone";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.works.model.ArtPublication)) return false;
+      else {
+         com.golead.art.works.model.ArtPublication o = (com.golead.art.works.model.ArtPublication) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtPublication:");
+		buffer.append(" id:").append(id);
+		buffer.append(" press:").append(dealNull(press));
+		buffer.append(" wholeDesign:").append(dealNull(wholeDesign));
+		buffer.append(" revision:").append(dealNull(revision));
+		buffer.append(" articlesNumber:").append(dealNull(articlesNumber));
+		buffer.append(" title:").append(dealNull(title));
+		buffer.append(" cover:").append(dealNull(cover));
+		buffer.append(" isbn:").append(dealNull(isbn));
+		buffer.append(" sheet:").append(dealNull(sheet));
+		buffer.append(" albumCName:").append(dealNull(albumCName));
+		buffer.append(" spine:").append(dealNull(spine));
+		buffer.append(" impression:").append(dealNull(impression));
+		buffer.append(" printing:").append(dealNull(printing));
+		buffer.append(" artistId:").append(dealNull(artistId));
+		buffer.append(" coverDesign:").append(dealNull(coverDesign));
+		buffer.append(" worksNumber:").append(dealNull(worksNumber));
+		buffer.append(" editor:").append(dealNull(editor));
+		buffer.append(" personalPhotos:").append(dealNull(personalPhotos));
+		buffer.append(" chargeEditor:").append(dealNull(chargeEditor));
+		buffer.append(" price:").append(dealNull(price));
+		buffer.append(" albumEName:").append(dealNull(albumEName));
+		buffer.append(" folio:").append(dealNull(folio));
+		buffer.append(" printRun:").append(dealNull(printRun));
+		buffer.append(" backCover:").append(dealNull(backCover));
+		buffer.append(" producer:").append(dealNull(producer));
+		buffer.append(" proofReader:").append(dealNull(proofReader));
+		buffer.append(" respPrint:").append(dealNull(respPrint));
+		buffer.append(" telephone:").append(dealNull(telephone));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"press\":\"").append(dealNull(press)).append("\"");
+		buffer.append(",\"wholeDesign\":\"").append(dealNull(wholeDesign)).append("\"");
+		buffer.append(",\"revision\":\"").append(dealNull(revision)).append("\"");
+		buffer.append(",\"articlesNumber\":\"").append(dealNull(articlesNumber)).append("\"");
+		buffer.append(",\"title\":\"").append(dealNull(title)).append("\"");
+		buffer.append(",\"cover\":\"").append(dealNull(cover)).append("\"");
+		buffer.append(",\"isbn\":\"").append(dealNull(isbn)).append("\"");
+		buffer.append(",\"sheet\":\"").append(dealNull(sheet)).append("\"");
+		buffer.append(",\"albumCName\":\"").append(dealNull(albumCName)).append("\"");
+		buffer.append(",\"spine\":\"").append(dealNull(spine)).append("\"");
+		buffer.append(",\"impression\":\"").append(dealNull(impression)).append("\"");
+		buffer.append(",\"printing\":\"").append(dealNull(printing)).append("\"");
+		buffer.append(",\"artistId\":\"").append(dealNull(artistId)).append("\"");
+		buffer.append(",\"coverDesign\":\"").append(dealNull(coverDesign)).append("\"");
+		buffer.append(",\"worksNumber\":\"").append(dealNull(worksNumber)).append("\"");
+		buffer.append(",\"editor\":\"").append(dealNull(editor)).append("\"");
+		buffer.append(",\"personalPhotos\":\"").append(dealNull(personalPhotos)).append("\"");
+		buffer.append(",\"chargeEditor\":\"").append(dealNull(chargeEditor)).append("\"");
+		buffer.append(",\"price\":\"").append(dealNull(price)).append("\"");
+		buffer.append(",\"albumEName\":\"").append(dealNull(albumEName)).append("\"");
+		buffer.append(",\"folio\":\"").append(dealNull(folio)).append("\"");
+		buffer.append(",\"printRun\":\"").append(dealNull(printRun)).append("\"");
+		buffer.append(",\"backCover\":\"").append(dealNull(backCover)).append("\"");
+		buffer.append(",\"producer\":\"").append(dealNull(producer)).append("\"");
+		buffer.append(",\"proofReader\":\"").append(dealNull(proofReader)).append("\"");
+		buffer.append(",\"respPrint\":\"").append(dealNull(respPrint)).append("\"");
+		buffer.append(",\"telephone\":\"").append(dealNull(telephone)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

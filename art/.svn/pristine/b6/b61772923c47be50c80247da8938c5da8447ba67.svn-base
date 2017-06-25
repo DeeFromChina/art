@@ -1,0 +1,52 @@
+package com.golead.art.auction.dao.impl;
+
+import java.io.Serializable;
+import com.golead.core.exception.DAOException;
+import com.golead.core.dao.impl.HibernateDaoImpl;
+import com.golead.art.auction.model.ArtAuctionPlace;
+import com.golead.art.auction.dao.ArtAuctionPlaceDao;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ArtAuctionPlaceDaoImpl extends HibernateDaoImpl<ArtAuctionPlace> implements ArtAuctionPlaceDao {
+
+	public Class getReferenceClass() {
+		return ArtAuctionPlace.class;
+	}
+
+	public ArtAuctionPlace cast(Object object) {
+		return (ArtAuctionPlace) object;
+	}
+
+	public ArtAuctionPlace get(Serializable id)  throws DAOException{
+		return (ArtAuctionPlace) super.get(id);
+	}
+
+	public ArtAuctionPlace load(Serializable id)  throws DAOException{
+		return (ArtAuctionPlace) super.load(id);
+	}
+
+	public Serializable save(ArtAuctionPlace artAuctionPlace)  throws DAOException{
+		return super.save(artAuctionPlace);
+	}
+
+	public void saveOrUpdate(ArtAuctionPlace artAuctionPlace)  throws DAOException{
+		super.saveOrUpdate(artAuctionPlace);
+	}
+
+	public void update(ArtAuctionPlace artAuctionPlace)  throws DAOException{
+		super.update(artAuctionPlace);
+	}
+
+	public void delete(ArtAuctionPlace artAuctionPlace)  throws DAOException{
+		super.delete(artAuctionPlace);
+	}
+
+	public void refresh(ArtAuctionPlace artAuctionPlace)  throws DAOException{
+		super.refresh(artAuctionPlace);
+	}
+
+	public String getTableName() {
+		return ArtAuctionPlace.REF_TABLE;
+	}
+}

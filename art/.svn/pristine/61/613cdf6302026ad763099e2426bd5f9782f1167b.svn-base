@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+  <sql id="artArtistList">
+  	SELECT aa.ID AS id,
+  	C_NAME AS cName,
+  	E_NAME AS eName,
+  	BIRTHDATE AS birthdate,
+  	NATIONALITY AS nationality,
+  	BIRTHPLACE AS birthplace,
+  	C_RESUME AS cResume,
+  	E_RESUME AS eResume,
+  	PHOTO AS photo,
+  	ARTIST_TYPE AS artistType,
+  	PERSONAL_PAGE AS personalPage,
+  	NHOM AS nhom,
+  	ZODIAC AS zodiac,
+  	ANCESTRAL_HOME AS ancestralHome,
+  	SEX AS sex 
+  	FROM ART_ARTIST aa 
+  	{#paras}
+  	<!-- SELECT aa.ID AS id,
+  	C_NAME AS cName,
+  	E_NAME AS eName,
+  	BIRTHDATE AS birthdate,
+  	NATIONALITY AS nationality,
+  	BIRTHPLACE AS birthplace,
+  	C_RESUME AS cResume,
+  	E_RESUME AS eResume,
+  	PHOTO AS photo,
+  	ARTIST_TYPE AS artistType,
+  	PERSONAL_PAGE AS personalPage,
+  	NHOM AS nhom,
+  	ZODIAC AS zodiac,
+  	ANCESTRAL_HOME AS ancestralHome,
+  	SEX AS sex 
+  	FROM ART_ARTIST aa 
+  	LEFT JOIN ART_ARTIST_EXPERIENCE aae ON aae.art_id = aa.id 
+  	{#paras} -->
+  	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+  
+  <!--查询作品列表 -->
+	<sql id="artMediumList" orderBy="medium.id desc">
+		SELECT 
+		medium.id AS id,
+		medium.medium_name AS mediumName,
+		medium.up_medium_id AS upId,
+		medium.tree_code AS treeCode,
+		medium.tree_level AS treeLevel,
+		medium.medium_side AS mediumSide,
+		medium.medium_category AS mediumCategory 
+		FROM ART_MEDIUM medium {#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+  <sql id="artArtistExperienceList">
+	SELECT aae.ID AS id,
+	aae.ART_ID AS artId,
+	YEAR AS year,
+	C_EXPERIENCE AS cExperience,
+	E_EXPERIENCE AS eExperience 
+	FROM ART_ARTIST_EXPERIENCE aae
+	LEFT JOIN ART_ARTIST aa ON aa.id = aae.art_id 
+	{#paras}  
+	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+</sqls>

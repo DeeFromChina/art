@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="works" extends="default" namespace="/works">
+		<action name="artWorks" class="com.golead.art.works.ArtWorksAction">
+			<result name="LIST">/jsp/works/artWorks_list.jsp</result>
+			<result name="ADD">/jsp/works/artWorks_add.jsp</result>
+			<result name="EDIT">/jsp/works/artWorks_edit.jsp</result>
+			<result name="VIEW">/jsp/works/artWorks_view.jsp</result>
+			<result name="ARTIST">/jsp/works/artWorks_artist.jsp</result>
+		</action>
+		<action name="artPeriod" class="com.golead.art.works.ArtWorksPeriodAction">
+			<result name="LIST">/jsp/works/artWorks_period_list.jsp</result>
+			<result name="ADD">/jsp/works/artWorks_period_add.jsp</result>
+			<result name="EDIT">/jsp/works/artWorks_period_edit.jsp</result>
+			<result name="VIEW">/jsp/works/artWorks_period_view.jsp</result>
+			<result name="ARTIST">/jsp/works/artWorks_artist.jsp</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,8 @@
+package com.golead.art.auction.dao;
+
+import com.golead.core.dao.HibernateDao;
+
+import com.golead.art.auction.model.ArtAuctionTempVideo;
+
+public interface ArtAuctionTempVideoDao extends HibernateDao<ArtAuctionTempVideo> {
+}

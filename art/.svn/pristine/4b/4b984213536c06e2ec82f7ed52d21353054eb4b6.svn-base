@@ -1,0 +1,257 @@
+package com.golead.art.literature.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_literature_include table.
+ */
+@Entity  
+@Table(name="art_literature_include")  
+public class ArtLiteratureInclude implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+
+   @Column(name = "editor")
+   private java.lang.String editor;   // 主编
+
+   @Column(name = "press")
+   private java.lang.String press;   // 出版社
+
+   @Column(name = "category")
+   private java.lang.String category;   // 类别，画册(1:个人，0:非个))，杂志(1:美术，0:非美)，3:报纸(1:美术)
+
+   @Column(name = "relevant_pages")
+   private java.lang.String relevantPages;   // 相关页/版面
+
+   @Column(name = "joint_publish")
+   private java.lang.String jointPublish;   // 联合出版
+
+   @Column(name = "include_name")
+   private java.lang.String includeName;   // 名称
+
+   @Column(name = "total_period")
+   private java.lang.Integer totalPeriod;   // 总期数
+
+   @Column(name = "period")
+   private java.lang.Integer period;   // 期数
+
+   @Column(name = "photo")
+   private java.lang.String photo;   // 相片，多个用;隔开
+
+   @Column(name = "album_time")
+   private java.util.Date albumTime;   // 时间
+
+   @Column(name = "include_type")
+   private java.lang.String includeType;   // 收录类型，1:画册，2:杂志，3:报纸
+
+   @Column(name = "page_count")
+   private java.lang.Integer pageCount;   // 总页数/版数
+
+   // Constructors
+   public ArtLiteratureInclude() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.String getEditor() { 
+      return this.editor; 
+   }
+   public void setEditor(java.lang.String editor) { 
+      this.editor = editor; 
+   }
+
+
+   public java.lang.String getPress() { 
+      return this.press; 
+   }
+   public void setPress(java.lang.String press) { 
+      this.press = press; 
+   }
+
+
+   public java.lang.String getCategory() { 
+      return this.category; 
+   }
+   public void setCategory(java.lang.String category) { 
+      this.category = category; 
+   }
+
+
+   public java.lang.String getRelevantPages() { 
+      return this.relevantPages; 
+   }
+   public void setRelevantPages(java.lang.String relevantPages) { 
+      this.relevantPages = relevantPages; 
+   }
+
+
+   public java.lang.String getJointPublish() { 
+      return this.jointPublish; 
+   }
+   public void setJointPublish(java.lang.String jointPublish) { 
+      this.jointPublish = jointPublish; 
+   }
+
+
+   public java.lang.String getIncludeName() { 
+      return this.includeName; 
+   }
+   public void setIncludeName(java.lang.String includeName) { 
+      this.includeName = includeName; 
+   }
+
+
+   public java.lang.Integer getTotalPeriod() { 
+      return this.totalPeriod; 
+   }
+   public void setTotalPeriod(java.lang.Integer totalPeriod) { 
+      this.totalPeriod = totalPeriod; 
+   }
+
+
+   public java.lang.Integer getPeriod() { 
+      return this.period; 
+   }
+   public void setPeriod(java.lang.Integer period) { 
+      this.period = period; 
+   }
+
+
+   public java.lang.String getPhoto() { 
+      return this.photo; 
+   }
+   public void setPhoto(java.lang.String photo) { 
+      this.photo = photo; 
+   }
+
+
+   public java.util.Date getAlbumTime() { 
+      return this.albumTime; 
+   }
+   public void setAlbumTime(java.util.Date albumTime) { 
+      this.albumTime = albumTime; 
+   }
+
+
+   public java.lang.String getIncludeType() { 
+      return this.includeType; 
+   }
+   public void setIncludeType(java.lang.String includeType) { 
+      this.includeType = includeType; 
+   }
+
+
+   public java.lang.Integer getPageCount() { 
+      return this.pageCount; 
+   }
+   public void setPageCount(java.lang.Integer pageCount) { 
+      this.pageCount = pageCount; 
+   }
+
+
+   public static String REF_CLASS = "ArtLiteratureInclude";
+   public static String PROP_ID = "id";
+   public static String PROP_EDITOR = "editor";
+   public static String PROP_PRESS = "press";
+   public static String PROP_CATEGORY = "category";
+   public static String PROP_RELEVANT_PAGES = "relevantPages";
+   public static String PROP_JOINT_PUBLISH = "jointPublish";
+   public static String PROP_INCLUDE_NAME = "includeName";
+   public static String PROP_TOTAL_PERIOD = "totalPeriod";
+   public static String PROP_PERIOD = "period";
+   public static String PROP_PHOTO = "photo";
+   public static String PROP_ALBUM_TIME = "albumTime";
+   public static String PROP_INCLUDE_TYPE = "includeType";
+   public static String PROP_PAGE_COUNT = "pageCount";
+
+   public static String REF_TABLE = "art_literature_include";
+   public static String COL_ID = "id";
+   public static String COL_EDITOR = "editor";
+   public static String COL_PRESS = "press";
+   public static String COL_CATEGORY = "category";
+   public static String COL_RELEVANT_PAGES = "relevant_pages";
+   public static String COL_JOINT_PUBLISH = "joint_publish";
+   public static String COL_INCLUDE_NAME = "include_name";
+   public static String COL_TOTAL_PERIOD = "total_period";
+   public static String COL_PERIOD = "period";
+   public static String COL_PHOTO = "photo";
+   public static String COL_ALBUM_TIME = "album_time";
+   public static String COL_INCLUDE_TYPE = "include_type";
+   public static String COL_PAGE_COUNT = "page_count";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.literature.model.ArtLiteratureInclude)) return false;
+      else {
+         com.golead.art.literature.model.ArtLiteratureInclude o = (com.golead.art.literature.model.ArtLiteratureInclude) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtLiteratureInclude:");
+		buffer.append(" id:").append(id);
+		buffer.append(" editor:").append(dealNull(editor));
+		buffer.append(" press:").append(dealNull(press));
+		buffer.append(" category:").append(dealNull(category));
+		buffer.append(" relevantPages:").append(dealNull(relevantPages));
+		buffer.append(" jointPublish:").append(dealNull(jointPublish));
+		buffer.append(" includeName:").append(dealNull(includeName));
+		buffer.append(" totalPeriod:").append(dealNull(totalPeriod));
+		buffer.append(" period:").append(dealNull(period));
+		buffer.append(" photo:").append(dealNull(photo));
+		buffer.append(" albumTime:").append(dealNull(albumTime));
+		buffer.append(" includeType:").append(dealNull(includeType));
+		buffer.append(" pageCount:").append(dealNull(pageCount));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"editor\":\"").append(dealNull(editor)).append("\"");
+		buffer.append(",\"press\":\"").append(dealNull(press)).append("\"");
+		buffer.append(",\"category\":\"").append(dealNull(category)).append("\"");
+		buffer.append(",\"relevantPages\":\"").append(dealNull(relevantPages)).append("\"");
+		buffer.append(",\"jointPublish\":\"").append(dealNull(jointPublish)).append("\"");
+		buffer.append(",\"includeName\":\"").append(dealNull(includeName)).append("\"");
+		buffer.append(",\"totalPeriod\":\"").append(dealNull(totalPeriod)).append("\"");
+		buffer.append(",\"period\":\"").append(dealNull(period)).append("\"");
+		buffer.append(",\"photo\":\"").append(dealNull(photo)).append("\"");
+		buffer.append(",\"albumTime\":\"").append(dealNull(albumTime)).append("\"");
+		buffer.append(",\"includeType\":\"").append(dealNull(includeType)).append("\"");
+		buffer.append(",\"pageCount\":\"").append(dealNull(pageCount)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

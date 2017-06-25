@@ -1,0 +1,137 @@
+package com.golead.art.works.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_works_include table.
+ */
+@Entity  
+@Table(name="art_works_include")  
+public class ArtWorksInclude implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+
+   @Column(name = "include_id")
+   private java.lang.Integer includeId;   // 收录id
+
+   @Column(name = "works_id")
+   private java.lang.Integer worksId;   // 作品id
+
+   @Column(name = "relevant_pages")
+   private java.lang.String relevantPages;   // 相关页面
+
+   @Column(name = "attachment")
+   private java.lang.String attachment;   // 附件
+
+   // Constructors
+   public ArtWorksInclude() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.Integer getIncludeId() { 
+      return this.includeId; 
+   }
+   public void setIncludeId(java.lang.Integer includeId) { 
+      this.includeId = includeId; 
+   }
+
+
+   public java.lang.Integer getWorksId() { 
+      return this.worksId; 
+   }
+   public void setWorksId(java.lang.Integer worksId) { 
+      this.worksId = worksId; 
+   }
+
+
+   public java.lang.String getRelevantPages() { 
+      return this.relevantPages; 
+   }
+   public void setRelevantPages(java.lang.String relevantPages) { 
+      this.relevantPages = relevantPages; 
+   }
+
+
+   public java.lang.String getAttachment() { 
+      return this.attachment; 
+   }
+   public void setAttachment(java.lang.String attachment) { 
+      this.attachment = attachment; 
+   }
+
+
+   public static String REF_CLASS = "ArtWorksInclude";
+   public static String PROP_ID = "id";
+   public static String PROP_INCLUDE_ID = "includeId";
+   public static String PROP_WORKS_ID = "worksId";
+   public static String PROP_RELEVANT_PAGES = "relevantPages";
+   public static String PROP_ATTACHMENT = "attachment";
+
+   public static String REF_TABLE = "art_works_include";
+   public static String COL_ID = "id";
+   public static String COL_INCLUDE_ID = "include_id";
+   public static String COL_WORKS_ID = "works_id";
+   public static String COL_RELEVANT_PAGES = "relevant_pages";
+   public static String COL_ATTACHMENT = "attachment";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.works.model.ArtWorksInclude)) return false;
+      else {
+         com.golead.art.works.model.ArtWorksInclude o = (com.golead.art.works.model.ArtWorksInclude) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtWorksInclude:");
+		buffer.append(" id:").append(id);
+		buffer.append(" includeId:").append(dealNull(includeId));
+		buffer.append(" worksId:").append(dealNull(worksId));
+		buffer.append(" relevantPages:").append(dealNull(relevantPages));
+		buffer.append(" attachment:").append(dealNull(attachment));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"includeId\":\"").append(dealNull(includeId)).append("\"");
+		buffer.append(",\"worksId\":\"").append(dealNull(worksId)).append("\"");
+		buffer.append(",\"relevantPages\":\"").append(dealNull(relevantPages)).append("\"");
+		buffer.append(",\"attachment\":\"").append(dealNull(attachment)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

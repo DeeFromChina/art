@@ -1,0 +1,238 @@
+package com.golead.art.artist;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
+
+import com.golead.art.artist.model.ArtArtistCollect;
+import com.golead.art.artist.service.ArtArtistCollectService;
+import com.golead.art.utils.FileUtils;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtistCollectAction extends BaseAction {
+
+	private Log log = LogFactory.getLog(ArtistCollectAction.class);
+	
+	public static String FILE_PATH = ServletActionContext.getServletContext().getRealPath("");
+	private File files;
+	private String filesFileName;
+	
+	@Resource
+	private ArtArtistCollectService artArtistCollectService;
+	
+	@Override
+	public String doExecute() throws Exception {
+		String forward = "";
+		String action = getForm().getAction();
+		if (action == null) {
+			forward = LIST;
+		}
+		try {
+			if (LIST.equalsIgnoreCase(action)) forward = listCollect();
+			else if (PAGE.equalsIgnoreCase(action)) forward = pageCollect();
+			else if (ADD.equalsIgnoreCase(action)) forward = addCollect();
+			else if (SAVE.equalsIgnoreCase(action)) forward = saveCollect();
+			else if (EDIT.equalsIgnoreCase(action)) forward = editCollect();
+			else if (UPDATE.equalsIgnoreCase(action)) forward = updateCollect();
+			else if (DELETE.equalsIgnoreCase(action)) forward = deleteCollect();
+			else if (VIEW.equalsIgnoreCase(action)) forward = viewCollect();
+			else if ("IMPORT".equalsIgnoreCase(action)) forward = importCollect();
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.put("errMsg", e.getMessage());
+			return ERROR;
+		}
+		return forward;
+	}
+	
+	public String listCollect() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'listCollect()' method");
+		try {
+			initForm();
+			return LIST;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String pageCollect() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering pageCollect() method");
+		try {
+			initForm();
+			PageQuery pq = getForm().getQuery();
+			String artistId = getForm().getRecord().get("artistId");
+			pq.getParameters().put("artistId", artistId);
+			pq = artArtistCollectService.queryArtArtistCollect(pq);
+			List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+			for (Map<String, Object> item : pq.getRecordSet()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				String collectLink = "^javascript:view(" + item.get("id") + ")^_self";
+				map.put("id", item.get("id"));
+				map.put("data", new Object[]{
+					""
+					,item.get("collectName") + collectLink
+					,item.get("collectDesc")
+				});
+				list.add(map);
+			}
+			String res = genGridJson(pq, list);
+			setResponse(res);
+		} catch (ServiceException e) {
+			setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+		} catch (Exception e) {
+			e.printStackTrace();
+			setResponse("{exit:1,message:\"数据访问错误。\"}");
+		}
+		return null;
+	}
+	
+	public String addCollect() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'addCollect()' method");
+		try {
+			initForm();
+			return ADD;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String saveCollect() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'saveCollect()' method");
+		try {
+			String artistId = getForm().getRecord().get("artistId");
+			ArtArtistCollect artArtistCollect = new ArtArtistCollect();
+			artArtistCollect.setArtistId(Integer.valueOf(artistId));
+			artArtistCollect.setCollectName(getForm().getRecord().get("collectName"));
+			artArtistCollect.setCollectDesc(getForm().getRecord().get("collectDesc"));
+			artArtistCollectService.createArtArtistCollect(artArtistCollect);
+			return returnForward(RETURN_NORMAL);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String editCollect() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'editCollect()' method");
+		try {
+			initForm();
+			int id = Integer.valueOf(getForm().getRecord().get("id"));
+			ArtArtistCollect artArtistCollect = artArtistCollectService.getArtArtistCollect(id);
+			ConvertUtil.objectToMap(getForm().getRecord(), artArtistCollect);
+			return EDIT;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String updateCollect() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'updateCollect()' method");
+		try {
+			artArtistCollectService.updateArtArtistCollect(getForm().getRecord());
+			return returnForward(RETURN_NORMAL);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+		
+	}
+	
+	public String deleteCollect() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'deleteCollect()' method");
+		try {
+			String[] id = ids.split(",");
+			Integer[] del_ids = new Integer[id.length];
+			for (int i = 0; i < del_ids.length; i++) {
+				del_ids[i] = Integer.valueOf(id[i]);
+			}
+			artArtistCollectService.deleteArtArtistCollects(del_ids);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+		return pageCollect();
+	}
+	
+	public String viewCollect() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'viewCollect()' method");
+		try {
+			initForm();
+			ArtArtistCollect artArtistCollect = artArtistCollectService.getArtArtistCollect(Integer.valueOf(ids));
+			ConvertUtil.objectToMap(getForm().getRecord(), artArtistCollect);
+			return VIEW;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String importCollect() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'viewCollect()' method");
+		try {
+			if (files != null) {
+				String newName = filesFileName.substring(filesFileName.lastIndexOf("."));
+				newName = files.getName().substring(0, files.getName().lastIndexOf(".") - 1) + newName;
+				String filePath = FILE_PATH + File.separator + newName;
+				FileUtils.fileUpload(filePath, files);
+				int artistId = Integer.valueOf(getForm().getRecord().get("artistId"));
+				artArtistCollectService.importCollects(files.toString(), artistId);
+				FileUtils.deleteFile(filePath);
+				return returnForward(RETURN_NORMAL);
+			} else
+				return "IMPORT";
+		} catch (ServiceException e) {
+			addMessage(getForm(), e.getMessage());
+			initForm();
+			return "IMPORT";
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			addMessage(getForm(), "保存操作失败!");
+			initForm();
+			return "IMPORT";
+		}
+	}
+	
+	public void initForm() throws Exception {
+		setCode(getForm(), "");
+	}
+
+	public File getFiles() {
+		return files;
+	}
+
+	public void setFiles(File files) {
+		this.files = files;
+	}
+
+	public String getFilesFileName() {
+		return filesFileName;
+	}
+
+	public void setFilesFileName(String filesFileName) {
+		this.filesFileName = filesFileName;
+	}
+
+}

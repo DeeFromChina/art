@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+	<sql id="artAuctionHousesList" orderBy="aah.ID DESC">
+		SELECT aah.ID AS id,
+		AUCTION_HOUSE AS auctionHouse,
+		NATIONALITY AS nationality,
+		ADDR AS addr,
+		REMARK AS remark,
+		WEBSITE AS website
+		FROM ART_AUCTION_HOUSES aah
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artAuctionWordsList" orderBy="aaw.ID DESC">
+		SELECT aaw.ID AS id,
+		aaw.auction_id AS auctionId,
+		words_theme AS wordsTheme,
+		attachment AS attachment,
+		words_source AS wordsSource,
+		words_time AS wordsTime
+		FROM ART_AUCTION_WORDS aaw
+		LEFT JOIN ART_WORKS_AUCTION awa ON awa.id = aaw.auction_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artAuctionVideoList" orderBy="aav.ID DESC">
+		SELECT aav.ID AS id,
+		aav.auction_id AS auctionId,
+		video_link AS videoLink,
+		video_theme AS videoTheme,
+		video_time AS videoTime,
+		video_source AS videoSource
+		FROM ART_AUCTION_VIDEO aav
+		LEFT JOIN ART_WORKS_AUCTION awa ON awa.id = aav.auction_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artAuctionExchangeList"  orderBy="t.year desc">
+	  select t.id,t.year,t.hk_exchange_rate as hkExchangeRate,t.d_exchange_rate as dExchangeRate,t.e_exchange_rate as eExchangeRate,t.p_exchange_rate as pExchangeRate from art_auction_exchange t
+	  {#paras}
+	  <parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+	<sql id="artAuctionList" orderBy="a.id DESC">
+		SELECT
+		a.id AS id,
+		w.works_c_name AS worksCName,
+		h.auction_house AS auctionHouse,
+		a.c_tran_price AS cTranPrice,
+		a.c_trade_price AS cTradePrice,
+		a.c_lowest_price AS cLowestPrice,
+		a.c_highest_price AS cHighestPrice,
+		a.sale_name AS saleName,
+		a.auction AS auction,
+		a.auction_no AS auctionNo,
+		a.auction_identity AS auctionIdentity,
+		a.auction_time AS auctionTime,
+		a.auction_desc AS auctionDesc,
+		a.works_source AS worksSource,
+		a.aution_season AS autionSeason,
+		t.c_name as cName,
+		a.create_year as createYear,
+		a.create_month as createMonth,
+		a.create_day as createDay,
+		a.imageUrl,
+		a.works_category as worksCategory,
+		a.size_cm as sizeCm
+		FROM art_auction a
+		LEFT JOIN art_works w ON w.id = a.works_id
+		LEFT JOIN art_artist t ON t.id = a.art_id
+		LEFT JOIN art_auction_houses h ON h.id = a.auction_houses_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+</sqls>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+  	<!--出版物列表 -->
+	<sql id="artPublicationList" orderBy="CONVERT(a.c_name USING gbk),p.publication_name asc,p.publication_type asc,p.publication_year desc,p.publication_month desc">
+		SELECT 
+		p.id AS id,
+		p.publication_name AS publicationName,
+		p.publication_type AS publicationType,
+		p.cover AS cover,
+		p.back_cover AS backCover,
+		p.editor AS editor,
+		p.press AS press,
+		p.publication_year AS publicationYear,
+		p.publication_month AS publicationMonth,
+		p.circulation,
+		p.impression,
+		p.isbn AS isbn,
+		p.price AS price,
+		p.page_count AS pageCount,
+		p.price_unit AS priceUnit,
+		a.c_name AS cName
+		FROM ART_PUBLICATION p  
+		LEFT JOIN art_artist a ON a.id = p.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artPublicationWorksList" orderBy="w.works_no ">	
+	  select p.id,w.id as wid,w.works_c_name as worksName,w.create_year as createYear,
+	  w.size_cm_width as sizeCmWidth,  
+	  w.size_cm_height as sizeCmHeight,  
+	  w.size_cm_length as sizeCmLength  
+	  from art_publication_works p
+	  left join art_works w on p.works_id=w.id
+	  {#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artPublicationLiteratureList" orderBy="w.write_time DESC">
+	  select p.id,p.page_number as pageNumber,literature_id as literatureId,w.id as wid,w.literature_title as publicationName,w.write_time as writeTime,w.literature_auther as literatureAuther from art_publication_literature p
+	  left join art_literature_words w on p.literature_id=w.id
+	  {#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+</sqls>

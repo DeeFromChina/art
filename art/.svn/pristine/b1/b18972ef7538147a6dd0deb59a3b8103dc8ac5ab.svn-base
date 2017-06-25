@@ -1,0 +1,52 @@
+package com.golead.art.works.dao.impl;
+
+import java.io.Serializable;
+import com.golead.core.exception.DAOException;
+import com.golead.core.dao.impl.HibernateDaoImpl;
+import com.golead.art.works.model.ArtWorksInclude;
+import com.golead.art.works.dao.ArtWorksIncludeDao;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ArtWorksIncludeDaoImpl extends HibernateDaoImpl<ArtWorksInclude> implements ArtWorksIncludeDao {
+
+	public Class getReferenceClass() {
+		return ArtWorksInclude.class;
+	}
+
+	public ArtWorksInclude cast(Object object) {
+		return (ArtWorksInclude) object;
+	}
+
+	public ArtWorksInclude get(Serializable id)  throws DAOException{
+		return (ArtWorksInclude) super.get(id);
+	}
+
+	public ArtWorksInclude load(Serializable id)  throws DAOException{
+		return (ArtWorksInclude) super.load(id);
+	}
+
+	public Serializable save(ArtWorksInclude artWorksInclude)  throws DAOException{
+		return super.save(artWorksInclude);
+	}
+
+	public void saveOrUpdate(ArtWorksInclude artWorksInclude)  throws DAOException{
+		super.saveOrUpdate(artWorksInclude);
+	}
+
+	public void update(ArtWorksInclude artWorksInclude)  throws DAOException{
+		super.update(artWorksInclude);
+	}
+
+	public void delete(ArtWorksInclude artWorksInclude)  throws DAOException{
+		super.delete(artWorksInclude);
+	}
+
+	public void refresh(ArtWorksInclude artWorksInclude)  throws DAOException{
+		super.refresh(artWorksInclude);
+	}
+
+	public String getTableName() {
+		return ArtWorksInclude.REF_TABLE;
+	}
+}

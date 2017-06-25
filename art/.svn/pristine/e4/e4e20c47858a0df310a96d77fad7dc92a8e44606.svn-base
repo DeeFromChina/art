@@ -1,0 +1,131 @@
+package com.golead.art.publication;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.golead.art.publication.service.ArtPublicationWorksService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.web.action.BaseAction;
+import com.sun.mail.imap.protocol.Item;
+
+public class ArtPublicationWorksAction extends BaseAction {
+
+   private final Log logger = LogFactory.getLog(ArtPublicationWorksAction.class);
+
+   @Override
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = form.getAction();
+
+      if (action == null) action = LIST;
+      if (logger.isDebugEnabled()) logger.debug("action:" + action);
+      try {
+         if (LIST.equalsIgnoreCase(action)) forward = sreachPublication();
+         else if (PAGE.equalsIgnoreCase(action)) forward = pagePublication();
+         else if (SAVE.equalsIgnoreCase(action)) forward = savePublication();
+         else if (DELETE.equalsIgnoreCase(action)) forward = deletePublication();
+      }
+      catch (Exception e) {// 其他系统出错
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   public String sreachPublication() throws Exception {
+      return LIST;
+   }
+
+   public String pagePublication() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'pageRole' method");
+      try {
+         PageQuery pageQuery = form.getQuery() == null ? new PageQuery() : form.getQuery();
+         pageQuery = artPublicationWorksService.queryArtPublicationWorks(pageQuery);
+         if (pageQuery != null) {
+            List<Map<String, Object>> rs = pageQuery.getRecordSet();
+            if (rs != null) {
+               List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+               for (int i = 0; i < rs.size(); i++) {
+                  Map<String, Object> publication = rs.get(i);
+                  Map<String, Object> map = new HashMap<String, Object>();
+                  map.put("id", publication.get("id"));
+                  String link = "^javascript:view(" + publication.get("wid") + ")^_self";
+                  String sizeCm = "";
+                  String sizeCmWidth = publication.get("sizeCmWidth") == null ? "" : publication.get("sizeCmWidth").toString();
+                  String sizeCmHeight = publication.get("sizeCmHeight") == null ? "" : publication.get("sizeCmHeight").toString();
+                  String sizeCmLength = publication.get("sizeCmLength") == null ? "" : publication.get("sizeCmLength").toString();
+                  sizeCm = sizeCmLength + (!"".equals(sizeCmWidth) ? "*" : "") + sizeCmWidth + (!"".equals(sizeCmHeight) ? "*" : "") + sizeCmHeight; 
+                  map.put("data", new Object[] { "", publication.get("worksName") + link, publication.get("createYear"), sizeCm });
+                  list.add(map);
+               }
+               String res = genGridJson(pageQuery, list);
+               setResponse(res);
+            }
+            else setResponse("{exit:1,message:\"数据访问错误。\"}");
+         }
+         else setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+
+   public String savePublication() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'savePublication' method");
+      try {
+         String[] id = ids.split("、");
+         int[] add_ids = new int[id.length];
+         for (int i = 0; i < add_ids.length; i++) {
+            add_ids[i] = Integer.valueOf(id[i]);
+         }
+         int pubId = Integer.valueOf(form.getQuery().getParameters().get("pubId"));
+         artPublicationWorksService.createArtPublicationWorks(add_ids, pubId);
+         setResponse("{exit:0}");
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         setResponse("{exit:1,message:\"保存操作失败!\"}");
+      }
+      return null;
+   }
+
+   public String deletePublication() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'deleteAuction' method");
+      try {
+         String[] id = ids.split(",");
+         Integer[] del_ids = new Integer[id.length];
+         for (int i = 0; i < del_ids.length; i++) {
+            del_ids[i] = Integer.valueOf(id[i]);
+         }
+         artPublicationWorksService.deleteArtPublicationWorkss(del_ids);
+         setResponse("{exit:0}");
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         setResponse("{exit:1,message:\"删除操作失败!\"}");
+      }
+      return null;
+   }
+
+   @Resource
+   private ArtPublicationWorksService artPublicationWorksService;
+
+}

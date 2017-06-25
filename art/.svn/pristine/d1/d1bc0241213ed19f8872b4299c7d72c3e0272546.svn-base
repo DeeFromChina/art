@@ -1,0 +1,222 @@
+package com.golead.art.artist;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.artist.service.ArtArtistService;
+import com.golead.common.service.system.SysUserService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtistInformationAction extends BaseAction {
+
+	private Log log = LogFactory.getLog(ArtistInformationAction.class);
+
+	private final static SimpleDateFormat dateFormate = new SimpleDateFormat("yyyy-MM-dd");
+	private final static SimpleDateFormat datetimeFormate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	
+	@Resource
+	private ArtArtistService artArtistService;
+
+	@Resource
+	private SysUserService sysUserService;
+
+	@Override
+	public String doExecute() throws Exception {
+		String forward = "";
+		String action = getForm().getAction();
+		if (action == null) {
+			action = LIST;
+		}
+		if (log.isDebugEnabled())
+			log.debug("action" + action);
+		try {
+			if (LIST.equalsIgnoreCase(action)) forward = listArtist();
+			else if (PAGE.equalsIgnoreCase(action)) forward = page();
+			else if (ADD.equalsIgnoreCase(action)) forward = addArtist();
+			else if (SAVE.equalsIgnoreCase(action)) forward = saveArtist();
+			else if (EDIT.equalsIgnoreCase(action)) forward = editArtist();
+			else if (UPDATE.equalsIgnoreCase(action)) forward = updateArtist();
+			else if (DELETE.equalsIgnoreCase(action)) forward = deleteArtist();
+			else if (VIEW.equalsIgnoreCase(action)) forward = viewArtist();
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.put("errMsg", e.getMessage());
+			forward = ERROR;
+		}
+		return forward;
+	}
+	
+	public String listArtist() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'list()' method");
+		initForm();
+		return LIST;
+	}
+
+	public String page() throws Exception{
+		if (log.isDebugEnabled()) log.debug("Entering 'page()' method");
+		try {
+			initForm();
+			PageQuery pq = form.getQuery();
+			pq = artArtistService.queryArtArtist(pq);
+			List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+			for (Map<String, Object> item : pq.getRecordSet()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				String artistLink = "^javascript:view(" + item.get("id") +");^_self";
+				map.put("id", item.get("id"));
+				map.put("data", new Object[] {
+						""
+						,item.get("cName") + "(" + item.get("eName") + ")"+ artistLink
+						,formateDate(item.get("birthdate"))
+						,item.get("nationality")
+						,findCodeName(getForm(), "ZODIAC", String.valueOf(item.get("zodiac")))
+						,findCodeName(getForm(), "ARTIST_TYPE", String.valueOf(item.get("artistType")))
+				});
+				list.add(map);
+			}
+			String res = genGridJson(pq, list);
+			setResponse(res);
+			
+		} catch (ServiceException e) {
+			setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+		} catch (Exception e) {
+			e.printStackTrace();
+			setResponse("{exit:1,message:\"数据访问错误。\"}");
+		}
+		return null;
+	}
+
+	public String addArtist() throws Exception {
+		if(log.isDebugEnabled())
+			log.debug("Entering 'addArtist()' method");
+		String forward = null;
+		try {
+			initForm();
+			return ADD;
+		} catch (Exception e) {
+			e.printStackTrace();
+			forward = ERROR;
+		}
+		return forward;
+		
+	}
+	
+	public String saveArtist() throws Exception {
+		if(log.isDebugEnabled()) log.debug("Entering 'saveArtist()' method");
+		try {
+			initForm();
+			ArtArtist artArtist = new ArtArtist();
+			artArtist.setArtistType(getForm().getRecord().get("artistType"));
+			artArtist.setAncestralHome(getForm().getRecord().get("ancestralHome"));
+			artArtist.setBirthplace(getForm().getRecord().get("birthplace"));
+			artArtist.setBirthdate(dateFormate.parse(getForm().getRecord().get("birthdate")));
+			artArtist.setCname(getForm().getRecord().get("cName"));
+			artArtist.setCresume(getForm().getRecord().get("cResume"));
+			artArtist.setEname(getForm().getRecord().get("eName"));
+			artArtist.setEresume(getForm().getRecord().get("eResume"));
+			artArtist.setNationality(getForm().getRecord().get("nationality"));
+			artArtist.setNhom(getForm().getRecord().get("nhom"));
+			artArtist.setPersonalPage(getForm().getRecord().get("personalPage"));
+			artArtist.setPhoto(getForm().getRecord().get("photo"));
+			artArtist.setSex(getForm().getRecord().get("sex"));
+			artArtist.setZodiac(getForm().getRecord().get("zodiac"));
+			artArtistService.createArtArtist(artArtist);
+			return returnForward(RETURN_NORMAL);
+		} catch (ServiceException e) {
+			addMessage(getForm(), e.getMessage());
+			return ADD;
+		} catch (Exception e) {
+			e.printStackTrace();
+			addMessage(getForm(), "保存操作失败!");
+			return ADD;
+		}
+	}
+	
+	public String editArtist() throws Exception {
+		if(log.isDebugEnabled()) log.debug("Entering 'editArtist()' method");
+		String forward = null;
+		try {
+			initForm();
+			int id = Integer.valueOf(getForm().getRecord().get("id"));
+			ArtArtist artArtist = artArtistService.getArtArtist(id);
+			ConvertUtil.objectToMap(getForm().getRecord(), artArtist);
+			return EDIT;
+		} catch (Exception e) {
+			e.printStackTrace();
+			forward = ERROR;
+		}
+		return forward;
+	}
+
+	public String updateArtist() throws Exception {
+		if (log.isDebugEnabled()) log.debug("Entering 'updateArtist()' method");
+		try {
+			initForm();
+			
+			artArtistService.updateArtArtist(getForm().getRecord());
+			return returnForward(RETURN_NORMAL);
+		}
+		catch (Exception e) {
+			addMessage(form, e.getMessage());
+			initForm();
+			return EDIT;
+		}
+	}
+	
+	public String deleteArtist() throws Exception {
+		if(log.isDebugEnabled())
+			log.debug("Entering 'deleteArtist()' method");
+		try {
+			String[] id = ids.split(",");
+			Integer[] del_ids = new Integer[id.length];
+			for (int i = 0; i < id.length; i++) {
+				del_ids[i] = Integer.parseInt(id[i]);
+			}
+			artArtistService.deleteArtArtistsAndExperience(del_ids);
+		} catch (Exception e) {
+			initForm();
+			return ERROR;
+		}
+		return page();
+	}
+	
+	public String viewArtist() throws Exception {
+		if(log.isDebugEnabled()) log.debug("Entering 'viewArtist()' method");
+		try {
+			initForm();
+			ArtArtist artArtist = artArtistService.getArtArtist(Integer.valueOf(ids));
+			ConvertUtil.objectToMap(getForm().getRecord(), artArtist);
+		} catch (Exception e) {
+			initForm();
+			return ERROR;
+		}
+		return VIEW;
+	}
+	
+	public void initForm() throws Exception {
+		setCode(getForm(), "ARTIST_TYPE,ZODIAC,GENDER");
+	}
+	
+	private String formateDate(Object obj) {
+		if(obj == null) return "";
+		return dateFormate.format(obj);
+	}
+	
+	private String formateDatetime(Object obj) {
+		if(obj == null) return "";
+		return datetimeFormate.format(obj);
+	}
+
+}

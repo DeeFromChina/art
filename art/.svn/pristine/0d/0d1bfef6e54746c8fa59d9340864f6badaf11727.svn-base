@@ -1,0 +1,485 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+
+  	<!--查询作品列表 -->
+	<sql id="artWorksList">
+SELECT 
+		works.id AS id,
+		works.works_no AS no,
+		works.create_year AS createYear,
+		works.create_period AS createPeriod,
+		works.works_series AS worksSeries,
+		works.works_c_name AS chineseName,
+		works.works_e_name AS englishName,
+		works.medium_material AS mediumMaterial,
+		works.size_cm AS sizeCm,
+		works.size_in AS sizeIn,
+		works.size_rule AS sizeRule,
+		works.signature AS signature,
+		works.style_type AS styleType,
+		works.thumbnail AS thumbnail,
+		t.theme_name AS worksTheme1,
+		works.style_content AS styleContent,
+		works.create_place AS createPlace,
+		works.create_cause AS createCause,
+		works.back_story AS backStory,
+		works.create_to AS createTo,
+		works.create_from AS createFrom,
+		works.part_size AS partSize,
+		works.works_status AS worksStatus,
+		works.artist_id AS artistId,
+		works.signature_content AS signatureContent,
+		works.medium_shape AS mediumShape,
+		works.signature2 AS signature2,
+		works.signature3 AS signature3,
+		works.signature_content2 AS signatureContent2,
+		works.signature_content3 AS signatureContent3,
+		works.create_month AS createMonth,
+		works.create_day AS createDay,
+		works.create_country AS createCountry,
+		works.works_theme2 AS worksTheme2,
+		works.works_theme3 AS worksTheme3,
+		works.keyword_addr AS keywordAddr,
+		works.keyword_character AS keywordCharacter,
+		works.keyword_event AS keywordEvent,
+		works.keyword_thing AS keywordThing,
+		works.keyword_other1 AS keywordOther1,
+		works.keyword_other2 AS keywordOther2,
+		works.works_image AS worksImage,
+		works.works_store_name AS worksStoreName,
+		works.repeat_marker AS repeatMarker,
+		works.size_cm_width AS sizeCmWidth,
+		works.size_cm_height AS sizeCmHeight,
+		works.size_cm_length AS sizeCmLength,
+		works.size_in_width AS sizeInWidth,
+		works.size_in_height AS sizeInHeight,
+		works.size_in_length AS sizeInLength,
+		works.size_rule_width AS sizeRuleWidth,
+		works.size_rule_height AS sizeRuleHeight,
+		works.size_rule_length AS sizeRuleLength,
+		k.tranPrice AS tranPrice,
+		k.tradePrice AS tradePrice,
+		k.lowestPrice AS lowestPrice,
+		k.highestPrice AS highestPrice,
+		k.auctionTime AS auctionTime,
+		houses.auction_house AS auctionHouse,
+		artist.c_name AS c_name,
+		artist.e_name AS e_name 
+		FROM ART_WORKS works 
+		LEFT JOIN art_artist artist ON artist.id = works.artist_id 
+		LEFT JOIN (
+	      SELECT
+	        works_id,
+	        c_tran_price AS tranPrice,
+			c_trade_price AS tradePrice,
+			c_lowest_price AS lowestPrice,
+			c_highest_price AS highestPrice,
+			auction_time AS auctionTime,
+			auction_houses_id,
+	        max(auction_time) AS max_acution_time
+	      FROM
+	        art_auction
+	      GROUP BY
+	        works_id
+	    ) k ON k.works_id = works.id
+		LEFT JOIN art_auction_houses houses ON k.auction_houses_id = houses.id 
+		LEFT JOIN art_works_theme t ON t.id = works.works_theme1 
+		{#paras}
+		{#orderBy}
+		<parameters id="paras" prefix="where" suffix="" />
+		<parameters id="orderBy" prefix="order by " suffix="" />
+	</sql>
+	
+  	<!--查询作品时期列表 -->
+	<sql id="artWorksPeriodList" orderBy="period.id desc">
+		SELECT 
+		period.id AS id,
+		period.period_type AS periodType,
+		period.period_name AS periodName,
+		period.works_id AS periodWorksId,
+		works.id AS worksId,
+		works.works_no AS no,
+		works.create_period AS createPeriod,
+		works.works_series AS worksSeries,
+		works.works_c_name AS chineseName,
+		works.works_e_name AS englishName,
+		works.medium_material AS mediumMaterial,
+		works.size_cm AS sizeCm,
+		works.size_in AS sizeIn,
+		works.size_rule AS sizeRule,
+		works.signature AS signature,
+		works.style_type AS styleType,
+		works.thumbnail AS thumbnail,
+		works.style_content AS styleContent,
+		works.create_place AS createPlace,
+		works.create_cause AS createCause,
+		works.back_story AS backStory,
+		works.create_to AS createTo,
+		works.create_from AS createFrom,
+		works.part_size AS partSize,
+		works.works_status AS worksStatus,
+		works.artist_id AS artistId,
+		works.signature_content AS signatureContent,
+		works.medium_shape AS mediumShape,
+		works.signature2 AS signature2,
+		works.signature3 AS signature3,
+		works.signature_content2 AS signatureContent2,
+		works.signature_content3 AS signatureContent3,
+		artist.c_name AS c_name,
+		artist.e_name AS e_name 
+		FROM ART_WORKS_PERIOD period  
+		LEFT JOIN art_works works ON works.id = period.works_id  
+		LEFT JOIN art_artist artist ON artist.id = works.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+  	<!--查询作品评价列表 -->
+	<sql id="artWorksEvaluateList" orderBy="evaluate.id desc">
+		SELECT 
+		evaluate.id AS id,
+		evaluate.evaluate_type AS evaluateType,
+		evaluate.evaluate AS evaluates,
+		evaluate.works_id AS worksEvaluateId,
+		works.id AS worksId,
+		works.works_no AS no,
+		works.create_period AS createPeriod,
+		works.works_series AS worksSeries,
+		works.works_c_name AS chineseName,
+		works.works_e_name AS englishName,
+		works.medium_material AS mediumMaterial,
+		works.size_cm AS sizeCm,
+		works.size_in AS sizeIn,
+		works.size_rule AS sizeRule,
+		works.signature AS signature,
+		works.style_type AS styleType,
+		works.thumbnail AS thumbnail,
+		works.style_content AS styleContent,
+		works.create_place AS createPlace,
+		works.create_cause AS createCause,
+		works.back_story AS backStory,
+		works.create_to AS createTo,
+		works.create_from AS createFrom,
+		works.part_size AS partSize,
+		works.works_status AS worksStatus,
+		works.artist_id AS artistId,
+		works.signature_content AS signatureContent,
+		works.medium_shape AS mediumShape,
+		works.signature2 AS signature2,
+		works.signature3 AS signature3,
+		works.signature_content2 AS signatureContent2,
+		works.signature_content3 AS signatureContent3,
+		artist.c_name AS c_name,
+		artist.e_name AS e_name 
+		FROM ART_WORKS_EVALUATE evaluate  
+		LEFT JOIN art_works works ON works.id = evaluate.works_id  
+		LEFT JOIN art_artist artist ON artist.id = works.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+  	<!--查询作品案例列表 -->
+	<sql id="artWorksCaseList" orderBy="cases.id desc">
+		SELECT 
+		cases.id AS id,
+		cases.case_auther AS caseAuther,
+		cases.case_name AS caseName,
+		cases.case_time AS caseTime,
+		cases.research_topic AS researchTopic,
+		cases.case_content AS caseContent,
+		cases.works_id AS caseWorksId,
+		cases.attachment AS attachment,
+		works.id AS worksId,
+		works.works_no AS no,
+		works.create_period AS createPeriod,
+		works.works_series AS worksSeries,
+		works.works_c_name AS chineseName,
+		works.works_e_name AS englishName,
+		works.medium_material AS mediumMaterial,
+		works.size_cm AS sizeCm,
+		works.size_in AS sizeIn,
+		works.size_rule AS sizeRule,
+		works.signature AS signature,
+		works.style_type AS styleType,
+		works.thumbnail AS thumbnail,
+		works.style_content AS styleContent,
+		works.create_place AS createPlace,
+		works.create_cause AS createCause,
+		works.back_story AS backStory,
+		works.create_to AS createTo,
+		works.create_from AS createFrom,
+		works.part_size AS partSize,
+		works.works_status AS worksStatus,
+		works.artist_id AS artistId,
+		works.signature_content AS signatureContent,
+		works.medium_shape AS mediumShape,
+		works.signature2 AS signature2,
+		works.signature3 AS signature3,
+		works.signature_content2 AS signatureContent2,
+		works.signature_content3 AS signatureContent3,
+		artist.c_name AS c_name,
+		artist.e_name AS e_name 
+		FROM ART_WORKS_CASE cases   
+		LEFT JOIN art_works works ON works.id = cases.works_id  
+		LEFT JOIN art_artist artist ON artist.id = works.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+  	<!--查询相关作品列表 -->
+	<sql id="artWorksSomeList" orderBy="some.id desc">
+		SELECT 
+		some.id AS id,
+		some.works_name AS worksName,
+		some.year AS year,
+		some.medium_material AS material,
+		some.medium_shape AS shape,
+		some.some_works_id AS someWorksId,
+		some.works_id AS worksId,
+		works.works_no AS no,
+		works.create_period AS createPeriod,
+		works.works_series AS worksSeries,
+		works.works_c_name AS chineseName,
+		works.works_e_name AS englishName,
+		works.medium_material AS mediumMaterial,
+		works.size_cm AS sizeCm,
+		works.size_in AS sizeIn,
+		works.size_rule AS sizeRule,
+		works.signature AS signature,
+		works.style_type AS styleType,
+		works.thumbnail AS thumbnail,
+		works.style_content AS styleContent,
+		works.create_place AS createPlace,
+		works.create_cause AS createCause,
+		works.back_story AS backStory,
+		works.create_to AS createTo,
+		works.create_from AS createFrom,
+		works.part_size AS partSize,
+		works.works_status AS worksStatus,
+		works.artist_id AS artistId,
+		works.signature_content AS signatureContent,
+		works.medium_shape AS mediumShape,
+		works.signature2 AS signature2,
+		works.signature3 AS signature3,
+		works.signature_content2 AS signatureContent2,
+		works.signature_content3 AS signatureContent3,
+		artist.c_name AS c_name,
+		artist.e_name AS e_name 
+		FROM ART_WORKS_SOME some   
+		LEFT JOIN art_works works ON works.id = some.works_id  
+		LEFT JOIN art_artist artist ON artist.id = works.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+	<sql id="artWorksAttachmentList" orderBy="attachment.id desc">
+		SELECT 
+		attachment.id AS id,
+		attachment.file_name AS fileName,
+		attachment.file_desc AS fileDesc,
+		attachment.is_cover AS isCover,
+		attachment.works_id AS worksId,
+		works.works_no AS no,
+		works.create_period AS createPeriod,
+		works.works_series AS worksSeries,
+		works.works_c_name AS chineseName,
+		works.works_e_name AS englishName,
+		works.medium_material AS mediumMaterial,
+		works.size_cm AS sizeCm,
+		works.size_in AS sizeIn,
+		works.size_rule AS sizeRule,
+		works.signature AS signature,
+		works.style_type AS styleType,
+		works.thumbnail AS thumbnail,
+		works.style_content AS styleContent,
+		works.create_place AS createPlace,
+		works.create_cause AS createCause,
+		works.back_story AS backStory,
+		works.create_to AS createTo,
+		works.create_from AS createFrom,
+		works.part_size AS partSize,
+		works.works_status AS worksStatus,
+		works.artist_id AS artistId,
+		works.signature_content AS signatureContent,
+		works.medium_shape AS mediumShape,
+		works.signature2 AS signature2,
+		works.signature3 AS signature3,
+		works.signature_content2 AS signatureContent2,
+		works.signature_content3 AS signatureContent3,
+		artist.c_name AS cName,
+		artist.e_name AS eName 
+		FROM ART_WORKS_ATTACHMENT attachment   
+		LEFT JOIN art_works works ON works.id = attachment.works_id  
+		LEFT JOIN art_artist artist ON artist.id = works.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+  
+	
+  	<!--查询相关作品列表 -->
+	<sql id="artPublicationContentList" orderBy="content.id desc">
+		SELECT 
+		content.id AS id,
+		content.title AS contentTitle,
+		content.author AS author,
+		content.pub_id AS pubId,
+		publication.id AS pid,
+		publication.album_c_name AS albumCName,
+		publication.album_e_name AS albumEName,
+		publication.cover AS cover,
+		publication.spine AS spine,
+		publication.back_cover AS backCover,
+		publication.title AS title,
+		publication.editor AS editor,
+		publication.charge_editor AS chargeEditor,
+		publication.cover_design AS coverDesign,
+		publication.whole_design AS wholeDesign,
+		publication.proof_reader AS proofReader,
+		publication.resp_print AS respPrint,
+		publication.producer AS producer,
+		publication.press AS press,
+		publication.telephone AS telephone,
+		publication.printing AS printing,
+		publication.folio AS folio,
+		publication.sheet AS sheet,
+		publication.print_run AS printRun,
+		publication.revision AS revision,
+		publication.impression AS impression,
+		publication.isbn AS isbn,
+		publication.price AS price,
+		publication.works_number AS worksNumber,
+		publication.articles_number AS articlesNumber,
+		publication.personal_photos AS personalPhotos,
+		publication.artist_id AS artistId,
+		publication.publication_type AS publicationType,
+		artist.c_name AS cName,
+		artist.e_name AS eName 
+		FROM ART_PUBLICATION_CONTENT content  
+		LEFT JOIN art_publication publication ON publication.id = content.pub_id 
+		LEFT JOIN art_artist artist ON artist.id = publication.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+  	<!--查询相关作品列表 -->
+	<sql id="artPublicationCatalogList" orderBy="catalog.id desc">
+		SELECT 
+		catalog.id AS id,
+		catalog.page_number AS pageNumber,
+		catalog.catalog_content AS catalogContent,
+		catalog.attachment AS attachment,
+		catalog.pub_id AS pubId,
+		publication.id AS pid,
+		publication.album_c_name AS albumCName,
+		publication.album_e_name AS albumEName,
+		publication.cover AS cover,
+		publication.spine AS spine,
+		publication.back_cover AS backCover,
+		publication.title AS title,
+		publication.editor AS editor,
+		publication.charge_editor AS chargeEditor,
+		publication.cover_design AS coverDesign,
+		publication.whole_design AS wholeDesign,
+		publication.proof_reader AS proofReader,
+		publication.resp_print AS respPrint,
+		publication.producer AS producer,
+		publication.press AS press,
+		publication.telephone AS telephone,
+		publication.printing AS printing,
+		publication.folio AS folio,
+		publication.sheet AS sheet,
+		publication.print_run AS printRun,
+		publication.revision AS revision,
+		publication.impression AS impression,
+		publication.isbn AS isbn,
+		publication.price AS price,
+		publication.works_number AS worksNumber,
+		publication.articles_number AS articlesNumber,
+		publication.personal_photos AS personalPhotos,
+		publication.artist_id AS artistId,
+		publication.publication_type AS publicationType,
+		artist.c_name AS cName,
+		artist.e_name AS eName 
+		FROM ART_PUBLICATION_CATALOG catalog  
+		LEFT JOIN art_publication publication ON publication.id = catalog.pub_id 
+		LEFT JOIN art_artist artist ON artist.id = publication.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+  	
+	<sql id="artWorksAbmbList" orderBy="works_abmb.id desc">
+		SELECT 
+		works_abmb.id AS id,
+		works_abmb.works_id AS worksId,
+		works_abmb.abmb_id AS worksAbmbId,
+		abmb.id AS abmbId,
+		abmb.abmb_name AS abmbName,
+		abmb.sponsor AS sponsor, 
+		abmb.abmb_year AS abmbYear, 
+		abmb.abmb_number AS abmbNumber, 
+		abmb.abmb_month AS abmbMonth, 
+		abmb.art_director AS artDirector, 
+		abmb.country_id AS countryId, 
+		abmb.city AS city, 
+		country.country_name AS countryName 
+		FROM art_works_abmb works_abmb 
+		LEFT JOIN art_activity_abmb abmb ON abmb.id = works_abmb.abmb_id 
+		LEFT JOIN art_country country ON country.id = abmb.country_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+  	
+	<sql id="artWorksWordsList" orderBy="words.id desc">
+		SELECT 
+		words.id AS id,
+		words.works_id AS worksId,
+		words.words_id AS wordsId,
+		literature.id AS literatureId,
+		literature.literature_title AS literatureTitle,
+		literature.literature_auther AS literatureAuther  
+		FROM art_works_words words 
+		LEFT JOIN art_literature_words literature ON literature.id = words.words_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+  	
+	<sql id="artWorksNetworkList" orderBy="network.id desc">
+		SELECT 
+		network.id AS id,
+		network.works_id AS worksId,
+		network.network_id AS networkId,
+		literature.id AS literatureId,
+		literature.literature_title AS literatureTitle,
+		literature.literature_auther AS literatureAuther  
+		FROM art_works_network network 
+		LEFT JOIN art_literature_network literature ON literature.id = network.network_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+  	
+	<sql id="artWorksMediumList" orderBy="medium.id desc">
+		SELECT 
+		medium.id AS id,
+		medium.works_id AS worksId,
+		medium.medium_id AS mediumId,
+		literature.id AS literatureId,
+		literature.literature_title AS literatureTitle,
+		literature.shot_people AS shotPeople  
+		FROM art_works_medium medium 
+		LEFT JOIN art_literature_medium literature ON literature.id = medium.medium_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+	<sql id="artWorksThemeList"  orderBy="t.theme_name">
+	  select t.id,t.theme_name as themeName,t.theme_desc as themeDesc,t.create_time as createTime,t.create_person as createPerson from art_works_theme t
+	  {#paras}
+	  <parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artWorksStyleList"  orderBy="t.style_name">
+	  select t.id,t.style_name as styleName,t.style_desc as styleDesc,t.create_time as createTime,t.create_person as createPerson from art_works_style t
+	  {#paras}
+	  <parameters id="paras" prefix="where" suffix="" />
+	</sql>
+</sqls>

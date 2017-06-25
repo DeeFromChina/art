@@ -1,0 +1,148 @@
+package com.golead.art.works;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.golead.art.works.service.ArtArtistWorksSeriesResearchService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.web.action.BaseAction;
+
+/**
+ * 系列作品
+ */
+public class ArtistSeriesWorksAction extends BaseAction {
+
+   private Log                                 log                 = LogFactory.getLog(ArtistSeriesWorksAction.class);
+
+   private final String                        REPRESENTATIVE      = "REPRESENTATIVE_LIST";
+
+   private String                              cellImgFormat       = "<a href='%s' target='_blank'><img src='%s' /></a>";
+   private String                              thumbnailPathFormat = "%supload/auction/%s/thumbnail/%s";
+   private String                              imgPathFormat       = "%supload/auction/%s/%s";
+
+   @Resource
+   private ArtArtistWorksSeriesResearchService artArtistWorksSeriesResearchService;
+
+   @Override
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = getForm().getAction();
+      initForm();
+      if (action == null) {
+         forward = LIST;
+      }
+      try {
+         if (LIST.equalsIgnoreCase(action)) forward = list();
+         else if (REPRESENTATIVE.equalsIgnoreCase(action)) forward = representativeList();
+         else if (PAGE.equalsIgnoreCase(action)) forward = page();
+         else if (ADD.equalsIgnoreCase(action)) forward = add();
+         else if (SAVE.equalsIgnoreCase(action)) forward = save();
+         else if (DELETE.equalsIgnoreCase(action)) forward = delete();
+         else if (VIEW.equalsIgnoreCase(action)) forward = view();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   public void initForm() {
+
+   }
+
+   public String representativeList() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'representativeList()' method");
+      return REPRESENTATIVE;
+   }
+
+   public String list() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'list()' method");
+      return LIST;
+   }
+
+   public String page() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'page()' method");
+      try {
+         PageQuery pageQuery = form.getQuery();
+         String artistId = getForm().getRecord().get("artistId");
+         pageQuery.getParameters().put("artistId", artistId);
+         pageQuery = artArtistWorksSeriesResearchService.queryArtArtistWorksSeriesResearch(pageQuery);
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         for (Map<String, Object> item : pageQuery.getRecordSet()) {
+            String folderName = item.get("folderName").toString();
+            String thumbnail;
+            String cell;
+            if (item.get("thumbnail") != null) {
+               thumbnail = item.get("thumbnail").toString();
+               String thumbnailPath = String.format(thumbnailPathFormat, request.get("CONTEXT_PATH"), folderName, thumbnail);
+               String imgPath = String.format(imgPathFormat, request.get("CONTEXT_PATH"), folderName, thumbnail);
+               cell = String.format(cellImgFormat, imgPath, thumbnailPath);
+            }
+            else {
+               cell = "暂无图片";
+            }
+            String worksCName = item.get("worksCName") + "";
+            String worksEName = item.get("worksEName") + "";
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", item.get("id"));
+            map.put("data", new Object[] { "", cell, worksCName, worksEName });
+            list.add(map);
+         }
+         String res = genGridJson(pageQuery, list);
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+
+   public String add() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'add()' method");
+      return null;
+   }
+
+   public String save() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'save()' method");
+      return null;
+   }
+
+   public String view() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'view()' method");
+      return null;
+   }
+
+   public String delete() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'delete()' method");
+      try {
+         String[] id = ids.split(",");
+         Integer[] del_ids = new Integer[id.length];
+         for (int i = 0; i < id.length; i++) {
+            del_ids[i] = Integer.valueOf(id[i]);
+         }
+         artArtistWorksSeriesResearchService.deleteArtArtistWorksSeriesResearchs(del_ids);
+         setResponse("{exit:0}");
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         setResponse("{exit:1,message:\"删除操作失败!\"}");
+      }
+      return null;
+   }
+}

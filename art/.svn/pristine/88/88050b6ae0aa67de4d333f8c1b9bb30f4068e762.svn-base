@@ -1,0 +1,333 @@
+package com.golead.art.literature.service.impl;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+import com.golead.art.artist.dao.ArtArtistDao;
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.literature.dao.ArtLiteratureWordsDao;
+import com.golead.art.literature.model.ArtLiteratureWords;
+import com.golead.art.literature.model.ArtLiteratureWordsResearch;
+import com.golead.art.literature.service.ArtLiteratureWordsResearchService;
+import com.golead.art.literature.service.ArtLiteratureWordsService;
+import com.golead.art.utils.FileUtils;
+
+import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+
+import net.coobird.thumbnailator.Thumbnails;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtLiteratureWordsServiceImpl extends BaseServiceImpl implements ArtLiteratureWordsService {
+   private static final long serialVersionUID = 1L;
+
+   public ArtLiteratureWords getArtLiteratureWords(Serializable id) throws ServiceException {
+      try {
+         return artLiteratureWordsDao.get(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void createArtLiteratureWords(ArtLiteratureWords artLiteratureWords) throws ServiceException {
+      try {
+         artLiteratureWordsDao.save(artLiteratureWords);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+   
+   public void createArtLiteratureWords(Map<String, String> map, List<File> files, String filesFileName, String path) throws ServiceException{
+      try {
+         ArtLiteratureWords artLiteratureWords = new ArtLiteratureWords();
+         ConvertUtil.mapToObject(artLiteratureWords, map, false);
+         artLiteratureWordsDao.save(artLiteratureWords);
+         ArtLiteratureWordsResearch artLiteratureWordsResearch = new ArtLiteratureWordsResearch();
+         artLiteratureWordsResearch.setWordsId(artLiteratureWords.getId());
+         ConvertUtil.mapToObject(artLiteratureWordsResearch, map, false);
+         artLiteratureWordsResearchService.createArtLiteratureWordsResearch(artLiteratureWordsResearch);
+         if (files != null) {
+            saveFile(artLiteratureWords, files, filesFileName, path);
+         }
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void updateArtLiteratureWords(Map<String, String> artLiteratureWordsMap) throws ServiceException {
+      try {
+         Integer pkId = new Integer(artLiteratureWordsMap.get(ArtLiteratureWords.PROP_ID));
+         ArtLiteratureWords tmp = artLiteratureWordsDao.get(pkId);
+         ConvertUtil.mapToObject(tmp, artLiteratureWordsMap, true);
+         artLiteratureWordsDao.update(tmp);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtLiteratureWords(Serializable id) throws ServiceException {
+      try {
+         artLiteratureWordsDao.delete(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtLiteratureWordss(Serializable[] ids) throws ServiceException {
+      try {
+         artLiteratureWordsDao.deleteAll(ids);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public PageQuery queryArtLiteratureWords(PageQuery pageQuery) throws ServiceException {
+      try {
+         createSqlFilter(pageQuery);
+         return jdbcDao.queryBySqlId("artLiteratureWordsList", pageQuery);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private void createSqlFilter(PageQuery page) {
+      String paras = "";
+      Map<String, String> map = page.getParameters();
+      String artArtistId = map.get("artArtistId");
+      if (artArtistId != null && !"".equals(artArtistId)) {
+         paras = " words.artist_id =" + artArtistId.trim();
+      }
+
+      String literatureTitle = map.get("literatureTitle");
+      if (literatureTitle != null && !"".equals(literatureTitle)) {
+         paras = " words.literature_title like '%" + literatureTitle.trim() + "%'";
+      }
+
+      String literatureAuther = map.get("literatureAuther");
+      if (literatureAuther != null && !"".equals(literatureAuther)) {
+         paras = " words.literature_auther like '%" + literatureAuther.trim() + "%'";
+      }
+
+      String wordsType = map.get("wordsType");
+      if (wordsType != null && !"".equals(wordsType)) {
+         paras = " words.words_type =" + wordsType.trim();
+      }
+
+      if (paras.length() > 0) {
+         page.getParameters().put("paras", paras);
+      }
+   }
+   
+   private String artistName(String path, int id){
+      List<ArtArtist> artArtists = artArtistDao.findByField(ArtArtist.PROP_ID, id);
+      ArtArtist artArtist = null;
+      if(artArtists != null && artArtists.size()>0){
+         artArtist = artArtists.get(0);
+      }
+      if(artArtist == null){
+         return path;
+      }
+      path = path + File.separator + artArtist.getEname().trim().toLowerCase();
+      return path;
+   }
+
+   public boolean saveFile(ArtLiteratureWords artLiteratureWords, List<File> files, String filesFileName, String path) throws ServiceException {
+      try {
+         String[] names = filesFileName.split(",");
+         path = artistName(path, artLiteratureWords.getArtistId());
+         if (!new File(path).exists()) {
+            new File(path).mkdirs();
+         }
+         
+         StringBuffer fileName = new StringBuffer();
+         if (files != null) {
+            for (int i = 0; i < files.size(); i++) {
+               File file = files.get(i);
+               String cName = String.valueOf(System.currentTimeMillis());
+               String endless = names[i].substring(names[i].lastIndexOf("."));
+               FileUtils.fileUpload(path + File.separator + cName + endless, file);
+               fileName.append(names[i] + "/" + cName + endless);
+               if ((i + 1) != files.size()) fileName.append(",");
+            }
+         }
+         artLiteratureWords.setAttachment(fileName.toString());
+         updateArtLiteratureWords(artLiteratureWords);
+         return false;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void updateFile(ArtLiteratureWordsResearch artLiteratureWordsResearch, ArtLiteratureWords artLiteratureWords, List<File> files, String filesFileName,
+         String FILE_PATH, String fileName) throws ServiceException {
+      try {
+         if(artLiteratureWordsResearch.getId() != null && artLiteratureWordsResearch.getId() != 0){
+            artLiteratureWordsResearchService.updateArtLiteratureWordsResearch(artLiteratureWordsResearch);
+         }else{
+            artLiteratureWordsResearchService.createArtLiteratureWordsResearch(artLiteratureWordsResearch);
+         }
+         
+         String path = artistName(FILE_PATH, artLiteratureWords.getArtistId());
+         File file = new File(path);
+         File[] files2 = null;
+         if (file.exists()) {
+            files2 = file.listFiles();//原本的文件
+         }
+         Map<String, String> map = new HashMap<String, String>();
+         if (fileName != null && !"".equals(fileName)) {
+            String[] fileNames = fileName.split(",");
+            for (int i = 0; i < fileNames.length; i++) {
+               if (fileNames[i] != null && !"".equals(fileNames[i])) {
+                  map.put(fileNames[i], "");
+               }
+            }
+         }
+         String attachment = artLiteratureWords.getAttachment();
+         StringBuffer newAttachment = new StringBuffer();
+         if (attachment != null && !"".equals(attachment)) {
+            String[] attachments = attachment.split(",");
+            for (int i = 0; i < attachments.length; i++) {
+               if (map.get(attachments[i].split("/")[1]) == null) {
+                  deleteFile(files2, attachments[i].split("/")[1]);
+                  attachments[i] = "";
+               }
+               if (attachments[i] != "") {
+                  newAttachment.append(attachments[i]);
+                  newAttachment.append(",");
+               }
+            }
+
+         }
+         if (files != null) {
+            saveFile(artLiteratureWords, files, filesFileName, FILE_PATH);
+            attachment = artLiteratureWords.getAttachment();
+            newAttachment.append(attachment);
+         }
+         String att = newAttachment.toString();
+         if (att.endsWith(",")) {
+            att.substring(0, att.length() - 1);
+         }
+         artLiteratureWords.setAttachment(att);
+         updateArtLiteratureWords(artLiteratureWords);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private void deleteFile(File[] files, String fileName) {
+      for (int i = 0; i < files.length; i++) {
+         File file = files[i];
+         if (file.getName().equals(fileName)) {
+            file.delete();
+         }
+      }
+   }
+
+   public void updateArtLiteratureWords(ArtLiteratureWords artLiteratureWords) throws ServiceException {
+      try {
+         artLiteratureWordsDao.update(artLiteratureWords);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   @Resource
+   private ArtLiteratureWordsDao             artLiteratureWordsDao;
+   
+   @Resource
+   private ArtArtistDao                      artArtistDao;
+
+   @Resource
+   private ArtLiteratureWordsResearchService artLiteratureWordsResearchService;
+
+   public void setArtLiteratureWordsDao(ArtLiteratureWordsDao artLiteratureWordsDao) {
+      this.artLiteratureWordsDao = artLiteratureWordsDao;
+   }
+}

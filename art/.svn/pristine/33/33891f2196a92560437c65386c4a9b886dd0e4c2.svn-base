@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="literature" extends="default" namespace="/literature">
+		<action name="ArtLiteratureInformation" class="com.golead.art.literature.ArtLiteratureInformationAction">
+			<result name="LIST">/jsp/literature/information/artLiterature_information_list.jsp</result>
+			<result name="ADD">/jsp/literature/information/artLiterature_information_add.jsp</result>
+			<result name="EDIT">/jsp/literature/information/artLiterature_information_edit.jsp</result>
+			<result name="VIEW">/jsp/literature/information/artLiterature_information_view.jsp</result>
+			<result name="IMPORT">/jsp/literature/information/artLiterature_information_import.jsp</result>
+			<result name="ARTIST">/jsp/literature/information/artLiterature_information_artist.jsp</result>
+			<result name="SHOW">/jsp/literature/information/artLiterature_information_show.jsp</result>
+		</action>
+		<action name="ArtLiteratureCollect" class="com.golead.art.literature.ArtLiteratureCollectAction">
+			<result name="LIST">/jsp/literature/collect/artLiterature_collect_list.jsp</result>
+			<result name="ADD">/jsp/literature/collect/artLiterature_collect_add.jsp</result>
+			<result name="EDIT">/jsp/literature/collect/artLiterature_collect_edit.jsp</result>
+			<result name="VIEW">/jsp/literature/collect/artLiterature_collect_view.jsp</result>
+			<result name="IMPORT">/jsp/literature/collect/artLiterature_collect_import.jsp</result>
+			<result name="SHOW">/jsp/literature/collect/artLiterature_collect_show.jsp</result>
+		</action>
+		<action name="ArtLiteratureMedium" class="com.golead.art.literature.ArtLiteratureMediumAction">
+			<result name="LIST">/jsp/literature/medium/artLiterature_medium_list.jsp</result>
+			<result name="ADD">/jsp/literature/medium/artLiterature_medium_add.jsp</result>
+			<result name="EDIT">/jsp/literature/medium/artLiterature_medium_edit.jsp</result>
+			<result name="VIEW">/jsp/literature/medium/artLiterature_medium_view.jsp</result>
+		</action>
+		<action name="ArtLiteratureWords" class="com.golead.art.literature.ArtLiteratureWordsAction">
+			<result name="LIST">/jsp/literature/artLiteratureWords/artLiteratureWords_list.jsp</result>
+			<result name="ADD">/jsp/literature/artLiteratureWords/artLiteratureWords_add.jsp</result>
+			<result name="EDIT">/jsp/literature/artLiteratureWords/artLiteratureWords_edit.jsp</result>
+			<result name="VIEW">/jsp/literature/artLiteratureWords/artLiteratureWords_view.jsp</result>
+			<result name="ARTIST">/jsp/literature/artLiteratureWords/artLiteratureWords_artist.jsp</result>
+			<result name="SHOW">/jsp/literature/artLiteratureWords/artLiteratureWords_show.jsp</result>
+		</action>
+		<action name="ArtLiteratureNetwork" class="com.golead.art.literature.ArtLiteratureNetworkAction">
+			<result name="LIST">/jsp/literature/artLiteratureNetwork/artLiteratureNetwork_list.jsp</result>
+			<result name="ADD">/jsp/literature/artLiteratureNetwork/artLiteratureNetwork_add.jsp</result>
+			<result name="EDIT">/jsp/literature/artLiteratureNetwork/artLiteratureNetwork_edit.jsp</result>
+			<result name="VIEW">/jsp/literature/artLiteratureNetwork/artLiteratureNetwork_view.jsp</result>
+			<result name="ARTIST">/jsp/literature/artLiteratureNetwork/artLiteratureNetwork_artist.jsp</result>
+			<result name="SHOW">/jsp/literature/artLiteratureNetwork/artLiteratureNetwork_show.jsp</result>
+		</action>
+	</package>
+</struts>

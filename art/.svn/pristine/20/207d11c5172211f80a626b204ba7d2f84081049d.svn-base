@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="auction" extends="default" namespace="/auction">
+		<action name="ArtAuction" class="com.golead.art.auction.ArtAuctionAction">
+			<result name="LIST">/jsp/works/auction/artWorks_auction_list.jsp</result>
+			<result name="ADD">/jsp/works/auction/artWorks_auction_add.jsp</result>
+			<result name="EDIT">/jsp/works/auction/artWorks_auction_edit.jsp</result>
+			<result name="VIEW">/jsp/works/auction/artWorks_auction_view.jsp</result>
+			<result name="IMPORT">/jsp/works/auction/artWorks_auction_import.jsp</result>
+			<result name="HOUSESLIST">/jsp/works/auction/artWorks_auction_houses.jsp</result>
+			<result name="WORKSLIST">/jsp/works/auction/artWorks_auction_works.jsp</result>
+		</action>
+		<action name="ArtAuctionHouses" class="com.golead.art.auction.ArtAuctionHousesAction">
+			<result name="LIST">/jsp/auction/houses/artAuction_houses_list.jsp</result>
+			<result name="ADD">/jsp/auction/houses/artAuction_houses_add.jsp</result>
+			<result name="EDIT">/jsp/auction/houses/artAuction_houses_edit.jsp</result>
+			<result name="VIEW">/jsp/auction/houses/artAuction_houses_view.jsp</result>
+			<result name="IMPORT">/jsp/auction/houses/artAuction_houses_import.jsp</result>
+		</action>
+		
+		<action name="ArtAuctionWords" class="com.golead.art.auction.ArtAuctionWordsAction">
+			<result name="LIST">/jsp/auction/words/artAuction_words_list.jsp</result>
+			<result name="ADD">/jsp/auction/words/artAuction_words_add.jsp</result>
+			<result name="EDIT">/jsp/auction/words/artAuction_words_edit.jsp</result>
+			<result name="VIEW">/jsp/auction/words/artAuction_words_view.jsp</result>
+			<result name="IMPORT">/jsp/auction/words/artAuction_words_import.jsp</result>
+			<result name="SHOW">/jsp/auction/words/artAuction_words_show.jsp</result>
+		</action>
+		
+		<action name="ArtAuctionVideo" class="com.golead.art.auction.ArtAuctionVideoAction">
+			<result name="LIST">/jsp/auction/video/artAuction_video_list.jsp</result>
+			<result name="ADD">/jsp/auction/video/artAuction_video_add.jsp</result>
+			<result name="EDIT">/jsp/auction/video/artAuction_video_edit.jsp</result>
+			<result name="VIEW">/jsp/auction/video/artAuction_video_view.jsp</result>
+			<result name="IMPORT">/jsp/auction/video/artAuction_video_import.jsp</result>
+		</action>
+		
+		<action name="exchangeRate" class="com.golead.art.auction.ArtAuctionExchangeAction">
+			<result name="LIST">/jsp/auction/exchangeRate/exchangeRate_list.jsp</result>
+			<result name="ADD">/jsp/auction/exchangeRate/exchangeRate_add.jsp</result>
+			<result name="EDIT">/jsp/auction/exchangeRate/exchangeRate_edit.jsp</result>
+			<result name="VIEW">/jsp/auction/exchangeRate/exchangeRate_view.jsp</result>
+			<result name="IMPORT">/jsp/auction/exchangeRate/exchangeRate_import.jsp</result>
+		</action>
+	</package>
+</struts>

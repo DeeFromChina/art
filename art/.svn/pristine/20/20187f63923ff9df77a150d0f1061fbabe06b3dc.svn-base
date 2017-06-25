@@ -1,0 +1,20 @@
+@CHARSET "UTF-8";
+
+.editableTable { 
+	width: 99%; 
+	border-left: 1px solid #c1b2ff; border-top: 1px solid #c1b2ff; border-right: 0px solid #c1b2ff; border-bottom: 0px solid #c1b2ff; 
+}
+.editableTable th { 
+	border-left: 0px solid #c1b2ff; border-top: 0px solid #c1b2ff; border-right: 1px solid #c1b2ff; border-bottom: 1px solid #c1b2ff; 
+	height: 32px; text-align: center; background-color:#f9f9f9;
+}
+
+.editableTable td { 
+	border-left: 0px solid #c1b2ff; border-top: 0px solid #c1b2ff; border-right: 1px solid #c1b2ff; border-bottom: 1px solid #c1b2ff; 
+	height: 32px; text-align: center; padding-left:2px;padding-right:6px;
+}
+.editableTable .selected td { background-color: #e3eeff; }
+.editableTable .inputCell { width: 100%; text-align: center; }
+
+.editableTable .optionCell { width: 80px; }
+.editableTable .spanCell {}

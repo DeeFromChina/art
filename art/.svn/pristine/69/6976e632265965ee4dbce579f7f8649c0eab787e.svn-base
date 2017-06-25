@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+  <sql id="artActivityAbmbList" orderBy="a.abmb_name asc">
+  select a.id,a.abmb_name as abmbName,a.abmb_number as abmbNumber,a.sponsor,a.art_director as artDirector,a.abmb_year as abmbYear,
+     a.abmb_month as abmbMonth,a.city,c.country_name as country from art_activity_abmb a
+     left join art_country c on c.id=a.country_id
+  	{#paras}
+  	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+ 
+	<!--查询相关作品列表 -->
+	<sql id="artActivityExhibitList" orderBy="exhibit.id desc">
+		SELECT 
+		exhibit.id AS id,
+		exhibit.exhibit_name AS exhibitName,
+		exhibit.exhibitors AS exhibitors,
+		exhibit.curator AS curator, 
+		exhibit.activity_year AS activityYear, 
+		exhibit.city AS city, 
+		exhibit.country_id AS countryId, 
+		exhibit.exhib_type AS exhibType, 
+		exhibit.activity_month AS activityMonth, 
+		country.country_name AS countryName, 
+		artist.c_name AS cName, 
+		works.works_c_name AS worksCName, 
+		agency.agency_c_name AS agencyCName 
+		FROM art_activity_exhibit exhibit  
+		LEFT JOIN art_country country ON country.id = exhibit.country_id 
+		LEFT JOIN art_agency agency ON agency.id = exhibit.exhibitors 
+		LEFT JOIN art_activity_exhibit_artist exhibit_artist ON exhibit_artist.exhibit_id = exhibit.id 
+		LEFT JOIN art_artist artist ON artist.id = exhibit_artist.artist_id 
+		LEFT JOIN art_works_exhibit works_exhibit ON works_exhibit.exhibit_id = exhibit.id  
+		LEFT JOIN art_works works ON works.id = works_exhibit.works_id  
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+	<sql id="artActivityExhibitArtistList" orderBy="exhibit_artist.id desc">
+		SELECT 
+		exhibit_artist.id AS id,
+		exhibit_artist.exhibit_id AS exhibitId,
+		exhibit_artist.artist_id AS artistId,
+		artist.c_name AS cName, 
+		artist.sex AS sex, 
+		country.country_name AS countryName 
+		FROM art_activity_exhibit_artist exhibit_artist  
+		LEFT JOIN art_artist artist ON artist.id = exhibit_artist.artist_id 
+		LEFT JOIN art_country country ON country.id = artist.nationality 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+</sqls>

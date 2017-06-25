@@ -1,0 +1,515 @@
+package com.golead.art.publication.service.impl;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.Serializable;
+import java.util.*;
+
+import javax.annotation.Resource;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.stereotype.Service;
+
+import com.golead.art.artist.dao.ArtArtistDao;
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.publication.dao.ArtPublicationDao;
+import com.golead.art.publication.model.ArtPublication;
+import com.golead.art.publication.service.ArtPublicationService;
+import com.golead.art.utils.FileUtils;
+import com.golead.core.common.Code;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.DAOException;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.form.BaseForm;
+
+@Service
+public class ArtPublicationServiceImpl extends BaseServiceImpl implements ArtPublicationService {
+   private static final long serialVersionUID = 1L;
+
+   public ArtPublication getArtPublication(Serializable id) throws ServiceException {
+      try {
+         return artPublicationDao.get(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void createArtPublication(ArtPublication artPublication) throws ServiceException {
+      try {
+         artPublicationDao.save(artPublication);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private String setNewFileName(String fileName) {
+      String coverName = String.valueOf(System.currentTimeMillis());
+      String coverendless = fileName.substring(fileName.lastIndexOf("."));
+      String newFileName = coverName + coverendless;
+      return newFileName;
+   }
+
+   private void setArtPublicationCover(ArtPublication artPublication, File cover, String coverFileName, String path) {
+      String newFileName = setNewFileName(coverFileName);
+      FileUtils.fileUpload(path + File.separator + newFileName, cover);
+      artPublication.setCover(coverFileName + "/" + newFileName);
+   }
+
+   private void setArtPublicationBackCover(ArtPublication artPublication, File backCover, String backCoverFileName, String path) {
+      String newFileName = setNewFileName(backCoverFileName);
+      FileUtils.fileUpload(path + File.separator + newFileName, backCover);
+      artPublication.setBackCover(backCoverFileName + "/" + newFileName);
+   }
+
+   public String getArtPublicationPath(ArtPublication artPublication, String filePath) {
+      ArtArtist artist = artArtistDao.get(artPublication.getArtistId());
+      String path = filePath + File.separator + artist.getFolderName();
+      File file = new File(path);
+      if (!file.exists()) {
+         file.mkdirs();
+      }
+      return path;
+   }
+
+   private void setArtPublicationOther(ArtPublication artPublication, List<File> files, String[] filesFileName, String filePath) throws IOException {
+      String path = getArtPublicationPath(artPublication, filePath);
+      File otherFile = new File(path);
+      StringBuffer artPublicationOther = new StringBuffer();
+      if (!otherFile.exists()) {
+         otherFile.mkdir();
+      }
+      for (int i = 0; i < files.size(); i++) {
+         File file = files.get(i);
+         if (file != null) {
+            String newFileName = setNewFileName(filesFileName[i]);
+            artPublicationOther.append(newFileName);
+            if ((i + 1) != files.size()) artPublicationOther.append(",");
+            org.apache.commons.io.FileUtils.copyFile(file, new File(path + File.separator + newFileName));
+         }
+      }
+      artPublication.setCatalogOther(artPublicationOther.toString());
+   }
+
+   public void createArtPublication(ArtPublication artPublication, File cover, String coverFileName, File backCover, String backCoverFileName, String filePath)
+         throws ServiceException {
+      try {
+         String path = getArtPublicationPath(artPublication, filePath);
+         if (cover != null) {
+            setArtPublicationCover(artPublication, cover, coverFileName, path);
+         }
+         if (backCover != null) {
+            setArtPublicationBackCover(artPublication, backCover, backCoverFileName, path);
+         }
+         createArtPublication(artPublication);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void createArtPublication(ArtPublication artPublication, File cover, String coverFileName, File backCover, String backCoverFileName, List<File> files,
+         String[] filesFileName, String filePath) throws ServiceException {
+      try {
+         if (files != null && files.size() > 0) {
+            setArtPublicationOther(artPublication, files, filesFileName, filePath);
+         }
+         createArtPublication(artPublication, cover, coverFileName, backCover, backCoverFileName, filePath);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private void changepath(ArtPublication tmp, String FILE_PATH, String ArtistId) throws ServiceException {
+      try {
+         Integer id = tmp.getArtistId();
+         ArtArtist artArtist = artArtistDao.get(id);
+         String enName = artArtist.getFolderName();
+
+         List<String> fileNameList = new ArrayList<String>();
+         String cover = tmp.getCover() == null ? "" : tmp.getCover();
+         String backCover = tmp.getBackCover() == null ? "" : tmp.getBackCover();
+         //新的路径
+         ArtArtist afterArtist = artArtistDao.get(Integer.valueOf(ArtistId));
+         String changeEnName = afterArtist.getFolderName();
+         String changepath = FILE_PATH + File.separator + changeEnName;
+         File changFile = new File(changepath);
+         if (!changFile.exists()) {
+            changFile.mkdirs();
+         }
+         if (cover.split("/").length > 1) {
+            String path = FILE_PATH + File.separator + enName + File.separator + cover.split("/")[1];
+            File file = new File(path);
+            if (file.exists() && file.isFile()) {
+               FileUtils.fileUpload(changepath + File.separator + file.getName(), file);
+               file.delete();
+            }
+         }
+         if (backCover.split("/").length > 1) {
+            String backCoverpath = FILE_PATH + File.separator + enName + File.separator + backCover.split("/")[1];
+            File file = new File(backCoverpath);
+            if (file.exists() && file.isFile()) {
+               FileUtils.fileUpload(changepath + File.separator + file.getName(), file);
+               file.delete();
+            }
+         }
+         String catalogOther = tmp.getCatalogOther() == null ? "" : tmp.getCover();
+         String[] catalogOthers = catalogOther.split(",");
+         for (String string : catalogOthers) {
+            if (string.split("/").length > 1) {
+               String path = FILE_PATH + File.separator + enName + File.separator + string.split("/")[1];
+               File file = new File(path);
+               if (file.exists() && file.isFile()) {
+                  FileUtils.fileUpload(changepath + File.separator + file.getName(), file);
+                  file.delete();
+               }
+            }
+         }
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         throw new ServiceException("移动文件错误。");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("不能更改个人照片!");
+      }
+   }
+
+   private String cutFileName(String fullFileName) {
+      if (fullFileName != null) {
+         String[] split = fullFileName.split("/");
+         if (split.length > 1) { return split[1]; }
+      }
+      return null;
+   }
+
+   /**
+    * 更新附件 将旧附件删除，替换为新的文件 ，并返回新的文件名
+    */
+   private String updateAttachment(File attachmentFile, String attachmentFileName, String oldAttachmentName, String path) {
+      String fileName = oldAttachmentName.split("/")[1];
+      File oldCover = new File(path + File.separator + fileName);
+      oldCover.delete();
+      String newAttachmentFileName = setNewFileName(attachmentFileName);
+      FileUtils.fileUpload(path + File.separator + newAttachmentFileName, attachmentFile);
+      return newAttachmentFileName;
+   }
+
+   private void updateCover(ArtPublication artPublication, File cover, String coverFileName, String path) {
+      String coverStr = artPublication.getCover();
+      if (coverStr != null) {
+         String attachment = updateAttachment(cover, coverFileName, coverStr, path);
+         artPublication.setCover(attachment);
+      }
+   }
+
+   private void updateBackCover(ArtPublication artPublication, File cover, String coverFileName, String path) {
+      String backCoverStr = artPublication.getBackCover();
+      if (backCoverStr != null) {
+         String attachment = updateAttachment(cover, coverFileName, backCoverStr, path);
+         artPublication.setCover(attachment);
+      }
+   }
+
+   public void updateArtPublication(Map<String, String> artPublicationMap, File cover, String coverFileName, File backCover, String backCoverFileName,
+         List<File> files, String[] filesFileName, String catalogOther, String filePath) throws ServiceException {
+      try {
+         Integer pkId = new Integer(artPublicationMap.get(ArtPublication.PROP_ID));
+         ArtPublication oldPublication = artPublicationDao.get(pkId);
+
+         ArtArtist artist = artArtistDao.get(oldPublication.getArtistId());
+
+         String path = filePath + File.separator + artist.getFolderName();
+
+         if (cover != null) {
+            updateCover(oldPublication, cover, coverFileName, path);
+         }
+
+         if (backCover != null) {
+            updateBackCover(oldPublication, backCover, backCoverFileName, path);
+         }
+
+         if (files != null && files.size() > 0) {
+            setArtPublicationOther(oldPublication, files, filesFileName, path);
+         }
+
+         Set<String> catalogOtherSet = new HashSet<String>(Arrays.asList(catalogOther.split(",")));
+
+         Set<String> old = new HashSet<String>(Arrays.asList(oldPublication.getCatalogOther().split(",")));
+
+         old.removeAll(catalogOtherSet);
+
+         for (String delete : old) {
+            deleteFile(path, delete);
+         }
+
+         ConvertUtil.mapToObject(oldPublication, artPublicationMap, true);
+         changepath(oldPublication, filePath, artPublicationMap.get("artistId"));
+         artPublicationDao.update(oldPublication);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtPublication(Serializable id) throws ServiceException {
+      try {
+         artPublicationDao.delete(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private void deleteFile(String dirPath, String fileName) {
+      File file = null;
+      if (fileName != null && !"".equals(fileName)) {
+         file = new File(dirPath + File.separator + fileName.split("/")[1]);
+         file.delete();
+      }
+   }
+
+   @Override
+   public void deleteArtPublications(Serializable[] ids, String path) throws ServiceException {
+      try {
+         for (Serializable id : ids) {
+            ArtPublication publication = artPublicationDao.get(id);
+            artPublicationDao.delete(publication);
+            String dirPath = getArtPublicationPath(publication, path);
+            String cover = publication.getCover();
+            String backCover = publication.getBackCover();
+            String catalogOther = publication.getCatalogOther();
+            deleteFile(dirPath, cover);
+            deleteFile(dirPath, backCover);
+            String[] split = catalogOther.split(",");
+            if (split != null && split.length > 0) {
+               for (String fileName : split) {
+                  deleteFile(dirPath, fileName);
+               }
+            }
+         }
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public PageQuery queryArtPublication(PageQuery pageQuery) throws ServiceException {
+      try {
+         createSqlFilter(pageQuery);
+         return jdbcDao.queryBySqlId("artPublicationList", pageQuery);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private void createSqlFilter(PageQuery page) {
+      String tmp = "";
+      Map<String, String> map = page.getParameters();
+      String str = map.get("publicationType");
+      if (str != null && !"".equals(str.trim())) {
+         if (tmp.length() > 0) tmp += " and ";
+         tmp += " p.publication_type ='" + str.trim() + "'";
+      }
+      str = map.get("artistName");
+      if (str != null && !"".equals(str.trim())) {
+         if (tmp.length() > 0) tmp += " and ";
+         tmp += " a.c_name like '%" + str.trim() + "%'";
+      }
+      str = map.get("publicationYear");
+      if (str != null && !"".equals(str.trim())) {
+         if (tmp.length() > 0) tmp += " and ";
+         tmp += " p.publication_year =" + str.trim();
+      }
+      str = map.get("publicationName");
+      if (str != null && !"".equals(str.trim())) {
+         if (tmp.length() > 0) tmp += " and ";
+         tmp += " p.publication_name like '%" + str.trim() + "%'";
+      }
+
+      if (tmp.length() > 0) map.put("paras", tmp);
+   }
+
+   public List<ArtPublication> findAll() throws ServiceException {
+      try {
+         return artPublicationDao.findAll();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   @SuppressWarnings("deprecation")
+   public HSSFWorkbook export(BaseForm form, PageQuery pageQuery) throws ServiceException {
+      try {
+         HSSFWorkbook hssfWorkbook = new HSSFWorkbook();
+         HSSFSheet sheet = hssfWorkbook.createSheet("sheet1");
+         HSSFRow row = sheet.createRow((int) 0);
+
+         HSSFCell cell = row.createCell((short) 0);
+         cell.setCellValue("出版物名称");
+         cell = row.createCell((short) 1);
+         cell.setCellValue("艺术家");
+         cell = row.createCell((short) 2);
+         cell.setCellValue("出版机构");
+         cell = row.createCell((short) 3);
+         cell.setCellValue("出版时间");
+         cell = row.createCell((short) 4);
+         cell.setCellValue("编辑信息");
+         cell = row.createCell((short) 5);
+         cell.setCellValue("发行量");
+         cell = row.createCell((short) 6);
+         cell.setCellValue("印次");
+         cell = row.createCell((short) 7);
+         cell.setCellValue("出版物类型");
+         cell = row.createCell((short) 8);
+         cell.setCellValue("总页数");
+         cell = row.createCell((short) 9);
+         cell.setCellValue("价格");
+         pageQuery.setPageSize("-1");
+         PageQuery pageQuery2 = queryArtPublication(pageQuery);
+         int i = 0;
+         for (Map<String, Object> item : pageQuery2.getRecordSet()) {
+            String time = "";
+            time = addString(time, returnString(item.get("publicationYear")), "年");
+            time = addString(time, returnString(item.get("publicationMonth")), "月");
+            String publicationType = findCodeName(form, "PUBLI_TYPE", returnString(item.get("publicationType")));
+            String money = returnString(item.get("price")) + findCodeName(form, "CURRENCY_TYPE", returnString(item.get("priceUnit")));
+            row = sheet.createRow(i + 1);
+            row.createCell((short) 0).setCellValue(returnString(item.get("publicationName")));
+            row.createCell((short) 1).setCellValue(returnString(item.get("cName")));
+            row.createCell((short) 2).setCellValue(returnString(item.get("press")));
+            row.createCell((short) 3).setCellValue(time);
+            row.createCell((short) 4).setCellValue(returnString(item.get("editor")));
+            row.createCell((short) 5).setCellValue(returnString(item.get("circulation")));
+            row.createCell((short) 6).setCellValue(returnString(item.get("impression")));
+            row.createCell((short) 7).setCellValue(publicationType);
+            row.createCell((short) 8).setCellValue(returnString(item.get("pageCount")));
+            row.createCell((short) 9).setCellValue(money);
+            i++;
+         }
+         return hssfWorkbook;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private String returnString(Object object) {
+      String str = object == null ? "" : object.toString();
+      return str;
+   }
+
+   private String addString(String str, String equalStr, String addStr) {
+      if (!"".equals(equalStr)) {
+         if (equalStr.indexOf(addStr) > -1) return str + equalStr;
+         else return str + equalStr + addStr;
+      }
+      return str;
+   }
+
+   private String findCodeName(Object objForm, String codeNo, Serializable value) {
+      BaseForm bf = (BaseForm) objForm;
+
+      List<Code> list = bf.getCodeSets().get(codeNo);
+      if (value == null) return "";
+      if (list == null) return "";
+      for (int i = 0; i < list.size(); i++) {
+         Code code = list.get(i);
+         String v;
+         if (value instanceof String) v = ((String) value).trim();
+         else v = value.toString();
+         if (v.equals(code.getValue())) return code.getCodeName();
+      }
+      return "";
+   }
+
+   @Resource
+   private ArtPublicationDao artPublicationDao;
+
+   @Resource
+   private ArtArtistDao      artArtistDao;
+}

@@ -1,0 +1,152 @@
+package com.golead.art.literature.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_literature_collect table.
+ */
+@Entity  
+@Table(name="art_literature_collect")  
+public class ArtLiteratureCollect implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+
+   @Column(name = "collect_name")
+   private java.lang.String collectName;   // 机构或人名
+
+   @Column(name = "province")
+   private java.lang.String province;   // 省份
+
+   @Column(name = "collect_time")
+   private java.util.Date collectTime;   // 时间
+
+   @Column(name = "city")
+   private java.lang.String city;   // 城市
+
+   @Column(name = "country")
+   private java.lang.String country;   // 国家
+
+   // Constructors
+   public ArtLiteratureCollect() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.String getCollectName() { 
+      return this.collectName; 
+   }
+   public void setCollectName(java.lang.String collectName) { 
+      this.collectName = collectName; 
+   }
+
+
+   public java.lang.String getProvince() { 
+      return this.province; 
+   }
+   public void setProvince(java.lang.String province) { 
+      this.province = province; 
+   }
+
+
+   public java.util.Date getCollectTime() { 
+      return this.collectTime; 
+   }
+   public void setCollectTime(java.util.Date collectTime) { 
+      this.collectTime = collectTime; 
+   }
+
+
+   public java.lang.String getCity() { 
+      return this.city; 
+   }
+   public void setCity(java.lang.String city) { 
+      this.city = city; 
+   }
+
+
+   public java.lang.String getCountry() { 
+      return this.country; 
+   }
+   public void setCountry(java.lang.String country) { 
+      this.country = country; 
+   }
+
+
+   public static String REF_CLASS = "ArtLiteratureCollect";
+   public static String PROP_ID = "id";
+   public static String PROP_COLLECT_NAME = "collectName";
+   public static String PROP_PROVINCE = "province";
+   public static String PROP_COLLECT_TIME = "collectTime";
+   public static String PROP_CITY = "city";
+   public static String PROP_COUNTRY = "country";
+
+   public static String REF_TABLE = "art_literature_collect";
+   public static String COL_ID = "id";
+   public static String COL_COLLECT_NAME = "collect_name";
+   public static String COL_PROVINCE = "province";
+   public static String COL_COLLECT_TIME = "collect_time";
+   public static String COL_CITY = "city";
+   public static String COL_COUNTRY = "country";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.literature.model.ArtLiteratureCollect)) return false;
+      else {
+         com.golead.art.literature.model.ArtLiteratureCollect o = (com.golead.art.literature.model.ArtLiteratureCollect) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtLiteratureCollect:");
+		buffer.append(" id:").append(id);
+		buffer.append(" collectName:").append(dealNull(collectName));
+		buffer.append(" province:").append(dealNull(province));
+		buffer.append(" collectTime:").append(dealNull(collectTime));
+		buffer.append(" city:").append(dealNull(city));
+		buffer.append(" country:").append(dealNull(country));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"collectName\":\"").append(dealNull(collectName)).append("\"");
+		buffer.append(",\"province\":\"").append(dealNull(province)).append("\"");
+		buffer.append(",\"collectTime\":\"").append(dealNull(collectTime)).append("\"");
+		buffer.append(",\"city\":\"").append(dealNull(city)).append("\"");
+		buffer.append(",\"country\":\"").append(dealNull(country)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

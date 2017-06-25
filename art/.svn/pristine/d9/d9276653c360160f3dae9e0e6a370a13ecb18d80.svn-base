@@ -1,0 +1,27 @@
+#Update values
+#Wed Jul 06 18:14:01 CST 2016
+GenDao=true
+GenWeb=false
+db.Column.id=id,INTEGER,id,integer,10,0,Y,N,N, ,
+FilePath.Annotation=1
+FilePath.JspPath=
+FilePath.Dao=com.golead.art.works.dao
+java.ClassName=ArtPublicationContent
+FilePath.SpringCfgFile=
+db.SequenceName=
+db.Column.author=author,VARCHAR,author,string,30, ,N,N,Y,\u6536\u5F55\u6587\u7AE0\u4F5C\u8005,
+projectAnnotation=1
+db.Table=art_publication_content
+FilePath.Service=com.golead.art.works.service
+GenService=true
+db.Schema=
+FilePath.JavaDaoPath=/src/dao
+db.PKGenerator=native
+FilePath.Vo=com.golead.art.works.model
+FilePath.SpringDaoCfgFile=
+db.Column.title=title,VARCHAR,title,string,100, ,N,N,Y,\u6536\u5F55\u6587\u7AE0\u6807\u9898,
+FilePath.ActionPath=
+FilePath.ActionPackage=
+FilePath.StrutsCfgFile=
+FilePath.JavaServicePath=/src/service
+db.Column.pub_id=pub_id,INTEGER,pubId,integer,10,0,N,N,Y,\u51FA\u7248\u7269ID,

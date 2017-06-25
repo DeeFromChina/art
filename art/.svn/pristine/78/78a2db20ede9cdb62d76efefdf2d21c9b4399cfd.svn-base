@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="works" extends="default" namespace="/works">
+		<action name="artWorks" class="com.golead.art.works.ArtWorksAction">
+			<result name="LIST">/jsp/works/works/artWorks_list.jsp</result>
+			<result name="ADD">/jsp/works/works/artWorks_add.jsp</result>
+			<result name="EDIT">/jsp/works/works/artWorks_edit.jsp</result>
+			<result name="VIEW">/jsp/works/works/artWorks_view.jsp</result>
+			<result name="ARTIST">/jsp/works/works/artWorks_artist.jsp</result>
+			<result name="COUNTRY">/jsp/works/works/artWorks_country.jsp</result>
+			<result name="THEME">/jsp/works/works/artWorks_theme.jsp</result>
+			<result name="STYLE">/jsp/works/works/artWorks_style.jsp</result>
+			<result name="SERIES">/jsp/works/works/artWorks_series.jsp</result>
+			<result name="MEDIUM">/jsp/works/works/artWorks_medium.jsp</result>
+			<result name="THUMBNAIL">/jsp/works/works/artWorks_thumbnail.jsp</result>
+			<result name="SHOW">/jsp/works/works/artWorks_thumbnail_show.jsp</result>
+			<result name="GOEXCEL">/jsp/works/works/artWorks_import.jsp</result>
+		</action>
+		<action name="artPeriod" class="com.golead.art.works.ArtWorksPeriodAction">
+			<result name="LIST">/jsp/works/period/artWorks_period_list.jsp</result>
+			<result name="ADD">/jsp/works/period/artWorks_period_add.jsp</result>
+			<result name="EDIT">/jsp/works/period/artWorks_period_edit.jsp</result>
+			<result name="VIEW">/jsp/works/period/artWorks_period_view.jsp</result>
+			<result name="GOEXCEL">/jsp/works/period/artWorks_period_import.jsp</result>
+		</action>
+		<action name="artMedium" class="com.golead.art.works.ArtWorksMediumAction">
+			<result name="LIST">/jsp/works/medium/artWorks_medium_list.jsp</result>
+			<result name="ADD">/jsp/works/medium/artWorks_medium_add.jsp</result>
+			<result name="EDIT">/jsp/works/medium/artWorks_medium_edit.jsp</result>
+			<result name="VIEW">/jsp/works/medium/artWorks_medium_view.jsp</result>
+			<result name="ARTIST">/jsp/works/medium/artWorks_artist.jsp</result>
+		</action>
+		<action name="artEvaluate" class="com.golead.art.works.ArtWorksEvaluateAction">
+			<result name="LIST">/jsp/works/evaluate/artWorks_evaluate_list.jsp</result>
+			<result name="ADD">/jsp/works/evaluate/artWorks_evaluate_add.jsp</result>
+			<result name="EDIT">/jsp/works/evaluate/artWorks_evaluate_edit.jsp</result>
+			<result name="VIEW">/jsp/works/evaluate/artWorks_evaluate_view.jsp</result>
+			<result name="GOEXCEL">/jsp/works/evaluate/artWorks_evaluate_import.jsp</result>
+		</action>
+		<action name="artCase" class="com.golead.art.works.ArtWorksCaseAction">
+			<result name="LIST">/jsp/works/case/artWorks_case_list.jsp</result>
+			<result name="ADD">/jsp/works/case/artWorks_case_add.jsp</result>
+			<result name="EDIT">/jsp/works/case/artWorks_case_edit.jsp</result>
+			<result name="VIEW">/jsp/works/case/artWorks_case_view.jsp</result>
+			<result name="ARTIST">/jsp/works/case/artWorks_artist.jsp</result>
+			<result name="SHOW">/jsp/works/case/artWorks_case_show.jsp</result>
+			<result name="GOEXCEL">/jsp/works/case/artWorks_case_import.jsp</result>
+		</action>
+		<action name="artSome" class="com.golead.art.works.ArtWorksSomeAction">
+			<result name="LIST">/jsp/works/some/artWorks_some_list.jsp</result>
+			<result name="ADD">/jsp/works/some/artWorks_some_add.jsp</result>
+			<result name="EDIT">/jsp/works/some/artWorks_some_edit.jsp</result>
+			<result name="VIEW">/jsp/works/works/artWorks_view.jsp</result>
+			<result name="ARTIST">/jsp/works/some/artWorks_artist.jsp</result>
+			<result name="SHOW">/jsp/works/some/artWorks_some_show.jsp</result>
+			<result name="GOEXCEL">/jsp/works/some/artWorks_some_import.jsp</result>
+		</action>
+		<action name="artAttachment" class="com.golead.art.works.ArtWorksAttachmentAction">
+			<result name="LIST">/jsp/works/attachment/art_works_attachment_list.jsp</result>
+			<result name="ADD">/jsp/works/attachment/art_works_attachment_add.jsp</result>
+			<result name="EDIT">/jsp/works/attachment/art_works_attachment_edit.jsp</result>
+			<result name="VIEW">/jsp/works/attachment/art_works_attachment_view.jsp</result>
+			<result name="SHOW">/jsp/works/attachment/art_works_attachment_show.jsp</result>
+		</action>
+		<action name="worksTheme" class="com.golead.art.works.ArtWorksThemeAction">
+			<result name="LIST">/jsp/works/theme/theme_list.jsp</result>
+			<result name="ADD">/jsp/works/theme/theme_add.jsp</result>
+			<result name="EDIT">/jsp/works/theme/theme_edit.jsp</result>
+			<result name="VIEW">/jsp/works/theme/theme_view.jsp</result>
+		</action>
+		<action name="worksStyle" class="com.golead.art.works.ArtWorksStyleAction">
+			<result name="LIST">/jsp/works/style/style_list.jsp</result>
+			<result name="ADD">/jsp/works/style/style_add.jsp</result>
+			<result name="EDIT">/jsp/works/style/style_edit.jsp</result>
+			<result name="VIEW">/jsp/works/style/style_view.jsp</result>
+		</action>
+	</package>
+</struts>

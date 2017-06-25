@@ -1,0 +1,29 @@
+#Update values
+#Wed Jul 06 18:09:29 CST 2016
+GenDao=true
+db.Column.collect_name=collect_name,VARCHAR,collectName,string,64, ,N,N,Y,\u673A\u6784\u6216\u4EBA\u540D,
+db.Column.country=country,VARCHAR,country,string,30, ,N,N,Y,\u56FD\u5BB6,
+GenWeb=false
+db.Column.id=id,INTEGER,id,integer,10,0,Y,N,N, ,
+FilePath.Annotation=1
+FilePath.JspPath=
+FilePath.Dao=com.golead.art.literature.dao
+db.Column.city=city,VARCHAR,city,string,30, ,N,N,Y,\u57CE\u5E02,
+java.ClassName=ArtLiteratureCollect
+db.Column.collect_time=collect_time,TIMESTAMP,collectTime,date,19, ,N,N,Y,\u65F6\u95F4,
+FilePath.SpringCfgFile=
+db.SequenceName=
+projectAnnotation=1
+db.Table=art_literature_collect
+FilePath.Service=com.golead.art.literature.service
+GenService=true
+db.Schema=
+FilePath.JavaDaoPath=/src/dao
+db.PKGenerator=native
+FilePath.Vo=com.golead.art.literature.model
+FilePath.SpringDaoCfgFile=
+db.Column.province=province,VARCHAR,province,string,30, ,N,N,Y,\u7701\u4EFD,
+FilePath.ActionPath=
+FilePath.ActionPackage=
+FilePath.StrutsCfgFile=
+FilePath.JavaServicePath=/src/service

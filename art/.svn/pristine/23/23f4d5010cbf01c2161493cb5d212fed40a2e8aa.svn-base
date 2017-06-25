@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+  <!--查询作品列表 -->
+	<sql id="artMediumList" orderBy="medium.id desc">
+		SELECT 
+		medium.id AS id,
+		medium.medium_name AS mediumName,
+		medium.up_medium_id AS upId,
+		medium.tree_code AS treeCode,
+		medium.tree_level AS treeLevel,
+		medium.medium_side AS mediumSide,
+		medium.medium_category AS mediumCategory 
+		FROM ART_MEDIUM medium {#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+</sqls>

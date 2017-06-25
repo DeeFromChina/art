@@ -1,0 +1,247 @@
+package com.golead.art.artist;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
+
+import com.golead.art.artist.model.ArtArtistAlbum;
+import com.golead.art.artist.service.ArtArtistAlbumService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtistAlbumAction extends BaseAction {
+
+	private Log log = LogFactory.getLog(ArtArtistAlbum.class);
+	
+	public static String FILE_PATH = ServletActionContext.getServletContext().getRealPath("");
+	private File files;
+	private String filesFileName;
+	private List<Map<String, String>> pic = new ArrayList<Map<String, String>>();
+	
+	@Resource
+	private ArtArtistAlbumService artArtistAlbumService;
+	
+	@Override
+	public String doExecute() throws Exception {
+		String forward = "";
+		String action = getForm().getAction();
+		
+		if (action == null) {
+			forward = LIST;
+		}
+		try {
+			if (LIST.equalsIgnoreCase(action)) forward = listAlbum();
+			else if (PAGE.equalsIgnoreCase(action)) forward = pageAlbum();
+			else if (ADD.equalsIgnoreCase(action)) forward = addAlbum();
+			else if (SAVE.equalsIgnoreCase(action)) forward = saveAlbum();
+			else if (EDIT.equalsIgnoreCase(action)) forward = editAlbum();
+			else if (UPDATE.equalsIgnoreCase(action)) forward = updateAlbum();
+			else if (DELETE.equalsIgnoreCase(action)) forward = deleteAlbum();
+			else if (VIEW.equalsIgnoreCase(action)) forward = viewAlbum();
+			else if ("SHOW".equalsIgnoreCase(action)) forward = showAlbum();
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.put("errMsg", e.getMessage());
+			forward = ERROR;
+		}
+		return forward;
+	}
+	
+	public String listAlbum() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'listAlbum()' method");
+		initForm();
+		return LIST;
+	}
+	
+	public String pageAlbum() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'pageAlbum()' method");
+		try {
+			initForm();
+			PageQuery pq = form.getQuery();
+			String artistId = getForm().getRecord().get("artistId");
+			pq.getParameters().put("artistId", artistId);
+			pq = artArtistAlbumService.queryArtArtistAlbum(pq);
+			List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+			for (Map<String, Object> item : pq.getRecordSet()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("id", item.get("id"));
+				String photoLink = "^javascript:view(" + item.get("id") + ")^_self";
+				map.put("data", new Object[]{
+					""
+					,item.get("photo").toString().split("/")[0] + photoLink
+					,item.get("photoDesc")
+				});
+				list.add(map);
+			}
+			String res = genGridJson(pq, list);
+			setResponse(res);
+		} catch (ServiceException e) {
+			setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+		} catch (Exception e) {
+			e.printStackTrace();
+			setResponse("{exit:1,message:\"数据访问错误。\"}");
+		}
+		return null;
+	}
+	
+	public String addAlbum() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'addAlbum()' method");
+		try {
+			initForm();
+			return ADD;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String saveAlbum() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'saveAlbum()' method");
+		try {
+			initForm();
+			ArtArtistAlbum artArtistAlbum = new ArtArtistAlbum();
+			String path = FILE_PATH + File.separator +"upload" + File.separator + "artist" + File.separator +"album" + File.separator + getForm().getRecord().get("artistId");
+			File file = new File(path);
+			if(!file.exists()){
+	            file.mkdirs();
+			}
+			ConvertUtil.mapToObject(artArtistAlbum, getForm().getRecord(), false);
+			artArtistAlbumService.createArtArtistAlbum(artArtistAlbum, files, getFilesFileName(), path);
+			return returnForward(RETURN_NORMAL);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String editAlbum() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'editAlbum()' method");
+		try {
+			initForm();
+			String id = getForm().getRecord().get("id");
+			ArtArtistAlbum artArtistAlbum = artArtistAlbumService.getArtArtistAlbum(Integer.valueOf(id));
+			ConvertUtil.objectToMap(getForm().getRecord(), artArtistAlbum);
+			String picture = artArtistAlbum.getPhoto();
+			if (picture != null && !("").equals(picture)) {
+				String[] pictures = picture.split("/");
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("name", pictures[0]);
+				map.put("realName", pictures[1]);
+				pic.add(map);
+			}
+			return EDIT;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String updateAlbum() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'updateAlbum()' method");
+		try {
+			initForm();
+			String path = FILE_PATH + File.separator +"upload" + File.separator + "artist" + File.separator +"album" + File.separator + getForm().getRecord().get("artistId");
+			artArtistAlbumService.updateArtArtistAlbum(getForm().getRecord(), files, getFilesFileName(), path);
+			return returnForward(RETURN_NORMAL);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String deleteAlbum() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'deleteAlbum()' method");
+		try {
+			String[] id = ids.split(",");
+			Integer[] del_ids = new Integer[id.length];
+			for (int i = 0; i < id.length; i++) {
+				del_ids[i] = Integer.valueOf(id[i]);
+			}
+			String path = FILE_PATH + File.separator +"upload" + File.separator + "artist" + File.separator +"album" + File.separator + getForm().getRecord().get("artistId");
+			artArtistAlbumService.deleteArtArtistAlbums(del_ids, path);
+			return pageAlbum();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String viewAlbum() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'viewAlbum()' method");
+		try {
+			initForm();
+			ArtArtistAlbum artArtistAlbum = artArtistAlbumService.getArtArtistAlbum(Integer.valueOf(ids));
+			ConvertUtil.objectToMap(getForm().getRecord(), artArtistAlbum);
+			String picture = artArtistAlbum.getPhoto();
+			if (picture != null && !("").equals(picture)) {
+				String[] pictures = picture.split("/");
+				Map<String, String> map = new HashMap<String, String>();
+				map.put("name", pictures[0]);
+				map.put("realName", pictures[1]);
+				pic.add(map);
+			}
+			return VIEW;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String showAlbum() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'showAlbum()' method");
+		try {
+			return "SHOW";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public void initForm() throws Exception {
+		setCode(getForm(), "");
+	}
+
+	public File getFiles() {
+		return files;
+	}
+
+	public void setFiles(File files) {
+		this.files = files;
+	}
+
+	public String getFilesFileName() {
+		return filesFileName;
+	}
+
+	public void setFilesFileName(String filesFileName) {
+		this.filesFileName = filesFileName;
+	}
+
+	public List<Map<String, String>> getPic() {
+		return pic;
+	}
+
+	public void setPic(List<Map<String, String>> pic) {
+		this.pic = pic;
+	}
+
+}

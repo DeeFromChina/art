@@ -1,0 +1,28 @@
+#Update values
+#Wed Jul 06 18:05:12 CST 2016
+GenDao=true
+db.Column.year=year,CHAR,year,string,4, ,N,N,Y,\u5E74\u4EFD,
+GenWeb=false
+db.Column.id=id,INTEGER,id,integer,10,0,Y,N,N, ,
+FilePath.Annotation=1
+db.Column.c_experience=c_experience,VARCHAR,cExperience,string,1000, ,N,N,Y,\u7ECF\u5386(\u4E2D\u6587),
+FilePath.JspPath=
+FilePath.Dao=com.golead.art.artist.dao
+java.ClassName=ArtArtistExperience
+FilePath.SpringCfgFile=
+db.SequenceName=
+projectAnnotation=1
+db.Table=art_artist_experience
+FilePath.Service=com.golead.art.artist.service
+GenService=true
+db.Schema=
+FilePath.JavaDaoPath=/src/dao
+db.Column.e_experience=e_experience,VARCHAR,eExperience,string,1000, ,N,N,Y,\u7ECF\u5386(\u82F1\u6587),
+db.PKGenerator=native
+FilePath.Vo=com.golead.art.artist.model
+FilePath.SpringDaoCfgFile=
+FilePath.ActionPath=
+FilePath.ActionPackage=
+db.Column.art_id=art_id,INTEGER,artId,integer,10,0,N,N,Y,\u827A\u672F\u5BB6ID,
+FilePath.StrutsCfgFile=
+FilePath.JavaServicePath=/src/service

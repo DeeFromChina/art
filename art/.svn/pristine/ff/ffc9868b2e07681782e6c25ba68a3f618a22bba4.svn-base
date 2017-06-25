@@ -1,0 +1,151 @@
+package com.golead.art.artist.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+import com.golead.art.artist.dao.ArtArtistEduDao;
+import com.golead.art.artist.model.ArtArtistEdu;
+import com.golead.art.artist.service.ArtArtistEduService;
+
+import javax.annotation.Resource; 
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtArtistEduServiceImpl extends BaseServiceImpl implements ArtArtistEduService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtArtistEdu getArtArtistEdu(Serializable id) throws ServiceException {
+		try {
+			return artArtistEduDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtArtistEdu(ArtArtistEdu artArtistEdu) throws ServiceException {
+		try {
+			artArtistEduDao.save(artArtistEdu);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtArtistEdu(Map<String, String> artArtistEduMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artArtistEduMap.get(ArtArtistEdu.PROP_ID));
+			ArtArtistEdu tmp = artArtistEduDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artArtistEduMap, true);			
+			artArtistEduDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistEdu(Serializable id) throws ServiceException {
+		try {
+			artArtistEduDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistEdus(Serializable[] ids) throws ServiceException {
+		try {
+			artArtistEduDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistWithEdus(Serializable[] ids) throws ServiceException {
+		try {
+			for(Serializable id : ids) {
+				artArtistEduDao.deleteByField("artistId", id);
+			}
+		} catch (DAOException e) {
+			e.printStackTrace();
+			throw new ServiceException("数据库操作错误。");
+		} catch (ServiceException se) {
+			se.printStackTrace();
+			throw se;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ServiceException("系统错误。");
+		}
+	}
+	
+	public PageQuery queryArtArtistEdu(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artArtistEduList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+		String paras = "";
+		Map<String, String> parameters = page.getParameters();
+		String artist_id = parameters.get("artistId");
+		paras = " aae.artist_id = " + artist_id + " ";
+		if (paras.length() > 0)
+			page.getParameters().put("paras", paras);
+	}
+	
+    @Resource
+	private ArtArtistEduDao	artArtistEduDao;
+
+	public void setArtArtistEduDao(ArtArtistEduDao artArtistEduDao) {
+		this.artArtistEduDao = artArtistEduDao;
+	}
+}
+

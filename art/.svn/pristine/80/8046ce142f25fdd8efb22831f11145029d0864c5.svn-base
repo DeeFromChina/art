@@ -1,0 +1,35 @@
+#Update values
+#Thu Jul 07 10:18:34 CST 2016
+GenDao=true
+db.Column.publication_source=publication_source,VARCHAR,publicationSource,string,200, ,N,N,Y,\u6765\u6E90\u53CA\u51FA\u7248,
+GenWeb=false
+db.Column.id=id,INTEGER,id,integer,10,0,Y,N,N, ,
+db.Column.time_slot=time_slot,VARCHAR,timeSlot,string,30, ,N,N,Y,\u76F8\u5173\u65F6\u95F4\u6BB5,
+db.Column.content_type=content_type,VARCHAR,contentType,string,100, ,N,N,Y,\u5185\u5BB9\u7C7B\u578B,
+FilePath.Annotation=1
+db.Column.medium_title=medium_title,VARCHAR,mediumTitle,string,100, ,N,N,Y,\u6807\u9898,
+FilePath.JspPath=
+FilePath.Dao=com.golead.art.literature.dao
+db.Column.sooting_people=sooting_people,VARCHAR,sootingPeople,string,30, ,N,N,Y,\u62CD\u6444\u4EBA,
+java.ClassName=ArtLiteratureMedium
+FilePath.SpringCfgFile=
+db.SequenceName=
+db.Column.site_link=site_link,VARCHAR,siteLink,string,100, ,N,N,Y,\u539F\u5740\u94FE\u63A5,
+projectAnnotation=1
+FilePath.Service=com.golead.art.literature.service
+db.Table=art_literature_medium
+GenService=false
+FilePath.JavaDaoPath=/src/dao
+db.Schema=
+db.PKGenerator=native
+FilePath.Vo=com.golead.art.literature.model
+FilePath.SpringDaoCfgFile=
+db.Column.medium_type=medium_type,CHAR,mediumType,string,1, ,N,N,Y,\u7C7B\u578B\uFF0C1\uFF1A\u89C6\u9891\uFF0C2\uFF1A\u58F0\u97F3,
+db.Column.upload_time=upload_time,TIMESTAMP,uploadTime,date,19, ,N,N,Y,\u4E0A\u4F20\u65F6\u95F4,
+FilePath.ActionPath=
+db.Column.content_desc=content_desc,VARCHAR,contentDesc,string,500, ,N,N,Y,\u5185\u5BB9\u63CF\u8FF0,
+FilePath.ActionPackage=
+FilePath.StrutsCfgFile=
+FilePath.JavaServicePath=/src/service
+db.Column.when_long=when_long,VARCHAR,whenLong,string,50, ,N,N,Y,\u65F6\u957F,
+db.Column.attachment=attachment,VARCHAR,attachment,string,100, ,N,N,Y,\u9644\u4EF6\uFF0C\u591A\u4E2A\u7528;\u9694\u5F00,

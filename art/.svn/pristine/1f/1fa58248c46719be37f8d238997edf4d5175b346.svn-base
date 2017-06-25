@@ -1,0 +1,250 @@
+<%@page language="java" pageEncoding="UTF-8"%>
+<%@taglib uri="/struts-tags" prefix="s" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="/WEB-INF/tag/gl-tag.tld" prefix="gl"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<%@include file="/common/header.jsp" %>
+<script language="javascript">		
+
+	var contextpath = "<%=CONTEXT_PATH%>";
+
+	var fulllink = contextpath + "works/ArtWorksAuction.do";	
+	var auctionVideoLink = contextpath + "auction/ArtAuctionVideo.do";
+	var auctionWordsLink = contextpath + "auction/ArtAuctionWords.do";
+
+	var ret=new Object();
+
+	function goCancel(){
+		parent.closedialog('true');
+	}
+
+
+	function init(){
+		showMessage('<s:property value="errorMessage" escape="false"/>');
+		calendar = initCalendar("auctionTime","imgAuctionTime");
+		hidebtn();
+	}
+	
+	
+	
+	</script>
+<style type="text/css"> 
+   html, body {width:100%; height:100%; margin:0px; padding:0px; overflow:hidden;}
+</style>
+</head>
+ 
+<body onload="init()">
+	<s:form action="ArtWorksAuction" id="ArtWorksAuctionForm" method="post" namespace="/works" enctype="multipart/form-data">
+			<s:hidden name="record.id" id="auctionId"/>
+			<div id="tblForm"></div>
+			<div id="page_0"  style="padding:2px; height:100%; width:100%;">
+			<div id="formDiv" class="formDiv" style="padding:2px;">
+				<table cellpadding="0" cellspacing="0" class="formTable" style="width: 99%;">
+				<tr>
+					<td class="textR" width="15%" >拍卖会：</td>
+					<td width="35%" ><s:textfield name="form.record.auction" disabled="true"/></td>
+					<td class="textR" width="15%" >拍卖编号：</td>
+					<td width="35%"><s:textfield name="form.record.auctionNo" disabled="true"/></td>
+				</tr>
+				
+				<tr>
+					<td class="textR" width="15%" >拍场：</td>
+					<td width="35%" ><s:textfield name="form.record.saleName" disabled="true"/></td>
+					<td class="textR" width="15%" >季节：</td>
+					<td width="35%"><s:select list="codeSets.AUCTION_SEASON" listKey="value" listValue="codeName" name="form.record.autionSeason" disabled="true"/></td>
+				</tr>
+				
+				<tr>
+					<td class="textR" width="15%" >标识：</td>
+					<td width="35%" ><s:textfield name="form.record.auctionIdentity" disabled="true"/></td>
+					<td class="textR" width="15%" >拍卖时间：</td>
+					<td width="35%" class="textL">
+						<s:textfield name="form.record.auctionTime" readonly="true" id="auctionTime" disabled="true"/>
+					</td>
+				</tr>
+				
+				<tr>
+					<td class="textR" width="15%" >作品：</td>
+					<td width="35%" class="textL">
+						<s:textfield name="form.record.worksName" readonly="true" disabled="true"/>
+						<s:hidden name="form.record.worksId" />
+					</td>
+					<td class="textR" width="15%" >拍卖行：</td>
+					<td width="35%" class="textL">
+						<s:textfield name="form.record.housesName" readonly="true" disabled="true"/>
+						<s:hidden name="form.record.housesId" />
+					</td>
+				</tr>
+				
+				<tr>
+					<td class="textR" width="15%" >作品来源：</td>
+					<td colspan="3" ><s:textfield name="form.record.worksSource" disabled="true"/></td>
+				</tr>
+				
+				<tr>
+					<td class="textR" valign="top">拍卖说明：</td>
+					<td colspan="3" ><s:textarea name="form.record.auctionDesc" style="height:60px" disabled="true"/></td>
+				</tr>
+				
+				<tr>
+					<td>成交价：</td>
+					<td>
+						<table>
+							<tr>
+								<td width="15%" >(人民币)</td>
+								<td width="35%" ><s:textfield name="form.record.ctranPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(美元)</td>
+								<td width="35%" ><s:textfield name="form.record.dtranPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(欧元)</td>
+								<td width="35%" ><s:textfield name="form.record.etranPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(英镑)</td>
+								<td width="35%" ><s:textfield name="form.record.ptranPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(港币)</td>
+								<td width="35%" ><s:textfield name="form.record.hkTranPrice" disabled="true"/></td>
+							</tr>
+						</table>
+					</td>
+					<td>交易价：</td>
+					<td>
+							<table>
+							<tr>
+								<td width="15%" >(人民币)</td>
+								<td width="35%" ><s:textfield name="form.record.ctradePrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(美元)</td>
+								<td width="35%" ><s:textfield name="form.record.dtradePrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(欧元)</td>
+								<td width="35%" ><s:textfield name="form.record.etradePrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(英镑)</td>
+								<td width="35%" ><s:textfield name="form.record.ptradePrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(港币)</td>
+								<td width="35%"><s:textfield name="form.record.hkTradePrice" disabled="true"/></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				
+				<tr>
+					<td>最低估价：</td>
+					<td>
+						<table>
+							<tr>
+								<td width="15%" >(人民币)</td>
+								<td width="35%" ><s:textfield name="form.record.clowestPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(美元)</td>
+								<td width="35%" ><s:textfield name="form.record.dlowestPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(欧元)</td>
+								<td width="35%" ><s:textfield name="form.record.elowestPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(英镑)</td>
+								<td width="35%" ><s:textfield name="form.record.plowestPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(港币)</td>
+								<td width="35%" ><s:textfield name="form.record.hkLowestPrice" disabled="true"/></td>
+							</tr>
+						</table>
+					</td>
+					<td>最高估价：</td>
+					<td>
+						<table>
+							<tr>
+								<td width="15%" >(人民币)</td>
+								<td width="35%" ><s:textfield name="form.record.chighestPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(美元)</td>
+								<td width="35%" ><s:textfield name="form.record.dhighestPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(欧元)</td>
+								<td width="35%" ><s:textfield name="form.record.ehighestPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(英镑)</td>
+								<td width="35%" ><s:textfield name="form.record.phighestPrice" disabled="true"/></td>
+							</tr>
+							<tr>
+								<td width="15%" >(港币)</td>
+								<td width="35%"><s:textfield name="form.record.hkHighestPrice" disabled="true"/></td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				
+		 	</table>
+		  </div>
+		 </div>
+		 <iframe  id="page_1" width="100%" height="100%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_2" width="100%" height="100%" scrolling="no" frameborder="0"></iframe> 
+</s:form>
+
+<div id="btnDiv" class="btnDiv">
+	 <gl:button name="btnAdd" onClick="goCancel()" >关闭</gl:button>
+</div>
+
+	<%@include file="/common/dialog.jsp"%>
+	<script type="text/javascript">
+	var mainbody=window.document.body;
+	if(window.addEventListener) {
+		     window.addEventListener("resize",goResize,false); 
+	}
+	else {
+		     window.attachEvent('onresize',goResize);
+	}
+	
+	var fDiv=window.document.getElementById('formDiv');
+	var bDiv=window.document.getElementById('btnDiv');
+	var btbl=window.document.getElementById('tblForm');
+	
+	function goResize(){
+	   fDiv.style.width=mainbody.offsetWidth-fDiv.offsetLeft*2+"px";
+	   bDiv.style.width=mainbody.offsetWidth-bDiv.offsetLeft*2+"px";
+	  fDiv.style.height=mainbody.offsetHeight-bDiv.offsetHeight-fDiv.offsetTop*2+"px";
+	   bDiv.style.top=fDiv.offsetHeight+fDiv.offsetTop*2-5+"px";
+	   if(btbl){
+		   btbl.style.width=fDiv.offsetWidth-fDiv.offsetLeft-9+"px";
+		   btbl.style.height=fDiv.offsetHeight-fDiv.offsetTop-12+"px";
+	   }
+	}
+	goResize();  
+
+		var tabbar = new dhtmlXTabBar("tblForm", "top");
+		tabbar.setSkin('dhx_terrace');
+		tabbar.setArrowsMode("auto");
+		tabbar.addTab("a0", "作品拍卖基本信息", "140px");
+		tabbar.addTab("a1", "拍卖相关视频", "120px");
+		tabbar.addTab("a2", "拍卖相关文字", "120px");
+		tabbar.tabs("a0").attachObject("formDiv");
+		tabbar.tabs("a0").setActive();
+		tabbar.tabs("a1").attachObject("page_1");
+		tabbar.tabs("a2").attachObject("page_2");
+		tabbar.enableAutoReSize(true);
+		tabbar.enableTabCloseButton(true);
+		window.frames["page_1"].location.href = auctionVideoLink + '?action=LIST&record.auctionId=' + $$('auctionId').value + '&record.hide=1';
+		window.frames["page_2"].location.href = auctionWordsLink + '?action=LIST&record.auctionId=' + $$('auctionId').value + '&record.hide=1';
+	</script>
+</body>
+</html>

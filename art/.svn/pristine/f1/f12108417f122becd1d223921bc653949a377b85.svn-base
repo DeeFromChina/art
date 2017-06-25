@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+   <!-- 查询一个用户拥有的角色 -->
+	<sql id="getUserRoles">
+      select t.role_id as roleId,r.role_name as roleName 
+      from sys_user_role t,sys_role r 
+      where t.role_id=r.id and r.role_status='1' and t.user_id=?
+	</sql>
+   <!-- 查询一个角色拥有的权限 -->
+	<sql id="getRoleRights">
+      select r.res_code as resCode,r.res_name as resName 
+      from sys_resource_role t,sys_resource r 
+      where t.res_id=r.id and t.role_id=?
+	</sql>
+   <!-- 查询一个用户拥有的权限 -->
+	<sql id="getUserRights">
+      select r.res_code as resCode,r.res_name as resName 
+      from sys_resource_user t,sys_resource r 
+      where t.res_id=r.id and t.user_id=?
+	</sql>
+	<!-- 查询一个用户拥有的属性 -->
+	<sql id="getUserProperty">
+      select t.id as id,t.user_id as userId,t.property_key as propertyKey,t.property_Value as propertyValue 
+      from sys_property t 
+      where t.user_id=?
+	</sql>
+	<!-- 根据角色和部门Id查询用户信息 -->
+	<sql id="getUser">
+        select u.id,u.user_name from sys_user u
+		left join sys_dept d on u.dept_id=d.id
+		left join sys_org o on o.id=u.org_id and u.org_id=o.id
+		left join sys_user_role  l on l.user_id=u.id
+		left join sys_role r on r.id=l.role_id
+		where {#paras}
+		<parameters id="paras" prefix="" suffix="" />
+	</sql>
+	
+	
+   <!--用户管理模块,查询用户列表 -->
+	<sql id="userList" countColumn="u.id" orderBy="u.order_no asc">
+      select u.id,u.user_name as name,u.user_account as account,o.org_name as orgName,
+             u.user_status as status,u.remark as remark 
+      from   sys_user u,sys_org o
+      where u.org_id=o.id  {#paras}
+      <parameters id="paras" prefix="and" suffix="" />
+	</sql>
+	
+	<sql id="userDigtalSignList" countColumn="u.id" orderBy="u.order_no asc">
+      select u.id,u.user_name as name,u.user_account as account,o.org_name as orgName,
+             s.digtal_sign_img as digtalSignImg 
+      from sys_user u
+      left join sys_org o on u.org_id=o.id
+      left join sys_user_digtal_sign s on s.user_id = u.id
+      where u.user_status = '1'  {#paras}
+      <parameters id="paras" prefix="and" suffix="" />
+	</sql>
+	
+	<!--国家管理 -->
+	<sql id="artCountryList">
+      select country.id AS id,
+      country.country_name as countryName,
+      country.country_desc as countryDesc 
+      from art_country country 
+      WHERE 1=1 
+      {#paras} 
+      ORDER BY convert(country.country_name using gbk) ASC 
+      <parameters id="paras" prefix="and" suffix="" />
+	</sql>
+	
+	<!--机构管理-->
+	<sql id="artAgencyList" orderBy="country.id asc">
+      select agency.id AS id,
+      agency.agency_c_name as agencyCName,
+      agency.agency_e_name as agencyEName, 
+      agency.country_id as countryId, 
+      agency.city as city, 
+      agency.agency_type as agencyType, 
+      country.country_name as countryName 
+      from art_agency agency 
+      LEFT JOIN art_country country ON country.id = agency.country_id 
+      WHERE 1=1 
+      {#paras} 
+      <parameters id="paras" prefix="and" suffix="" />
+	</sql>
+ 
+</sqls>

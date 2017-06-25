@@ -1,0 +1,223 @@
+package com.golead.art.activity;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.golead.art.activity.model.ArtActivityAbmb;
+import com.golead.art.activity.service.ArtActivityAbmbService;
+import com.golead.art.artist.model.ArtCountry;
+import com.golead.art.artist.service.ArtCountryService;
+import com.golead.art.works.service.ArtWorksService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+/**
+ * 艺博会
+ * 
+ * @author 尹湘
+ * @version 1.0
+ * @since 2016年9月22日 下午2:27:41
+ */
+public class ArtActivityAbmbAction extends BaseAction {
+
+   private Log log = LogFactory.getLog(ArtActivityAbmbAction.class);
+
+   @Override
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = getForm().getAction();
+      if (action == null) action = LIST;
+      if (log.isDebugEnabled()) log.debug("action" + action);
+      try {
+         if (LIST.equalsIgnoreCase(action)) forward = sreachAbmb();
+         else if (PAGE.equalsIgnoreCase(action)) forward = pageAbmb();
+         else if (ADD.equalsIgnoreCase(action)) forward = addAbmb();
+         else if (SAVE.equalsIgnoreCase(action)) forward = saveAbmb();
+         else if (EDIT.equalsIgnoreCase(action)) forward = editAbmb();
+         else if (UPDATE.equalsIgnoreCase(action)) forward = updateAbmb();
+         else if (DELETE.equalsIgnoreCase(action)) forward = deleteAbmb();
+         else if (VIEW.equalsIgnoreCase(action)) forward = viewAbmb();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   public String sreachAbmb() throws Exception {
+      return LIST;
+   }
+
+   public String pageAbmb() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'pageAbmb' method");
+      try {
+         PageQuery pageQuery = form.getQuery() == null ? new PageQuery() : form.getQuery();
+         pageQuery = artActivityAbmbService.queryArtActivityAbmb(pageQuery);
+         if (pageQuery != null) {
+            List<Map<String, Object>> rs = pageQuery.getRecordSet();
+            if (rs != null) {
+               List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+               for (int i = 0; i < rs.size(); i++) {
+                  Map<String, Object> abmb = rs.get(i);
+                  Map<String, Object> map = new HashMap<String, Object>();
+                  String abmbYear = abmb.get("abmbYear") == null ? null : abmb.get("abmbYear") + "年";
+                  String abmbMonth = abmb.get("abmbMonth") == null ? null : abmb.get("abmbMonth") + "月";
+                  String abmbNumber = abmb.get("abmbNumber") == null ? null : "第" + abmb.get("abmbNumber") + "届";
+                  String abmbTime = "";
+                  if (abmbYear != null) {
+                     abmbTime = abmbYear;
+                  }
+                  if (abmbMonth != null) {
+                     abmbTime += abmbMonth;
+                  }
+                  map.put("id", abmb.get("id"));
+                  String link = "^javascript:view(" + abmb.get("id") + ")^_self";
+                  map.put("data",
+                        new Object[] { "", abmb.get("abmbName") + link, abmbNumber, abmb.get("sponsor"), abmb.get("artDirector"), abmbTime,
+                              abmb.get("country"), abmb.get("city") });
+                  list.add(map);
+               }
+               String res = genGridJson(pageQuery, list);
+               setResponse(res);
+            }
+            else setResponse("{exit:1,message:\"数据访问错误。\"}");
+         }
+         else setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+
+   public String addAbmb() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'addAbmb' method");
+      try {
+         return ADD;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+   }
+
+   public String saveAbmb() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'saveAbmb' method");
+      try {
+         ArtActivityAbmb abmb = new ArtActivityAbmb();
+         ConvertUtil.mapToObject(abmb, form.getRecord(), false);
+         artActivityAbmbService.createArtActivityAbmb(abmb);
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         addMessage(getForm(), e.getMessage());
+         return ADD;
+      }
+   }
+
+   public String editAbmb() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'editAbmb' method");
+      try {
+         ArtActivityAbmb abmb = artActivityAbmbService.getArtActivityAbmb(Integer.valueOf(ids));
+         ConvertUtil.objectToMap(form.getRecord(), abmb);
+         if (abmb.getCountryId() != null) {
+            ArtCountry country = artCountryService.getArtCountry(abmb.getCountryId());
+            form.getRecord().put("countryName", country.getCountryName());
+         }
+         return EDIT;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+   }
+
+   public String updateAbmb() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'updateAbmb' method");
+      try {
+         artActivityAbmbService.updateArtActivityAbmb(form.getRecord());
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return EDIT;
+      }
+   }
+
+   public String deleteAbmb() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'deleteAbmb' method");
+      try {
+         String[] id = ids.split(",");
+         Integer[] del_ids = new Integer[id.length];
+         for (int i = 0; i < del_ids.length; i++) {
+            del_ids[i] = Integer.valueOf(id[i]);
+         }
+         artActivityAbmbService.deleteArtActivityAbmbs(del_ids);
+         setResponse("{exit:0}");
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         setResponse("{exit:1,message:\"删除操作失败!\"}");
+      }
+      return null;
+   }
+
+   public String viewAbmb() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'viewAbmb' method");
+      String forward = null;
+      try {
+         ArtActivityAbmb abmb = artActivityAbmbService.getArtActivityAbmb(Integer.valueOf(ids));
+         ConvertUtil.objectToMap(form.getRecord(), abmb);
+         if (abmb.getCountryId() != null) {
+            ArtCountry country = artCountryService.getArtCountry(abmb.getCountryId());
+            form.getRecord().put("countryName", country.getCountryName());
+         }
+         String abmbYear = abmb.getAbmbYear() == null ? null : abmb.getAbmbYear() + "年";
+         String abmbMonth = abmb.getAbmbMonth() == null ? null : abmb.getAbmbMonth() + "月";
+         String abmbNumber = abmb.getAbmbNumber() == null ? "" : "第" + abmb.getAbmbNumber() + "届";
+         String abmbTime = "";
+         if (abmbYear != null) {
+            abmbTime = abmbYear;
+         }
+         if (abmbMonth != null) {
+            abmbTime += abmbMonth;
+         }
+         form.getRecord().put("abmbTime", abmbTime);
+         form.getRecord().put("abmbNumber", abmbNumber);
+         forward = "VIEW";
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("err", e);
+         forward = "ERROR";
+      }
+      return forward;
+   }
+
+   @Resource
+   private ArtActivityAbmbService artActivityAbmbService;
+
+   @Resource
+   private ArtCountryService      artCountryService;
+
+   @Resource
+   private ArtWorksService        artWorksService;
+
+}

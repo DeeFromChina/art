@@ -1,0 +1,52 @@
+package com.golead.art.auction.dao.impl;
+
+import java.io.Serializable;
+import com.golead.core.exception.DAOException;
+import com.golead.core.dao.impl.HibernateDaoImpl;
+import com.golead.art.auction.model.ArtAuctionTempWords;
+import com.golead.art.auction.dao.ArtAuctionTempWordsDao;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ArtAuctionTempWordsDaoImpl extends HibernateDaoImpl<ArtAuctionTempWords> implements ArtAuctionTempWordsDao {
+
+	public Class getReferenceClass() {
+		return ArtAuctionTempWords.class;
+	}
+
+	public ArtAuctionTempWords cast(Object object) {
+		return (ArtAuctionTempWords) object;
+	}
+
+	public ArtAuctionTempWords get(Serializable id)  throws DAOException{
+		return (ArtAuctionTempWords) super.get(id);
+	}
+
+	public ArtAuctionTempWords load(Serializable id)  throws DAOException{
+		return (ArtAuctionTempWords) super.load(id);
+	}
+
+	public Serializable save(ArtAuctionTempWords artAuctionTempWords)  throws DAOException{
+		return super.save(artAuctionTempWords);
+	}
+
+	public void saveOrUpdate(ArtAuctionTempWords artAuctionTempWords)  throws DAOException{
+		super.saveOrUpdate(artAuctionTempWords);
+	}
+
+	public void update(ArtAuctionTempWords artAuctionTempWords)  throws DAOException{
+		super.update(artAuctionTempWords);
+	}
+
+	public void delete(ArtAuctionTempWords artAuctionTempWords)  throws DAOException{
+		super.delete(artAuctionTempWords);
+	}
+
+	public void refresh(ArtAuctionTempWords artAuctionTempWords)  throws DAOException{
+		super.refresh(artAuctionTempWords);
+	}
+
+	public String getTableName() {
+		return ArtAuctionTempWords.REF_TABLE;
+	}
+}

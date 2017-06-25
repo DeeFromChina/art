@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+	<sql id="artLiteratureList" orderBy="al.id Desc">
+		SELECT
+		al.id AS id,
+		category AS category,
+		literature_type AS literatureType,
+		literature_name AS literatureName,
+		period AS period,
+		total_period AS totalPeriod,
+		press AS press,
+		publication_time AS publicationTime,
+		page_count AS pageCount,
+		editor AS editor,
+		subeditor AS subeditor,
+		executive_editor AS executiveEditor,
+		adviser AS adviser,
+		literature_column AS literatureColumn,
+		content_name AS contentName,
+		content_type AS contentType,
+		author AS author,
+		page_segment AS pageSegment,
+		relevant_pages AS relevantPages,
+		attachment AS attachment
+		FROM ART_LITERATURE al
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artLiteratureCollectList" orderBy="id Desc">
+		SELECT
+		id AS id,
+		collect_name AS collect_name,
+		collect_time AS collect_time,
+		city AS city,
+		province AS province,
+		country AS country,
+		attachment AS attachment
+		FROM ART_LITERATURE_COLLECT
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artLiteratureMediumList" orderBy="ald.id DESC">
+		SELECT
+		ald.id AS id,
+		medium_type AS mediumType,
+		medium_title AS mediumTitle,
+		when_long AS when_long,
+		sooting_people AS sootingPeople,
+		upload_time AS uploadTime,
+		publication_source AS publicationSource,
+		content_desc AS contentDesc,
+		time_slot AS timeSlot,
+		content_type AS contentType,
+		site_link AS siteLink,
+		attachment AS attachment
+		FROM ART_LITERATURE_MEDIUM ald
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+</sqls>

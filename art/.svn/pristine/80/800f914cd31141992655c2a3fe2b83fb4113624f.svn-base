@@ -1,0 +1,237 @@
+package com.golead.art.artist;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
+
+import com.golead.art.artist.model.ArtArtistDonation;
+import com.golead.art.artist.service.ArtArtistDonationService;
+import com.golead.art.utils.FileUtils;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtistDonationAction extends BaseAction {
+
+private Log log = LogFactory.getLog(ArtistDonationAction.class);
+	
+	@Resource
+	private ArtArtistDonationService artArtistDonationService;
+	
+	public static String FILE_PATH = ServletActionContext.getServletContext().getRealPath("");
+	private File files;
+	private String filesFileName;
+	
+	@Override
+	public String doExecute() throws Exception {
+		String forward = "";
+		String action = getForm().getAction();
+		if (action == null) {
+			forward = LIST;
+		}
+		try {
+			if (LIST.equalsIgnoreCase(action)) forward = listDonation();
+			else if (PAGE.equalsIgnoreCase(action)) forward = pageDonation();
+			else if (ADD.equalsIgnoreCase(action)) forward = addDonation();
+			else if (SAVE.equalsIgnoreCase(action)) forward = saveDonation();
+			else if (EDIT.equalsIgnoreCase(action)) forward = editDonation();
+			else if (UPDATE.equalsIgnoreCase(action)) forward = updateDonation();
+			else if (DELETE.equalsIgnoreCase(action)) forward = deleteDonation();
+			else if (VIEW.equalsIgnoreCase(action)) forward = viewDonation();
+			else if ("IMPORT".equalsIgnoreCase(action)) forward = importDonation();
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.put("errMsg", e.getMessage());
+			return ERROR;
+		}
+		return forward;
+	}
+	
+	public String listDonation() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'listDonation()' method");
+		try {
+			initForm();
+			return LIST;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String pageDonation() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering pageDonation() method");
+		try {
+			initForm();
+			PageQuery pq = getForm().getQuery();
+			String artistId = getForm().getRecord().get("artistId");
+			pq.getParameters().put("artistId", artistId);
+			pq = artArtistDonationService.queryArtArtistDonation(pq);
+			List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+			for (Map<String, Object> item : pq.getRecordSet()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				String DonationLink = "^javascript:view(" + item.get("id") + ")^_self";
+				map.put("id", item.get("id"));
+				map.put("data", new Object[]{
+					""
+					,item.get("donationTime") + DonationLink
+					,item.get("donationDesc")
+				});
+				list.add(map);
+			}
+			String res = genGridJson(pq, list);
+			setResponse(res);
+		} catch (ServiceException e) {
+			setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+		} catch (Exception e) {
+			e.printStackTrace();
+			setResponse("{exit:1,message:\"数据访问错误。\"}");
+		}
+		return null;
+	}
+	
+	public String addDonation() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'addDonation()' method");
+		try {
+			initForm();
+			return ADD;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String saveDonation() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'saveDonation()' method");
+		try {
+			ArtArtistDonation artArtistDonation = new ArtArtistDonation();
+			int artistId = Integer.valueOf(getForm().getRecord().get("artistId"));
+			artArtistDonation.setArtistId(artistId);
+			artArtistDonation.setDonationDesc(getForm().getRecord().get("donationDesc"));
+			artArtistDonation.setDonationTime(getForm().getRecord().get("donationTime"));
+			artArtistDonationService.createArtArtistDonation(artArtistDonation);
+			return returnForward(RETURN_NORMAL);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String editDonation() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'editDonation()' method");
+		try {
+			initForm();
+			int id = Integer.valueOf(getForm().getRecord().get("id"));
+			ArtArtistDonation artArtistDonation = artArtistDonationService.getArtArtistDonation(id);
+			ConvertUtil.objectToMap(getForm().getRecord(), artArtistDonation);
+			return EDIT;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String updateDonation() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'updateDonation()' method");
+		try {
+			artArtistDonationService.updateArtArtistDonation(getForm().getRecord());
+			return returnForward(RETURN_NORMAL);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String deleteDonation() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'deleteDonation()' method");
+		try {
+			String[] id = ids.split(",");
+			Integer[] del_ids = new Integer[id.length];
+			for (int i = 0; i < del_ids.length; i++) {
+				del_ids[i] = Integer.valueOf(id[i]);
+			}
+			artArtistDonationService.deleteArtArtistDonations(del_ids);
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+		return pageDonation();
+	}
+	
+	public String viewDonation() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'viewDonation()' method");
+		try {
+			initForm();
+			ArtArtistDonation artArtistDonation = artArtistDonationService.getArtArtistDonation(Integer.valueOf(ids));
+			ConvertUtil.objectToMap(getForm().getRecord(), artArtistDonation);
+			return VIEW;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String importDonation() throws Exception {
+		if (log.isDebugEnabled())
+			log.debug("Entering 'importDonation()' method");
+		try {
+			if (files != null) {
+				String newName = filesFileName.substring(filesFileName.lastIndexOf("."));
+				newName = files.getName().substring(0, files.getName().lastIndexOf(".") - 1) + newName;
+				String filePath = FILE_PATH + File.separator + newName;
+				FileUtils.fileUpload(filePath, files);
+				int artistId = Integer.valueOf(getForm().getRecord().get("artistId"));
+				artArtistDonationService.importDonations(files.toString(), artistId);
+				FileUtils.deleteFile(filePath);
+				return returnForward(RETURN_NORMAL);
+			} else 
+				return "IMPORT";
+		} catch (ServiceException e) {
+			addMessage(getForm(), e.getMessage());
+			initForm();
+			return "IMPORT";
+		} catch (Exception ex) {
+			ex.printStackTrace();
+			addMessage(getForm(), "保存操作失败!");
+			initForm();
+			return "IMPORT";
+		}
+	}
+	
+	public void initForm() throws Exception {
+		setCode(getForm(), "");
+	}
+
+	public File getFiles() {
+		return files;
+	}
+
+	public void setFiles(File files) {
+		this.files = files;
+	}
+
+	public String getFilesFileName() {
+		return filesFileName;
+	}
+
+	public void setFilesFileName(String filesFileName) {
+		this.filesFileName = filesFileName;
+	}
+
+}

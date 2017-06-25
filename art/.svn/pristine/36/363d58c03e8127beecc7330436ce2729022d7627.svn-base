@@ -1,0 +1,126 @@
+package com.golead.art.photo.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.photo.dao.ArtPhotoDao;
+import com.golead.art.photo.model.ArtPhoto;
+import com.golead.art.photo.service.ArtPhotoService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtPhotoServiceImpl extends BaseServiceImpl implements ArtPhotoService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtPhoto getArtPhoto(Serializable id) throws ServiceException {
+		try {
+			return artPhotoDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtPhoto(ArtPhoto artPhoto) throws ServiceException {
+		try {
+			artPhotoDao.save(artPhoto);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtPhoto(Map<String, String> artPhotoMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artPhotoMap.get(ArtPhoto.PROP_ID));
+			ArtPhoto tmp = artPhotoDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artPhotoMap, true);			
+			artPhotoDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtPhoto(Serializable id) throws ServiceException {
+		try {
+			artPhotoDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtPhotos(Serializable[] ids) throws ServiceException {
+		try {
+			artPhotoDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtPhoto(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artPhotoList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtPhotoDao	artPhotoDao;
+
+	public void setArtPhotoDao(ArtPhotoDao artPhotoDao) {
+		this.artPhotoDao = artPhotoDao;
+	}
+}
+

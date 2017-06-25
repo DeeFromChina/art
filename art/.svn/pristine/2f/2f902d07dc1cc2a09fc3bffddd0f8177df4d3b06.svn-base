@@ -1,0 +1,126 @@
+package com.golead.art.works.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.works.dao.ArtWorksCaseDao;
+import com.golead.art.works.model.ArtWorksCase;
+import com.golead.art.works.service.ArtWorksCaseService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtWorksCaseServiceImpl extends BaseServiceImpl implements ArtWorksCaseService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtWorksCase getArtWorksCase(Serializable id) throws ServiceException {
+		try {
+			return artWorksCaseDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtWorksCase(ArtWorksCase artWorksCase) throws ServiceException {
+		try {
+			artWorksCaseDao.save(artWorksCase);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtWorksCase(Map<String, String> artWorksCaseMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artWorksCaseMap.get(ArtWorksCase.PROP_ID));
+			ArtWorksCase tmp = artWorksCaseDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artWorksCaseMap, true);			
+			artWorksCaseDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtWorksCase(Serializable id) throws ServiceException {
+		try {
+			artWorksCaseDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtWorksCases(Serializable[] ids) throws ServiceException {
+		try {
+			artWorksCaseDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtWorksCase(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artWorksCaseList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtWorksCaseDao	artWorksCaseDao;
+
+	public void setArtWorksCaseDao(ArtWorksCaseDao artWorksCaseDao) {
+		this.artWorksCaseDao = artWorksCaseDao;
+	}
+}
+

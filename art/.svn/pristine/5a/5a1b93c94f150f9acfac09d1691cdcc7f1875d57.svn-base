@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+	<sql id="artAuctionHousesList" orderBy="aah.ID DESC">
+		SELECT aah.ID AS id,
+		AUCTION_HOUSE AS auctionHouse,
+		NATIONALITY AS nationality,
+		ADDR AS addr,
+		REMARK AS remark,
+		WEBSITE AS website
+		FROM ART_AUCTION_HOUSES aah
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artAuctionWordsList" orderBy="aaw.ID DESC">
+		SELECT aaw.ID AS id,
+		aaw.auction_id AS auctionId,
+		words_theme AS wordsTheme,
+		attachment AS attachment,
+		words_source AS wordsSource,
+		words_time AS wordsTime
+		FROM ART_AUCTION_WORDS aaw
+		LEFT JOIN ART_WORKS_AUCTION awa ON awa.id = aaw.auction_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+</sqls>

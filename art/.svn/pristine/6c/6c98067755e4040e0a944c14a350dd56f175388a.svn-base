@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="manager" extends="default" namespace="/appManager">
+		<action name="appUserManager" class="com.golead.art.appManager.AppUserManagerAction">
+			<result name="LIST">/jsp/appManager/appUserManageer/listAppUser.jsp</result>
+		</action>
+	</package>
+</struts>

@@ -1,0 +1,26 @@
+package com.golead.art.works.service;
+
+import java.io.Serializable;
+import java.util.Map;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.dao.model.PageQuery;
+
+import com.golead.art.works.model.ArtPublicationCatalog;
+
+public interface ArtPublicationCatalogService {
+
+	public ArtPublicationCatalog getArtPublicationCatalog(Serializable id) throws ServiceException;
+
+	public void createArtPublicationCatalog(ArtPublicationCatalog artPublicationCatalog) throws ServiceException;
+
+	public void updateArtPublicationCatalog(Map<String, String> artPublicationCatalogMap) throws ServiceException;
+
+	public void deleteArtPublicationCatalog(Serializable id) throws ServiceException;
+
+	public PageQuery queryArtPublicationCatalog(PageQuery pageQuery) throws ServiceException;
+
+	public void deleteArtPublicationCatalogs(Serializable[] ids) throws ServiceException;  
+	
+	public void deleteByArtPublicationId(Serializable id) throws ServiceException;  
+}
+

@@ -1,0 +1,232 @@
+package com.golead.art.app.service.impl;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.golead.art.app.service.ScreenFristService;
+import com.golead.art.artist.model.ArtArtistWorksSeries;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.service.impl.BaseServiceImpl;
+
+@Service
+public class ScreenFristServiceImpl extends BaseServiceImpl implements ScreenFristService {
+
+   @Override
+   public List<Map<String, Object>> selectScreen(Map<String, String> parameters) throws ServiceException {
+      try {
+         String pageName = parameters.get("pageName");
+         if (pageName.equalsIgnoreCase("worksSelect")) return worksSelect(parameters);// 对作品筛选
+         else if (pageName.equalsIgnoreCase("worksAllSeries")) return worksAllSeries(parameters);// 全部系列
+         else if (pageName.equalsIgnoreCase("worksYear")) return worksYear(parameters);// 全部年代
+         else if (pageName.equalsIgnoreCase("worksSeries")) return worksSeries(parameters);// 系列全部作品
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+
+      return null;
+   }
+
+   private List<Map<String, Object>> worksSelect(Map<String, String> parameters) throws ServiceException {
+      System.out.println("worksSelect...");
+      try {
+         series(parameters);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   //作品系列
+   private List<Map<String, Object>> series(Map<String, String> parameters) throws ServiceException {
+      System.out.println("series...");
+      try {
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         Map<String, Object> map = new HashMap<String, Object>();
+         String artistId = parameters.get("artistId");
+         if (!isInteger(returnString(parameters.get("artistId")))) { throw new ServiceException("艺术家id错误！"); }
+         String size = parameters.get("size");
+         if("pair".equalsIgnoreCase(size)){
+            putSeries(map, artistId);
+         }
+         else if("all".equalsIgnoreCase(size)){
+            putAllSeries(map, artistId);
+         }
+         list.add(map);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   private List<Map<String, Object>> worksAllSeries(Map<String, String> parameters) throws ServiceException {
+      System.out.println("worksAllSeries...");
+      try {
+         
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   private List<Map<String, Object>> worksYear(Map<String, String> parameters) throws ServiceException {
+      System.out.println("worksYear...");
+      try {
+         
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   private List<Map<String, Object>> worksSeries(Map<String, String> parameters) throws ServiceException {
+      System.out.println("worksSeries...");
+      try {
+         
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   private void putSeries(Map<String, Object> map, String artistId){
+      List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+      String sql = "SELECT t.id AS tid,t.name AS descript,works.id AS id,works.works_c_name AS name,"
+            + " CONCAT('auction/',artist.folder_name,'/',works.thumbnail) AS photo,"
+            + " COUNT(t.id) AS number "
+            + " FROM art_artist_works_series_research research "
+            + " LEFT JOIN "
+            + " (SELECT series.id,series.series_name AS name "
+            + " FROM art_artist_works_series series "
+            + " WHERE series.artist_id=" + artistId
+            + " ORDER BY series.series_important LIMIT 0,1) t "
+            + " ON t.id = research.series_id "
+            + " LEFT JOIN art_works works ON works.id=research.works_id LIMIT 4";
+      list = jdbcDao.queryBySql(sql);
+      if(list != null && list.size() > 0){
+         for(Map<String, Object> seriesMap : list){
+            map.putAll(seriesMap);
+         }
+         sql = "SELECT t.id AS tid,t.name AS descript,works.id AS id,works.works_c_name AS name,"
+               + " CONCAT('auction/',artist.folder_name,'/',works.thumbnail) AS photo,"
+               + " COUNT(t.id) AS number "
+               + " FROM art_artist_works_series_research research "
+               + " LEFT JOIN "
+               + " (SELECT series.id,series.series_name AS name "
+               + " FROM art_artist_works_series series "
+               + " WHERE series.artist_id=" + artistId
+               + " ORDER BY series.series_important LIMIT 1,2) t "
+               + " ON t.id = research.series_id "
+               + " LEFT JOIN art_works works ON works.id=research.works_id LIMIT 4";
+         list = jdbcDao.queryBySql(sql);
+         if(list != null && list.size() > 0){
+            for(Map<String, Object> seriesMap : list){
+               map.putAll(seriesMap);
+            }
+         }
+      }
+   }
+   
+   private void putAllSeries(Map<String, Object> map, String artistId){
+      List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+      StringBuffer sqlBuffer = new StringBuffer();
+      String sqlPrefix = "SELECT t.id AS tid,t.name AS descript,works.id AS id,works.works_c_name AS name,"
+            + " CONCAT('auction/',artist.folder_name,'/',works.thumbnail) AS photo,"
+            + " COUNT(t.id) AS number "
+            + " FROM art_artist_works_series_research research "
+            + " LEFT JOIN "
+            + " (SELECT series.id,series.series_name AS name "
+            + " FROM art_artist_works_series series "
+            + " WHERE series.artist_id=" + artistId
+            + " ORDER BY series.series_important LIMIT ";
+      sqlBuffer.append(sqlPrefix);
+      String num = "0,1";
+      String sqlSuffix = ") t "
+            + " ON t.id = research.series_id "
+            + " LEFT JOIN art_works works ON works.id=research.works_id LIMIT 4";
+      sqlBuffer.append(sqlSuffix);
+      list = jdbcDao.queryBySql(sqlBuffer.toString());
+      if(list != null && list.size() > 0){
+         for(Map<String, Object> seriesMap : list){
+            map.putAll(seriesMap);
+         }
+//         sql = "SELECT t.id AS tid,t.name AS descript,works.id AS id,works.works_c_name AS name,"
+//               + " CONCAT('auction/',artist.folder_name,'/',works.thumbnail) AS photo,"
+//               + " COUNT(t.id) AS number "
+//               + " FROM art_artist_works_series_research research "
+//               + " LEFT JOIN "
+//               + " (SELECT series.id,series.series_name AS name "
+//               + " FROM art_artist_works_series series "
+//               + " WHERE series.artist_id=" + artistId
+//               + " ORDER BY series.series_important LIMIT 1,2) t "
+//               + " ON t.id = research.series_id "
+//               + " LEFT JOIN art_works works ON works.id=research.works_id LIMIT 4";
+//         list = jdbcDao.queryBySql(sql);
+         if(list != null && list.size() > 0){
+            for(Map<String, Object> seriesMap : list){
+               map.putAll(seriesMap);
+            }
+         }
+      }
+   }
+
+   private boolean isInteger(String account) {
+      try {
+         Integer.valueOf(account);
+         return true;
+      }
+      catch (Exception e) {
+         return false;
+      }
+   }
+   
+   private String returnString(Object obj) {
+      if (obj == null) { return ""; }
+      return obj.toString();
+   }
+
+   private List<Map<String, Object>> addError(String message) {
+      Map<String, Object> map = new HashMap<String, Object>();
+      List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+      map.put("error", message);
+      list.add(map);
+      return list;
+   }
+}

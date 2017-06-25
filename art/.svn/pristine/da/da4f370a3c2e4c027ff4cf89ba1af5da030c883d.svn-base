@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+       xmlns:aop="http://www.springframework.org/schema/aop"
+	    xmlns:tx="http://www.springframework.org/schema/tx" 
+
+	    xmlns:context="http://www.springframework.org/schema/context"
+	    xsi:schemaLocation="http://www.springframework.org/schema/beans 
+  http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+  http://www.springframework.org/schema/aop 
+  http://www.springframework.org/schema/aop/spring-aop-2.5.xsd
+  http://www.springframework.org/schema/context 
+  http://www.springframework.org/schema/context/spring-context-2.5.xsd
+  http://www.springframework.org/schema/tx 
+  http://www.springframework.org/schema/tx/spring-tx-2.5.xsd"> 
+
+	<!-- JDBC DataSource 192.168.0.200 127.0.0.1 -->
+	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<property name="driverClassName" value="com.mysql.jdbc.Driver" />
+		<property name="url" value="jdbc:mysql://192.168.0.200:3306/art?characterEncoding=utf-8" />
+		<property name="username" value="art" /> 
+		<property name="password" value="art" />
+
+		<property name="maxActive" value="20" />
+		<property name="maxIdle" value="5" />
+		<property name="maxWait" value="1000" />
+		<property name="defaultAutoCommit" value="true" />
+		<property name="removeAbandoned" value="true" />
+		<property name="removeAbandonedTimeout" value="60" />
+		<property name="logAbandoned" value="true" />
+	</bean>
+
+	<!-- JNDI DataSource 
+	<bean id="dataSource" class="org.springframework.jndi.JndiObjectFactoryBean"> 
+	   <property name="jndiName"> 
+	      <value>java:comp/env/jdbc/oracleDataSource</value> 
+		</property> 
+   </bean> 
+   -->
+
+<!-- Hibernate SessionFactory -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="lobHandler" ref="lobHandler" />
+		<property name="packagesToScan" value="com.golead.**.model" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</prop>
+<!--
+				<prop key="hibernate.dialect">org.hibernate.dialect.Oracle9iDialect</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.SQLServerDialect</prop>
+				<prop key="hibernate.dialect">org.hibernate.dialect.MySQLInnoDBDialect</prop>
+-->
+				<prop key="hibernate.show_sql">true</prop>
+				<prop key="hibernate.order_updates">true</prop>
+				<prop key="hibernate.generate_statistics">true</prop>
+				<prop key="hibernate.bytecode.use_reflection_optimizer">true</prop>
+				<prop key="hibernate.query.factory_class">org.hibernate.hql.ast.ASTQueryTranslatorFactory</prop>
+				<prop key="hibernate.cache.provider_class">org.hibernate.cache.HashtableCacheProvider</prop>
+			</props>
+		</property>
+	</bean>
+
+	<bean id="sqlGenerator" class="com.golead.core.dao.impl.MysqlSqlGenerator" autowire="byName"></bean>
+<!--
+	<bean id="sqlGenerator" class="com.golead.core.dao.impl.OracleSqlGenerator" autowire="byName"></bean>
+	<bean id="sqlGenerator" class="com.golead.core.dao.impl.SqlServerSqlGenerator" autowire="byName"></bean>
+	<bean id="sqlGenerator" class="com.golead.core.dao.impl.MysqlSqlGenerator" autowire="byName"></bean>
+-->
+
+	<bean id="commonService" class="com.golead.common.service.impl.CommonServiceImpl" autowire="byName"></bean>
+
+	<bean id="jdbcDao" class="com.golead.core.dao.impl.JdbcDaoImpl" autowire="byName" />
+	
+	<bean id="sqlFactory" class="com.golead.core.dao.SqlFactory">
+		<property name="location">
+			<value>WEB-INF/sql/sql.xml;WEB-INF/sql/sql_artist.xml;WEB-INF/sql/sql_literature.xml;WEB-INF/sql/sql_auction.xml;WEB-INF/sql/sql_works.xml;</value>						
+		</property>
+	</bean>
+	
+	<tx:advice id="txAdvice" transaction-manager="transactionManager">
+		<tx:attributes>
+			<tx:method name="query*"  read-only="true"/>
+			<tx:method name="find*"  read-only="true" />
+			<tx:method name="get*"  read-only="true"/>
+			<tx:method name="*" propagation="REQUIRED" isolation="DEFAULT" rollback-for="ServiceException" />
+		</tx:attributes>
+	</tx:advice>
+	<aop:config>
+		<aop:advisor pointcut="execution(* *..*Service*.*(..))" advice-ref="txAdvice" />
+	</aop:config>
+	
+	<context:component-scan base-package="com.golead" >
+	</context:component-scan>
+
+	<!-- Transaction manager for a single Hibernate SessionFactory (alternative to JTA) -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">
+		<property name="dataSource" ref="dataSource" />
+	</bean>
+
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true" />
+
+</beans>

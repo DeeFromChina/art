@@ -1,0 +1,187 @@
+package com.golead.art.works.service.impl;
+
+import java.io.File;
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+import com.golead.art.works.dao.ArtPublicationCatalogDao;
+import com.golead.art.works.model.ArtPublicationCatalog;
+import com.golead.art.works.service.ArtPublicationCatalogService;
+
+import javax.annotation.Resource; 
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtPublicationCatalogServiceImpl extends BaseServiceImpl implements ArtPublicationCatalogService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtPublicationCatalog getArtPublicationCatalog(Serializable id) throws ServiceException {
+		try {
+			return artPublicationCatalogDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtPublicationCatalog(ArtPublicationCatalog artPublicationCatalog) throws ServiceException {
+		try {
+			artPublicationCatalogDao.save(artPublicationCatalog);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtPublicationCatalog(Map<String, String> artPublicationCatalogMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artPublicationCatalogMap.get(ArtPublicationCatalog.PROP_ID));
+			ArtPublicationCatalog tmp = artPublicationCatalogDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artPublicationCatalogMap, true);			
+			artPublicationCatalogDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtPublicationCatalog(Serializable id) throws ServiceException {
+		try {
+			artPublicationCatalogDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtPublicationCatalogs(Serializable[] ids) throws ServiceException {
+		try {
+			artPublicationCatalogDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtPublicationCatalog(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artPublicationCatalogList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+      String paras = " 1=1 ";
+      Map<String, String> map = page.getParameters();
+      
+      String id = map.get("id");
+      if (id != null && id.trim().length() > 0) {
+         paras += " AND publication.id =" + id.trim();
+      }
+      
+      if (paras.length() > 0) page.getParameters().put("paras", paras);
+   }
+	
+	public void deleteByArtPublicationId(Serializable id) throws ServiceException{
+	   try {
+	          List<ArtPublicationCatalog> artPublicationCatalogs = artPublicationCatalogDao.findByField(ArtPublicationCatalog.PROP_PUB_ID, id);
+	          Serializable[] ids = new Serializable[artPublicationCatalogs.size()];
+	          for(int i = 0; i<artPublicationCatalogs.size(); i++){
+	             ids[i] = artPublicationCatalogs.get(i).getId();
+	          }
+	          String path = ServletActionContext.getServletContext().getRealPath("") + File.separator +"upload" + File.separator + "works" + File.separator +"publicationCatalog" + File.separator + id.toString();
+	          File[] fileList = new File(path).listFiles();
+	          if(fileList!=null){
+	             for(File file : fileList){
+	                deleteFile(file.getPath());
+	             }
+	             fileList = new File(path).listFiles();
+	             if(fileList.length == 0){
+	                new File(path).delete();
+	             }
+	          }
+	          deleteArtPublicationCatalogs(ids);
+	        } catch (DAOException e) {
+	          e.printStackTrace();
+	          throw new ServiceException("数据库操作错误。");
+	        } catch (ServiceException se) {
+	          se.printStackTrace();
+	          throw se;
+	        } catch (Exception e) {
+	          e.printStackTrace();
+	          throw new ServiceException("系统错误。");
+	        }
+	}
+	
+	private void deleteFile(String FilePath) throws Exception{
+      try {
+         File file = new File(FilePath);
+         if(file.isFile()){
+            file.delete();
+         }else{
+            File[] fileList = file.listFiles();
+            for(File file2 : fileList){
+               deleteFile(file2.getPath());
+            }
+         }
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+   }
+	
+    @Resource
+	private ArtPublicationCatalogDao	artPublicationCatalogDao;
+
+	public void setArtPublicationCatalogDao(ArtPublicationCatalogDao artPublicationCatalogDao) {
+		this.artPublicationCatalogDao = artPublicationCatalogDao;
+	}
+}
+

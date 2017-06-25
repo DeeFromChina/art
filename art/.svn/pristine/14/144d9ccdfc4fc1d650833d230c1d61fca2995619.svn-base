@@ -1,0 +1,289 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+	<sql id="artArtistList" orderBy="convert(a.c_name using gbk) asc">
+		SELECT
+			a.id AS id,
+			a.c_name AS cName,
+			a.e_name AS eName,
+			a.birth_year as birthYear,
+			a.nationality as nationality,
+			a.birthplace as birthplace,
+			a.c_resume AS cResume,
+			a.e_resume AS eResume,
+			a.photo AS photo,
+			a.artist_type AS artistType,
+			a.personal_page AS personalPage,
+			a.nhom AS nhom,
+			a.zodiac AS zodiac,
+			a.ancestral_home AS ancestralHome,
+			a.sex AS sex,
+			a.folder_name AS folderName,
+			a.birth_country as birthCountry,
+			a.birth_month as birthMonth,
+			a.birth_day as birthDay,
+			a.death_year as deathYear,
+			a.death_month as deathMonth,
+			a.death_day as deathDay,
+			a.main_media as mainMedia,
+			c.country_name as nationalityName,
+			c2.country_name as birthCountryName
+		FROM art_artist a
+		left join art_country c on c.id = a.nationality
+		left join art_country c2 on c2.id = a.birth_country
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+  
+	<!--查询作品列表 -->
+	<sql id="artMediumList" orderBy="medium.id desc">
+		SELECT
+			medium.id AS id,
+			medium.medium_name AS mediumName,
+			medium.up_medium_id AS upId,
+			medium.tree_code AS treeCode,
+			medium.tree_level AS treeLevel,
+			medium.medium_side AS mediumSide,
+			medium.medium_category AS mediumCategory
+		FROM ART_MEDIUM medium
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artArtistExperienceList" orderBy="aae.expe_time desc">
+		SELECT
+			aae.ID AS id,
+			aae.ART_ID AS artId,
+			aae.expe_time AS expeTime,
+			aae.life_experience AS lifeExperience,
+			aae.history_experience AS historyExperience
+		FROM art_artist_experience aae
+		LEFT JOIN art_artist aa ON aa.id = aae.art_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artArtistAlbumList" orderBy="aaa.ID desc">
+		SELECT
+			aaa.Id AS id,
+			aaa.ARTIST_ID AS artId,
+			aaa.PHOTO AS photo,
+			PHOTO_DESC AS photoDesc
+		FROM art_artist_ALBUM aaa
+		LEFT JOIN art_artist aa ON aa.id = aaa.artist_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artArtistEduList" orderBy="aae.EDU_TIME desc">
+		SELECT aae.ID AS id,
+			aae.ARTIST_ID AS artId,
+			EDU_TIME AS eduTime,
+			EDU_DESC AS eduDesc
+		FROM art_artist_edu aae
+		LEFT JOIN art_artist aa ON aa.id = aae.artist_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artArtistHonorsList" orderBy="aah.HONOR_TIME desc">
+		SELECT
+			aah.ID AS id,
+			aah.ARTIST_ID AS artId,
+			HONOR_TIME AS honorTime,
+			HONOR_DESC AS honorDesc
+		FROM art_artist_honors aah
+		LEFT JOIN art_artist aa ON aa.id = aah.artist_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artArtistCollectAgencyList" orderBy="agency.collect_time desc">
+		SELECT
+			agency.ID AS id,
+			agency.artist_id AS artistId,
+			agency.agency_id AS agencyId,
+			agency.collect_time AS collectTime,
+			agency.collect_works AS collectWorks,
+			agency.collect_desc AS collectDesc,
+			artAgency.id AS artAgencyId,
+			artAgency.agency_c_name AS agencyCName
+		FROM art_artist_collect_agency agency
+		LEFT JOIN art_artist aa ON aa.id = agency.artist_id
+		LEFT JOIN art_agency artAgency ON artAgency.id = agency.agency_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artArtistCollectorList" orderBy="aac.collect_time desc">
+		SELECT
+			aac.ID AS id,
+			aac.artist_id AS artId,
+			COLLECTOR AS collector,
+			aac.collect_time AS collectTime,
+			aac.collect_works AS collectWorks,
+			COLLECT_DESC AS collectDesc
+		FROM art_artist_collector aac
+		LEFT JOIN art_artist aa ON aa.id = aac.artist_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artArtistCoopList" orderBy="aac.coop_time desc">
+		SELECT
+			aac.ID AS id,
+			aac.ARTIST_ID AS artId,
+			aac.agency_id AS agencyId,
+			aac.coop_time AS coopTime,
+			COOP_DESC AS coopDesc,
+			artAgency.id AS artAgencyId,
+			artAgency.agency_c_name AS agencyCName
+		FROM art_artist_coop aac
+		LEFT JOIN art_artist aa ON aa.id = aac.artist_id
+		LEFT JOIN art_agency artAgency ON artAgency.id = aac.agency_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artArtistDonationList" orderBy="aad.DONATION_TIME desc">
+		SELECT
+			aad.ID AS id,
+			aad.ARTIST_ID AS artId,
+			DONATION_TIME AS donationTime,
+			DONATION_DESC AS donationDesc,
+			DONATION_WORKS as donationWorks
+		FROM art_artist_donation aad
+		LEFT JOIN art_artist aa ON aa.id = aad.artist_id
+		{#paras}
+	<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artArtistWorksSeriesList" orderBy="series.series_important desc">
+		SELECT
+			series.ID AS id,
+			series.ARTIST_ID AS artId,
+			series.series_name AS seriesName
+			,series.appear_year AS appearYear
+			,series.series_important AS seriesImportant
+			,series.series_theme AS seriesTheme
+			,series.series_period AS seriesPeriod
+			,series.descript AS descript
+			,aa.folder_name AS folderName
+			,aw.thumbnail AS thumbnail
+		FROM art_artist_works_series series
+		LEFT JOIN art_artist aa ON aa.id = series.artist_id
+		LEFT JOIN art_artist_works_series_research aawsr ON aawsr.series_id = series.id
+		LEFT JOIN art_works aw ON aw.id = aawsr.works_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artPhotoList" orderBy="artist.c_name,artPhoto.photo_time,artPhoto.photo_name desc">
+		SELECT
+			artPhoto.ID AS id,
+			artPhoto.photo_type AS photoType,
+			artPhoto.photo_name AS photoName,
+			artPhoto.photo_time AS photoTime,
+			artPhoto.photo_addr AS photoAddr,
+			artPhoto.photo_desc AS photoDesc,
+			artPhoto.photo AS photo,
+			artPhoto.photo_source AS photoSource,
+			artPhoto.artist_id AS artistId,
+			artPhoto.pub_id AS pubId,
+			publication.publication_name AS publicationName,
+			artist.e_name AS eName,
+			artist.folder_name AS folderName,
+			artist.c_name AS cName
+		FROM art_photo artPhoto
+		LEFT JOIN art_artist artist ON artPhoto.artist_id = artist.id
+		LEFT JOIN art_publication publication ON artPhoto.pub_id = publication.id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+
+	<sql id="artWorksYearList">
+		SELECT
+			awy.id AS id
+			,awy.start_year AS startYear
+			,awy.end_year AS endYear
+			,awy.year_important AS yearImportant
+		FROM
+			art_works_year awy
+		LEFT JOIN
+			art_artist aa ON aa.id = awy.artist_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+
+	<sql id="artWorksYearResearchList">
+		SELECT
+			awyr.id AS id
+			,aw.works_c_name AS worksCName
+			,aw.works_e_name AS worksEName
+			,aw.thumbnail AS thumbnail
+			,aa.folder_name AS folderName
+		FROM
+			art_works_year_research awyr
+		LEFT JOIN art_works_year awy ON awy.id = awyr.year_id
+		LEFT JOIN art_works aw ON aw.id = awyr.works_id
+		LEFT JOIN art_artist aa ON aa.id = aw.artist_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+
+	<!-- 查出所有在年代中但又不是代表作的作品 -->
+	<sql id="YearWorksList">
+		SELECT
+			aw.id AS id
+			,aw.works_c_name AS worksCName
+			,aw.works_e_name AS works_EName
+			,aa.folder_name AS folderName
+			,aw.thumbnail AS thumbnail
+			,aw.create_to AS createTo
+		FROM art_works aw
+		LEFT JOIN art_artist aa ON aw.artist_id = aa.id
+		LEFT JOIN art_works_year_research awyr ON awyr.works_id = aw.id
+		LEFT JOIN art_works_year awy ON awy.id = awyr.year_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+
+	<!-- 查出在作品系列中但是又不是代表作的作品 -->
+	<sql id="SeriesWorksList" orderBy="aw.works_series DESC">
+		SELECT
+			aw.id AS id
+			,aw.works_c_name AS worksCName
+			,aw.works_e_name AS worksEName
+			,aaws.series_name AS seriesName
+			,aw.thumbnail AS thumbnail
+			,aa.folder_name AS folderName
+		FROM
+			art_works aw
+		LEFT JOIN
+			art_artist_works_series aaws ON aw.works_series = aaws.id
+		LEFT JOIN
+			art_artist aa ON aa.id = aw.artist_id
+		{#paras}
+		<parameters id="paras" prefix="WHERE" suffix="" />
+	</sql>
+
+	<!-- 从代表作表中查询系列代表作列表 -->
+	<sql id="artArtistWorksSeriesResearchList">
+		SELECT
+			aawsr.id AS id
+			,aw.works_c_name AS worksCName
+			,aw.works_e_name AS worksEName
+			,aw.thumbnail AS thumbnail
+			,aa.folder_name AS folderName
+		FROM
+			art_artist_works_series_research aawsr
+		LEFT JOIN art_artist_works_series aaws ON aaws.id = aawsr.series_id
+		LEFT JOIN art_works aw ON aw.id = aawsr.works_id
+		LEFT JOIN art_artist aa ON aa.id = aw.artist_id
+		{#paras}
+		<parameters id="paras" prefix="WHERE" suffix="" />
+	</sql>
+
+	<sql id="artArtistWorksSeriesCaseList">
+		SELECT
+			aawsc.id AS id
+			,aawsc.author AS author
+			,aaws.series_name AS seriesName
+			,aawsc.case_name AS caseName
+			,aawsc.case_time AS caseTime
+			,aawsc.case_content AS caseContent
+		FROM art_artist_works_series_case aawsc
+		LEFT JOIN art_artist_works_series aaws ON aaws.id = aawsc.series_id
+		{#paras}
+		<parameters id="paras" prefix="WHERE" suffix="" />
+	</sql>
+</sqls>

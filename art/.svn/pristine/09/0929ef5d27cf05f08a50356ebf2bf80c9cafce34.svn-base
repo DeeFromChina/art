@@ -1,0 +1,312 @@
+package com.golead.art.works;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsStatics;
+
+import com.golead.art.utils.FileUtils;
+import com.golead.art.utils.PrintExcel;
+import com.golead.art.utils.PrintPoint;
+import com.golead.art.works.model.ArtPublicationContent;
+import com.golead.art.works.model.ArtWorksPeriod;
+import com.golead.art.works.service.ArtPublicationContentService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtPublicationContentAction extends BaseAction {
+   
+   private final Log                     logger      = LogFactory.getLog(ArtPublicationContentAction.class);
+   
+   private File importFile;
+   private String importFileFileName;
+   private String importFileContentType;
+   
+   @Resource
+   ArtPublicationContentService artPublicationContentService;
+   
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = form.getAction();
+
+      if (action == null) action = LIST;
+      if (logger.isDebugEnabled()) logger.debug("action:" + action);
+      try {
+         initForm();
+         if (LIST.equalsIgnoreCase(action)) forward = LIST;
+         else if (PAGE.equalsIgnoreCase(action)) forward = getPageDate();
+         else if (ADD.equalsIgnoreCase(action)) forward = addPublication();
+         else if (SAVE.equalsIgnoreCase(action)) forward = savePublication();
+         else if (EDIT.equalsIgnoreCase(action)) forward = editPublication();
+         else if (UPDATE.equalsIgnoreCase(action)) forward = updatePublication();
+         else if (DELETE.equalsIgnoreCase(action)) forward = delete();
+         else if ("GOEXCEL".equalsIgnoreCase(action)) forward = goExcel();
+         else if ("EXCEL".equalsIgnoreCase(action)) forward = excel();
+         else if ("DOWNLOAD".equalsIgnoreCase(action)) forward = download();
+      }
+      catch (Exception e) {// 其他系统出错
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   public void initForm() throws Exception {
+      setCode(form, "ART_TYPE,DATE_YEAR,MEDIUM_TYPE,SIGNATURE,PERIOD_TYPE,PUBLI_TYPE");
+   }
+   
+   private String getPageDate() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'getPageDate' method");
+      try {
+         initForm();
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         PageQuery pageQuery = form.getQuery();
+         pageQuery.getParameters().put("id", form.getRecord().get("id"));
+         pageQuery = artPublicationContentService.queryArtPublicationContent(pageQuery);
+         if(pageQuery.getRecordSet() != null){
+            for(Map<String, Object> item : pageQuery.getRecordSet()){
+               Map<String, Object> map = new HashMap<String, Object>();
+               map.put("id", item.get("id"));
+               map.put("data", new Object[]{
+                     "",
+                     item.get("contentTitle"),
+                     item.get("author"),
+               });
+               list.add(map);
+            }
+         }
+         String res = genGridJson(pageQuery, list);
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+   
+   private String addPublication() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'addPublication' method");
+      String forward = null;
+      try {
+         initForm();
+         return ADD;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   private String savePublication() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'savePublication' method");
+      try {
+         initForm();
+         ArtPublicationContent artPublicationContent = new ArtPublicationContent();
+         ConvertUtil.convertToModel(artPublicationContent, form.getRecord());
+         artPublicationContentService.createArtPublicationContent(artPublicationContent);
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         addMessage(form, e.getMessage());
+         initForm();
+         return ADD;
+      }
+   }
+   
+   private String editPublication() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'editWorks' method");
+      String forward = null;
+      try {
+         initForm();
+         String id = form.getRecord().get("id");
+         ArtPublicationContent artPublicationContent = artPublicationContentService.getArtPublicationContent(Integer.valueOf(id));
+         ConvertUtil.objectToMap(form.getRecord(), artPublicationContent);
+         return EDIT;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   private String updatePublication() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'updateWorks' method");
+      try {
+         initForm();
+         artPublicationContentService.updateArtPublicationContent(form.getRecord());
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         addMessage(form, e.getMessage());
+         initForm();
+         return EDIT;
+      }
+   }
+   
+   private String delete() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'delete' method");
+      try {
+         String[] idlist = ids.split(",");
+         Integer[] dels = new Integer[idlist.length];
+         for(int i = 0; i<idlist.length; i++){
+            dels[i] = Integer.valueOf(idlist[i]);
+         }
+         artPublicationContentService.deleteArtPublicationContents(dels);
+         setResponse("{exit:0}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+      return null;
+   }
+
+   private String goExcel() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'goExcel' method");
+      try {
+         return "GOEXCEL";
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return LIST;
+      }
+   }
+   
+   private String excel() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'excel' method");
+      try {
+         String id = form.getRecord().get("id");
+//         File file = new File(FILE_PATH);
+//         if(!file.exists()){
+//            file.mkdirs();
+//         }
+//         String path = FILE_PATH + File.separator + importFileFileName;
+//         FileUtils.fileUpload(path, importFile);
+//         String message = artWorksPeriodService.importArtWorksPeriod(path, Integer.valueOf(id));
+//         if(!"".equals(message)){
+//            if(message.startsWith("成功")){
+//               request.put("msg", message);
+//            }else{
+//               throw new Exception(message);
+//            }
+//         }
+//         return returnForward(message);
+         return null;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         if(e.getMessage() != null){
+            addMessage(form, e.getMessage());
+         }
+         return "GOEXCEL";
+      }
+   }
+   
+   private String download() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'download' method");
+      try {
+         HttpServletResponse response = (HttpServletResponse) ctx.get(StrutsStatics.HTTP_RESPONSE);
+         response.setContentType("APPLICATION/DOWNLOAD");
+         response.setContentType("application/octed-stream,charset=gb2312");
+         response.setHeader("Content-Disposition", "attachment;filename=" + new String("作品时期模板.xls".getBytes("gb2312"), "ISO-8859-1"));
+         String tempPath = ServletActionContext.getServletContext().getRealPath("") + File.separator + "template" + File.separator + "works" + File.separator + "art_works_period.xls";
+         File tempFile = new File(tempPath);
+         if(!tempFile.exists()){
+            throw new Exception();
+         }
+
+         PrintExcel printExcel = new PrintExcel();
+         InputStream inp = null;
+         inp = new FileInputStream(tempFile);
+         HSSFWorkbook wb = null;
+         POIFSFileSystem f = new POIFSFileSystem(inp);
+         wb = new HSSFWorkbook(f);
+
+         HSSFDataFormat format = wb.createDataFormat();
+
+         HSSFCellStyle csString = wb.createCellStyle();
+         csString.setBorderLeft(CellStyle.BORDER_THIN);
+         csString.setBorderRight(CellStyle.BORDER_THIN);
+         csString.setBorderTop(CellStyle.BORDER_THIN);
+         csString.setBorderBottom(CellStyle.BORDER_THIN);
+         csString.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+         csString.setDataFormat(format.getFormat("@"));
+
+         HSSFCellStyle csDecimal = wb.createCellStyle();
+         csDecimal.setBorderLeft(CellStyle.BORDER_THIN);
+         csDecimal.setBorderRight(CellStyle.BORDER_THIN);
+         csDecimal.setBorderTop(CellStyle.BORDER_THIN);
+         csDecimal.setBorderBottom(CellStyle.BORDER_THIN);
+         csDecimal.setDataFormat(HSSFDataFormat.getBuiltinFormat("0.00"));
+
+         HSSFCellStyle csDecimal1 = wb.createCellStyle();
+         csDecimal1.setBorderLeft(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderRight(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderTop(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderBottom(CellStyle.BORDER_THIN);
+         HSSFDataFormat csformat = wb.createDataFormat();
+         csDecimal1.setDataFormat(csformat.getFormat("0.000"));
+
+         List<PrintPoint> printPointList = new ArrayList<PrintPoint>();
+
+         printExcel.setPrintPointList(printPointList);// 填写数据
+         printExcel.doFillSheet(wb, 0);// 写入workbook的第一页
+         printExcel.doPrint(response, tempFile, wb);// workbook输出到response中。
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+
+   public File getImportFile() {
+      return importFile;
+   }
+
+   public void setImportFile(File importFile) {
+      this.importFile = importFile;
+   }
+
+   public String getImportFileFileName() {
+      return importFileFileName;
+   }
+
+   public void setImportFileFileName(String importFileFileName) {
+      this.importFileFileName = importFileFileName;
+   }
+
+   public String getImportFileContentType() {
+      return importFileContentType;
+   }
+
+   public void setImportFileContentType(String importFileContentType) {
+      this.importFileContentType = importFileContentType;
+   }
+
+}

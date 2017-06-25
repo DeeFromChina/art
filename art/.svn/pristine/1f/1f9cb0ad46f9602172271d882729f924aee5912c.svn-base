@@ -1,0 +1,246 @@
+package com.golead.art.activity.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+import com.golead.art.activity.dao.ArtActivityExhibitArtistDao;
+import com.golead.art.activity.dao.ArtActivityExhibitDao;
+import com.golead.art.activity.model.ArtActivityExhibit;
+import com.golead.art.activity.model.ArtActivityExhibitArtist;
+import com.golead.art.activity.service.ArtActivityExhibitService;
+import com.golead.art.works.dao.ArtWorksExhibitDao;
+import com.golead.art.works.model.ArtWorksExhibit;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtActivityExhibitServiceImpl extends BaseServiceImpl implements ArtActivityExhibitService {
+   private static final long serialVersionUID = 1L;
+
+   public ArtActivityExhibit getArtActivityExhibit(Serializable id) throws ServiceException {
+      try {
+         return artActivityExhibitDao.get(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public int createArtActivityExhibit(Map<String, String> artActivityExhibitMap) throws ServiceException {
+      try {
+         ArtActivityExhibit artActivityExhibit = new ArtActivityExhibit();
+         ConvertUtil.mapToObject(artActivityExhibit, artActivityExhibitMap, false);
+         if ("person".equals(artActivityExhibitMap.get("type"))) {
+            artActivityExhibit.setExhibType("1");
+         }
+         if ("people".equals(artActivityExhibitMap.get("type"))) {
+            artActivityExhibit.setExhibType("2");
+         }
+         artActivityExhibitDao.save(artActivityExhibit);
+         if (artActivityExhibitMap.get("artistId") != null && !"".equals(artActivityExhibitMap.get("artistId").trim())) {
+            ArtActivityExhibitArtist artActivityExhibitArtist = new ArtActivityExhibitArtist();
+            ConvertUtil.mapToObject(artActivityExhibitArtist, artActivityExhibitMap, false);
+            artActivityExhibitArtist.setExhibitId(artActivityExhibit.getId());
+            artActivityExhibitArtistDao.save(artActivityExhibitArtist);
+         }
+         return artActivityExhibit.getId();
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void updateArtActivityExhibit(Map<String, String> artActivityExhibitMap) throws ServiceException {
+      try {
+         Integer pkId = new Integer(artActivityExhibitMap.get(ArtActivityExhibit.PROP_ID));
+         ArtActivityExhibit tmp = artActivityExhibitDao.get(pkId);
+         ConvertUtil.mapToObject(tmp, artActivityExhibitMap, true);
+         List<ArtActivityExhibitArtist> artActivityExhibitArtists = artActivityExhibitArtistDao.findByField(ArtActivityExhibitArtist.PROP_EXHIBIT_ID, pkId);
+         ArtActivityExhibitArtist artActivityExhibitArtist = new ArtActivityExhibitArtist();
+         if (artActivityExhibitArtists != null && artActivityExhibitArtists.size() > 0) {
+            artActivityExhibitArtist = artActivityExhibitArtists.get(0);
+            artActivityExhibitArtist.setArtistId(Integer.valueOf(artActivityExhibitMap.get(ArtActivityExhibitArtist.PROP_ARTIST_ID)));
+            artActivityExhibitArtistDao.update(artActivityExhibitArtist);
+         } else {
+            artActivityExhibitArtist.setExhibitId(pkId);
+            artActivityExhibitArtist.setArtistId(Integer.valueOf(artActivityExhibitMap.get(ArtActivityExhibitArtist.PROP_ARTIST_ID)));
+            artActivityExhibitArtistDao.save(artActivityExhibitArtist);
+         }
+         artActivityExhibitDao.update(tmp);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtActivityExhibit(Serializable id) throws ServiceException {
+      try {
+         artActivityExhibitDao.delete(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtActivityExhibits(Serializable[] ids) throws ServiceException {
+      try {
+         for (Serializable id : ids) {
+            artActivityExhibitArtistDao.deleteByField(ArtActivityExhibitArtist.PROP_EXHIBIT_ID, id);
+            artWorksExhibitDao.deleteByField(ArtWorksExhibit.PROP_EXHIBIT_ID, id);
+         }
+         artActivityExhibitDao.deleteAll(ids);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public PageQuery queryArtActivityExhibit(PageQuery pageQuery) throws ServiceException {
+      try {
+         createSqlFilter(pageQuery);
+         return jdbcDao.queryBySqlId("artActivityExhibitList", pageQuery);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private void createSqlFilter(PageQuery page) {
+      String paras = " 1=1 ";
+      Map<String, String> map = page.getParameters();
+
+      String exhibitName = map.get("exhibitName");
+      if (exhibitName != null && exhibitName.trim().length() > 0) {
+         paras += " AND exhibit.exhibit_name like '%" + exhibitName.trim() + "%'";
+      }
+
+      String artAgencyId = map.get("artAgencyId");
+      if (artAgencyId != null && artAgencyId.trim().length() > 0) {
+         paras += " AND exhibit.exhibitors=" + artAgencyId.trim();
+      }
+
+      String artArtistId = map.get("artArtistId");
+      if (artArtistId != null && artArtistId.trim().length() > 0) {
+         paras += " AND exhibit_artist.artist_id=" + artArtistId.trim();
+      }
+
+      String countryId = map.get("countryId");
+      if (countryId != null && countryId.trim().length() > 0) {
+         paras += " AND exhibit.country_id=" + countryId.trim();
+      }
+
+      String artWorksId = map.get("artWorksId");
+      if (artWorksId != null && artWorksId.trim().length() > 0) {
+         paras += " AND works_exhibit.works_id=" + artWorksId.trim();
+      }
+
+      String exhibType = map.get("exhibType");
+      if (exhibType != null && exhibType.trim().length() > 0) {
+         paras += " AND exhibit.exhib_Type='" + exhibType.trim() + "'";
+      }
+
+      //      String groupby = map.get("groupby");
+      //      if (groupby != null && groupby.trim().length() > 0) {
+      //         paras += " GROUP BY exhibit.id";
+      //      }
+
+      if (paras.length() > 0) page.getParameters().put("paras", paras);
+   }
+
+   public int findByCountry(String ids) throws ServiceException {
+      try {
+         String str = "SELECT COUNT(*) FROM art_activity_exhibit exhibit WHERE exhibit.country_id IN (" + ids + ")";
+         return jdbcDao.queryIntBySql(str);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public int findByAgency(String ids) throws ServiceException {
+      try {
+         String str = "SELECT COUNT(*) FROM art_activity_exhibit exhibit WHERE exhibit.exhibitors IN (" + ids + ")";
+         return jdbcDao.queryIntBySql(str);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   @Resource
+   private ArtActivityExhibitDao       artActivityExhibitDao;
+
+   @Resource
+   private ArtActivityExhibitArtistDao artActivityExhibitArtistDao;
+
+   @Resource
+   private ArtWorksExhibitDao          artWorksExhibitDao;
+
+   public void setArtActivityExhibitDao(ArtActivityExhibitDao artActivityExhibitDao) {
+      this.artActivityExhibitDao = artActivityExhibitDao;
+   }
+}

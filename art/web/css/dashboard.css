@@ -1,0 +1,411 @@
+html,body {
+	width: 100%;
+	height: 100%;
+	border: none;
+	margin: 0px;
+	background-color: white;
+}
+
+.indCssSelect {
+	background: #d0f8d0
+}
+
+.indCssSelect b.rtop {
+	display: block;
+	background: #FFFFFF
+}
+
+.indCssSelect b.rtop b {
+	display: block;
+	height: 1px;
+	overflow: hidden;
+	background: #d0f8d0
+}
+
+.indCssSelect b.rbottom {
+	display: block;
+	background: #FFFFFF
+}
+
+.indCssSelect b.rbottom b {
+	display: block;
+	height: 1px;
+	overflow: hidden;
+	background: #d0f8d0
+}
+
+.indCssSelect b.r1 {
+	margin: 0 5px
+}
+
+.indCssSelect b.r2 {
+	margin: 0 3px
+}
+
+.indCssSelect b.r3 {
+	margin: 0 2px
+}
+
+.indCssSelect b.rtop b.r4 {
+	margin: 0 1px;
+	height: 2px
+}
+
+.indCssSelect b.rbottom b.r4 {
+	margin: 0 1px;
+	height: 2px
+}
+
+.indCssSelect div.innerArea {
+	margin-left: 4px;
+	margin-right: 4px;
+	text-align: center;
+	padding-top: 4px;
+}
+
+.indCssSelect div.innerArea td.dataArea {
+	font-size: 24px;
+	font-weight: bold;
+	text-align: center;
+	vertical-align: middle;
+	color: red;
+	vertical-align: middle;
+}
+
+.indCssSelect div.innerArea td.dataArea span.dataMain {
+	font-size: 24px;
+	font-weight: bold;
+	color: red;
+	line-height: 24px;
+}
+
+.indCssSelect div.innerArea td.dataArea span {
+	font-size: 14px;
+	font-weight: normal;
+	line-height: 24px;
+	color: black;
+}
+
+.indCssSelect div.innerArea td.dataTitle {
+	font-size: 20px;
+	font-family:楷体,宋体;
+	font-weight: bold;
+	color: red;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.indCssSelect div.innerArea td.dataTitleSub {
+	line-height: 16px;
+	font-size: 12px;
+	text-align: left;
+	vertical-align: top;
+}
+
+.indCss {
+	background: #aaddFF
+}
+
+.indCss b.rtop {
+	display: block;
+	background: #FFFFFF
+}
+
+.indCss b.rtop b {
+	display: block;
+	height: 1px;
+	overflow: hidden;
+	background: #aaddFF
+}
+
+.indCss b.rbottom {
+	display: block;
+	background: #FFFFFF
+}
+
+.indCss b.rbottom b {
+	display: block;
+	height: 1px;
+	overflow: hidden;
+	background: #aaddFF
+}
+
+.indCss b.r1 {
+	margin: 0 5px
+}
+
+.indCss b.r2 {
+	margin: 0 3px
+}
+
+.indCss b.r3 {
+	margin: 0 2px
+}
+
+.indCss b.rtop b.r4 {
+	margin: 0 1px;
+	height: 2px
+}
+
+.indCss b.rbottom b.r4 {
+	margin: 0 1px;
+	height: 2px
+}
+
+.indCss div.innerArea {
+	margin-left: 4px;
+	margin-right: 4px;
+	text-align: center;
+	padding-top: 4px;
+}
+
+.indCss div.innerArea td.dataArea {
+	font-size: 24px;
+	font-weight: bold;
+	text-align: center;
+	vertical-align: middle;
+	color: blue;
+	vertical-align: middle;
+}
+
+.indCss div.innerArea td.dataArea span.dataMain {
+	font-size: 24px;
+	font-weight:bold;
+	color: blue;
+	line-height: 24px;
+}
+
+.indCss div.innerArea td.dataArea span {
+	font-size: 14px;
+	font-weight: normal;
+	color: black;
+	line-height: 24px;
+}
+
+.indCss div.innerArea td.dataTitle {
+	font-size: 24px;
+	font-family:楷体,宋体;
+	font-weight:bold;
+	color: blue;
+	text-align: left;
+	vertical-align: middle;
+}
+
+.indCss div.innerArea td.dataTitleSub {
+	line-height: 16px;
+	font-size: 12px;
+	text-align: left;
+	vertical-align: top;
+}
+
+.div_cell {
+	width: 100%;
+	height: 100%;
+	border:0px solid #999999;
+   font-size:12px;
+}
+
+.div_cell_frame {
+	width: 100%;
+	height: 100%;
+   padding-top:0px;
+   padding-left:0px;
+   font-size:12px;
+}
+
+.div_cell div.in_cell{
+   position:relative;
+	text-align:center;
+	border-top:1px solid #999999;
+	border-left:1px solid #999999;
+	border-right:1px solid #999999;
+	border-bottom:1px solid #999999;
+	background-color: #e8e8e8;
+}
+
+.div_cell div.in_cellImg{
+   position:relative;
+	text-align:center;
+	border-top:1px solid #999999;
+	border-left:1px solid #999999;
+	border-right:1px solid #999999;
+	border-bottom:1px solid #999999;
+	background-color: #e8e8e8;
+	background-image: url("chart_bar_link20.png");
+	background-repeat: no-repeat;
+	background-position: right bottom; 
+}
+
+.div_cell div.in_cell div.realdiv {
+	text-align:center;
+	border:0px;
+	background-color: red;
+}
+
+.div_cell div.in_cell_noborder{
+	text-align:center;
+	border-top:0px solid #999999;
+	border-left:0px solid #999999;
+	border-right:0px solid #999999;
+	border-bottom:0px solid #999999;
+}
+
+.indCss1 {
+	background: #e9e9e9;
+}
+
+.indCss1 table.noImg {
+	 background-repeat: no-repeat;
+	 background-position: right top; 
+}
+
+.indCss1 table.warnImg {
+    background-image: url("chart_bar_link20.png");
+	 background-repeat: no-repeat;
+	 background-position: left top; 
+}
+
+.indCss1 table.alertImg {
+    background-image: url("chart_bar_link20.png");
+	 background-repeat: no-repeat;
+	 background-position: left top; 
+}
+
+.indCss1 td.dataArea {
+	font-size: 14px;
+	font-weight: bold;
+	text-align: left;
+	padding-left:5px;
+	padding-top: 0px;
+}
+
+.indCss1 td.clickImg {
+	 height:20px;
+    background-image: url("chart_bar_link20.png");
+	 background-repeat: no-repeat;
+	 background-position: right top; 
+}
+
+.indCss1 td.dateClass{
+	 font-size:12px;
+	 font-weight:bold;
+	 font-family:Verdana;
+	 text-align:left;
+	 padding-left:6px;
+	 color:#665555;
+}
+
+.indCss1 td.clickNoImg {
+	 width:17px;
+}
+
+.indCss1 td.dataArea span.dataMain {
+	font-size: 40px;
+	color: #BD3632;
+	font-family:Arial Unicode MS;
+}
+
+
+.indCss1 td.dataTitle {
+	font-weight: bold;
+	text-align: left;
+	font-size: 18px;
+	font-family:黑体;
+	vertical-align: top;
+	padding-left:5px;
+}
+
+.indCss1 td.dataTitleSub {
+	text-align: left;
+	font-size:12px;
+	line-height: 14px;
+	vertical-align: top;
+}
+
+.indCss1 td.dataTitleSub span.subValue {
+	font-size:14px;
+	font-weight: bold;
+	color:#BD3632;
+}
+
+.indCssSelect1 {
+	background: #faffbb;
+}
+
+
+.indCssSelect1 table.noImg {
+	 background-repeat: no-repeat;
+	 background-position: right top; 
+}
+
+.indCssSelect1 table.warnImg {
+    background-image: url("chart_bar_link20.png");
+	 background-repeat: no-repeat;
+	 background-position: left top; 
+}
+
+.indCssSelect1 table.alertImg {
+    background-image: url("chart_bar_link20.png");
+	 background-repeat: no-repeat;
+	 background-position: left top; 
+}
+
+.indCssSelect1 td.dataArea {
+	font-size: 14px;
+	font-weight: bold;
+	text-align: left;
+	padding-left:5px;
+	padding-top: 0px;
+}
+
+.indCssSelect1 td.dataArea span.dataMain {
+	font-size: 40px;
+	color: #ee0000;
+	font-family:Arial Unicode MS;
+	padding-top:15px;
+}
+
+
+.indCssSelect1 td.dataTitle {
+   color:blue;
+	font-weight: bold;
+	text-align: left;
+	font-size: 18px;
+	font-family:黑体;
+	vertical-align: top;
+	padding-left:5px;
+}
+
+.indCssSelect1 td.clickImg {
+	 height:20px;
+    background-image: url("chart_bar_link20.png");
+	 background-repeat: no-repeat;
+	 background-position: right top; 
+}
+
+.indCssSelect1 td.clickNoImg {
+	 width:20px;
+}
+
+
+.indCssSelect1 td.dateClass{
+	 font-size:12px;
+	 font-weight:bold;
+	 font-family:Verdana;
+	 text-align:left;
+	 padding-left:6px;
+	 color:#882222;
+}
+
+.indCssSelect1 td.dataTitleSub {
+	text-align: left;
+	font-size:12px;
+	line-height:14px;
+	vertical-align: top;
+}
+
+.indCssSelect1 td.dataTitleSub span.subValue {
+	font-size:14px;
+	font-weight: bold;
+	color:#ee0000;
+}

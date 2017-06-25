@@ -1,0 +1,110 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+	pageEncoding="utf-8"%>
+<%@ taglib uri="/struts-tags" prefix="s"%>
+<%@ taglib uri="/WEB-INF/tag/gl-tag.tld" prefix="gl"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+
+<%@include file="/common/header.jsp"%>
+<script type="text/javascript">
+	var hyperlink = "../appManager/appWorksFollowManager.do";
+	var fulllink = contextpath + "appManager/appWorksFollowManager.do";
+	
+	function renew()  {
+	    var order = getElement("query.order");                  order.value="";
+	    var desc = getElement("query.orderDirection");          desc.value="";
+	    var pn = getElement("query.pageNumber");                pn.value="1";
+	    var ps = getElement("query.pageSize");                  ps.value="10";
+	    goSearch();
+	}
+
+
+	function closedialog(ret){
+	    if(ret==true || ret=='true') {
+	   		goSearch();
+	    }
+		editMode="";
+	}
+	
+	function goSearch(){
+		goappWorksFollowManagerGridSearch();
+	}
+	
+	function init(){
+		showMessage('<s:property value="errorMessage" escape="false"/>');
+		renew();
+	}
+</script>
+
+<style type="text/css">
+html,body {
+	width: 100%;
+	height: 100%;
+}
+</style>
+</head>
+<body onload="init()">
+    <div class="special-padding" id="mainDiv">
+        <s:form action="appWorksFollowManager" id="appWorksFollowManagerForm" method="post" namespace="/appManager">
+            <s:hidden name="query.order" />
+            <s:hidden name="query.orderDirection" />
+            <s:hidden name="query.pageNumber" />
+            <s:hidden name="query.recordCount" />
+            <s:hidden name="query.pageCount" />
+            <table width="99%" id="tbl" cellpadding="0" cellspacing="0" class="queryTable">
+            	<tr>
+	            	<td width="100%" style="height:30px;" class="textL">
+	            		&nbsp;&nbsp;账户：<s:textfield style="width:120px;" name="query.parameters.accountName"></s:textfield>
+	            		&nbsp;&nbsp;作品名：<s:textfield style="width:120px;" name="query.parameters.worksName"></s:textfield>
+	            		&nbsp;&nbsp;年：<s:select style="width:120px;" list="codeSets.DATE_YEAR" listKey="value" listValue="codeName" name="query.parameters.YEAR"/>
+	            		&nbsp;&nbsp;月份：<s:select style="width:120px;" list="codeSets.DATE_MONTH" listKey="value" listValue="codeName" name="query.parameters.MONTH"/>
+	            		&nbsp;&nbsp;<gl:button name="btnQuery" onClick="goSearch()">查询</gl:button>
+	            	</td>
+            	</tr>
+            </table>
+            
+            <gl:grid styleClass="pageTurn" id="appWorksFollowManager" page="true" form="appWorksFollowManagerForm"  property="query" cellPadding="0" cellSpacing="0">
+                var grid = new dhtmlXGridObject();
+                grid.setImagePath(imagePath);
+                var headAlign = [tCenter,tCenter,tCenter,tCenter,tCenter,tCenter];
+                grid.setHeader("#master_checkbox,作品图片,作品中文名,作品英文名,用户账号,关注时间",null, headAlign);
+                grid.setInitWidthsP("5,25,20,20,15,15");
+                grid.setColAlign("center,center,center,center,center,center");
+                grid.setColTypes("ch,link,ro,ro,ro,ro,ro");
+                grid.setColSorting("na,str,str,str,str,str");
+                grid.init();
+                var gDiv = $$('appWorksFollowManager_box');
+            </gl:grid>
+        </s:form>
+    </div>
+
+	<%@include file="/common/dialog.jsp"%>
+	<script type="text/javascript">
+	    if(window.addEventListener) {
+	 	     window.addEventListener("resize",goResize,false); 
+	    }
+	    else {
+	 	     window.attachEvent('onresize',goResize);
+	    }
+	    
+		 var gDiv=window.document.getElementById('appWorksFollowManager_box');
+		 var mDiv=window.document.getElementById('mainDiv');
+		 var tDiv=window.document.getElementById('tbl');
+		 
+		    
+	    function goResize(){
+	   	 var he;
+		    if(isIE()) he=window.document.body.offsetHeight; else he=window.innerHeight;
+	
+			 mDiv.style.height=he-42+"px";
+			 gDiv.style.height=mDiv.offsetHeight - tDiv.style.height - tDiv.offsetHeight - 2 +"px";
+			 tDiv.style.width=mDiv.offsetWidth-4+"px";
+			 gDiv.style.width=mDiv.offsetWidth-6+"px";
+		    
+	    }
+	    goResize();   
+	</script> 
+
+</body>
+</html>

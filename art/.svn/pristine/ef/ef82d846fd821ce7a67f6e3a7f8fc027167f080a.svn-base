@@ -1,0 +1,32 @@
+package com.golead.art.app.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.stereotype.Service;
+
+import com.golead.art.app.service.MessageFristService;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.service.impl.BaseServiceImpl;
+
+@Service
+public class MessageFristServiceImpl extends BaseServiceImpl implements MessageFristService {
+
+   @Override
+   public List<Map<String, Object>> selectMessage(Map<String, String> parameters) throws ServiceException {
+      try {
+         String pageName = parameters.get("pageName");
+//         if (pageName.equalsIgnoreCase("login")) return login(parameters);// 登陆
+//         else if (pageName.equalsIgnoreCase("search")) return search(parameters);// 艺术家搜索
+//         else if (pageName.equalsIgnoreCase("aristPage")) return aristPage(parameters);// 艺术家主页
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+
+      return null;
+   }
+}

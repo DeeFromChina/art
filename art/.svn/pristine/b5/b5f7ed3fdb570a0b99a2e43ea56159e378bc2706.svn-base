@@ -1,0 +1,24 @@
+package com.golead.art.literature.service;
+
+import java.io.Serializable;
+import java.util.Map;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.dao.model.PageQuery;
+
+import com.golead.art.literature.model.ArtLiteratureCollect;
+
+public interface ArtLiteratureCollectService {
+
+	public ArtLiteratureCollect getArtLiteratureCollect(Serializable id) throws ServiceException;
+
+	public void createArtLiteratureCollect(ArtLiteratureCollect artLiteratureCollect) throws ServiceException;
+
+	public void updateArtLiteratureCollect(Map<String, String> artLiteratureCollectMap) throws ServiceException;
+
+	public void deleteArtLiteratureCollect(Serializable id) throws ServiceException;
+
+	public PageQuery queryArtLiteratureCollect(PageQuery pageQuery) throws ServiceException;
+
+	public void deleteArtLiteratureCollects(Serializable[] ids) throws ServiceException;  
+}
+

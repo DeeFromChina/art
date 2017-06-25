@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+        "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+    <package name="system" extends="default" namespace="/system">
+        <action name="sysUser" class="com.golead.common.web.system.SysUserAction">
+            <result name="LIST">/jsp/system/org/sysUser_list.jsp</result>
+            <result name="ADD">/jsp/system/org/sysUser_add.jsp</result>
+            <result name="EDIT">/jsp/system/org/sysUser_edit.jsp</result>
+            <result name="VIEW">/jsp/system/org/sysUser_view.jsp</result>
+            <result name="PWD">/jsp/system/org/sysUser_pwd.jsp</result>
+            <result name="PROPERTY">/jsp/system/org/sysUser_property.jsp</result>
+            <result name="MYPWD">/changePwd.jsp</result>
+        </action>
+        <action name="sysReource" class="com.golead.common.web.system.SysReourceAction">
+            <result name="LIST">/jsp/system/org/sysUser_list.jsp</result>
+            <result name="USERRIGHTS">/jsp/system/org/sysUser_rights.jsp</result>
+            <result name="ROLERIGHTS">/jsp/system/org/sysRole_rights.jsp</result>
+        </action>
+        <action name="sysRole" class="com.golead.common.web.system.SysRoleAction">
+            <result name="LIST">/jsp/system/org/sysRole_list.jsp</result>
+            <result name="ADD">/jsp/system/org/sysRole_add.jsp</result>
+            <result name="EDIT">/jsp/system/org/sysRole_edit.jsp</result>
+            <result name="VIEW">/jsp/system/org/sysRole_view.jsp</result>
+            <result name="VERITY">/jsp/system/org/sysRole_verify.jsp</result>
+            <result name="RIGHTS">/jsp/system/org/sysRole_rights.jsp</result>
+            <result name="SELECTROLES">/jsp/system/org/sysRole_selectRoles.jsp</result>
+        </action>
+        <action name="sysOrg" class="com.golead.common.web.system.SysOrgAction">
+            <result name="LIST">/jsp/system/org/sysOrg.jsp</result>
+            <result name="ADD">/jsp/system/org/sysOrg_add.jsp</result>
+            <result name="EDIT">/jsp/system/org/sysOrg_edit.jsp</result>
+        </action>
+        <action name="sysOrgSelect" class="com.golead.common.web.system.SysOrgSelectAction">
+        </action>
+        <action name="sysDept" class="com.golead.common.web.system.SysDeptAction">
+            <result name="ADD">/jsp/system/org/sysDept_add.jsp</result>
+            <result name="EDIT">/jsp/system/org/sysDept_edit.jsp</result>
+        </action>
+        <action name="sysCode" class="com.golead.common.web.system.SysCodeAction">
+            <result name="LIST">/jsp/system/config/SysCodeSet_list.jsp</result>
+            <result name="ADD">/jsp/system/config/sysCode_add.jsp</result>
+            <result name="EDIT">/jsp/system/config/sysCode_edit.jsp</result>
+            <result name="CODELIST">/jsp/system/config/SysCode_grid.jsp</result>
+            <result name="CODETREE">/jsp/system/config/SysCode_treegrid.jsp</result>
+        </action>
+        <action name="sysNotice" class="com.golead.common.web.system.SysNoticeAction">
+            <result name="LIST">/jsp/system/notice/notice_list.jsp</result>
+            <result name="ADD">/jsp/system/notice/notice_add.jsp</result>
+            <result name="EDIT">/jsp/system/notice/notice_edit.jsp</result>
+            <result name="VIEW">/jsp/system/notice/notice_view.jsp</result>
+            <result name="VIEWNOTE">/jsp/system/notice/notice_viewNote.jsp</result>
+        </action>
+        <action name="sysProperty" class="com.golead.common.web.system.SysPropertyAction">
+            <result name="LIST">/jsp/system/property/sysProperty_list.jsp</result>
+        </action>
+        <action name="sysBarcode" class="com.golead.common.web.BarcodeAction">
+        </action>
+        <action name="blank" class="com.golead.common.web.BlankAction">
+            <result name="LIST">/blank.jsp</result>
+        </action>
+        <action name="artCountry" class="com.golead.art.base.ArtCountryAction">
+            <result name="LIST">/jsp/works/country/artCountry_list.jsp</result>
+            <result name="ADD">/jsp/works/country/artCountry_add.jsp</result>
+            <result name="EDIT">/jsp/works/country/artCountry_edit.jsp</result>
+        </action>
+        <action name="artAgency" class="com.golead.art.base.ArtAgencyAction">
+            <result name="LIST">/jsp/activity/artAgency/artAgency_list.jsp</result>
+            <result name="ADD">/jsp/activity/artAgency/artAgency_add.jsp</result>
+            <result name="EDIT">/jsp/activity/artAgency/artAgency_edit.jsp</result>
+            <result name="VIEW">/jsp/activity/artAgency/artAgency_view.jsp</result>
+            <result name="COUNTRY">/jsp/activity/artAgency/artAgency_country.jsp</result>
+        </action>
+        <action name="sysLog" class="com.golead.art.base.SysLogAction">
+            <result name="LIST">/jsp/log/system_log_list.jsp</result>
+        </action>
+    </package>
+</struts>

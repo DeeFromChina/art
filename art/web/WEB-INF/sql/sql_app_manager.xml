@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="artAppUserList">
+        SELECT
+            aau.id
+            ,aau.account_name AS accountName
+            ,aau.user_name AS userName
+            ,aau.user_status AS userStatus
+            ,aau.reopen_time AS reopenTime
+            ,aau.no_comment AS noComment
+            ,aau.recomment_time AS recommentTime
+        FROM
+            art_app_user aau
+        {#paras}
+        <parameters id="paras" prefix="where" suffix="" />
+    </sql>
+    
+    <sql id="artCommentaryList" orderBy="ac.commentary_time DESC">
+		SELECT
+			ac.id,
+			su.USER_ACCOUNT AS userAccount,
+			aau.account_name AS appAccountName,
+			aa.folder_name AS folderName,
+			aw.thumbnail AS thumbnail,
+			aw.works_c_name AS worksCName,
+			aw.works_e_name AS worksEName,
+			ac.commentary_time AS commentaryTime,
+			ac.commentary_status AS commentaryStatus,
+			ac.content AS content
+		FROM
+			art_commentary ac
+		LEFT JOIN sys_user su ON su.ID = ac.user_id
+		LEFT JOIN art_app_user aau ON aau.id = ac.app_user_id
+		LEFT JOIN art_works  aw ON aw.id = ac.works_id
+		LEFT JOIN art_artist aa ON aa.id = aw.artist_id
+		WHERE
+			ac.comment_type = 0
+    	{#paras}
+        <parameters id="paras" prefix="AND" suffix="" />
+    </sql>
+    <!-- 意见反馈列表 -->
+    <sql id="artFeedbackList">
+	    SELECT
+			ac.id as id
+			,ac.content as content
+			,apu.account_name as accountName
+			,ac.create_time as createTime
+		FROM
+			art_commentary ac
+		LEFT JOIN art_app_user apu on apu.id = ac.app_user_id
+		WHERE ac.comment_type = 1
+		{#paras}
+        <parameters id="paras" prefix="AND" suffix="" />
+    </sql>
+    
+    
+    <sql id="artWorksFollowList" orderBy="awf.follow_time DESC">
+    	SELECT
+			awf.id as id
+			,awf.follow_time as followTime
+			,aa.folder_name as folderName
+			,aw.thumbnail as thumbnail
+			,apu.account_name as accountName
+			,aw.works_c_name AS worksCName
+			,aw.works_e_name AS worksEName	
+		FROM
+			art_works_follow awf 
+		LEFT JOIN art_works aw on awf.works_id = aw.id
+		LEFT JOIN art_artist aa on aw.artist_id = aa.id
+		LEFT JOIN art_app_user apu on apu.id = awf.app_user_id
+		{#paras}
+        <parameters id="paras" prefix="where" suffix="" />
+    </sql>
+    
+    <sql id="artArtistFollowList">
+    	SELECT
+			aaf.id AS id,
+			aaf.follow_time AS followTime,
+			aa.folder_name AS folderName,
+			aa.photo AS photo,
+			apu.account_name AS accountName,
+			aa.c_name AS cName,
+			aa.e_name AS eName
+		FROM
+			art_artist_follow aaf
+		LEFT JOIN art_artist aa ON aaf.artist_id = aa.id
+		LEFT JOIN art_app_user apu ON apu.id = aaf.app_user_id
+		{#paras}
+        <parameters id="paras" prefix="where" suffix="" />
+    </sql>
+
+	<sql id="artAppHomePageList">
+		SELECT
+			aahp.id AS id,
+			aahp.homepage_photo AS homepagePhoto,
+			aahp.homepage_status AS homepageStatus,
+			aahp.seq_no AS seqNo
+		FROM
+			art_app_home_page aahp
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+	<sql id="artArtistPageList">
+		SELECT
+			aap.id as id,
+			aap.photo as photo,
+			aap.color as color,
+			aap.color_self as colorSelf,
+			aap.seq_no as seqNo,
+			aap.remark as remark,
+			aap.temp_id as tempId,
+			aat.create_time  AS createTime
+		FROM
+			art_artist_page aap
+		LEFT JOIN
+			art_artist_template aat ON aat.id = aap.temp_id
+		WHERE
+			aap.temp_id = ?
+	</sql>
+	
+	<sql id="artArtistTemplateList">
+		SELECT
+			aat.id AS id,
+			aat.template_name AS templateName,
+			aat.creater AS creater,
+			aat.create_time AS createTime,
+			aat.template_remark AS templateRemark
+		FROM
+			art_artist_template aat
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+	<sql id="artArtistPageResearchList">
+		SELECT
+			aapr.id AS id
+			,aa.c_name AS cName
+			,aa.e_name AS eName
+			,aa.folder_name AS folderName
+			,aa.photo AS photo
+		FROM
+			art_artist_page_research aapr
+		LEFT JOIN art_artist aa ON aa.id = aapr.artist_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+	<sql id="operationAddPage">
+		SELECT
+			aa.id AS id,
+			aa.c_name AS cName,
+			aa.e_name AS eName,
+			aa.folder_name AS folderName,
+			aa.photo AS photo
+		FROM
+			art_artist aa
+		WHERE
+			aa.id NOT IN (
+				SELECT
+					aapr.artist_id
+				FROM
+					art_artist_page_research aapr
+				{#paras}
+				<parameters id="paras" prefix="where" suffix="" />
+			)
+	</sql>
+</sqls>

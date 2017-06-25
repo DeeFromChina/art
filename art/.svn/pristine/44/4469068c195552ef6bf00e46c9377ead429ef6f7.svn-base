@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+  <sql id="artArtistList" orderBy="a.c_name asc">
+  SELECT a.id,
+  	a.c_name AS cName,
+  	a.e_name AS eName,
+  	a.birth_year as birthYear,
+	a.birth_month as birthMonth,
+	a.birth_day as birthDay,
+  	a.death_year as deathYear,
+	a.death_month as deathMonth,
+	a.death_day as deathDay,
+  	c.country_name as nationality,
+  	a.birthplace,
+  	a.c_resume AS cResume,
+  	a.photo,
+  	a.artist_type AS artistType,
+  	a.personal_page AS personalPage,
+  	a.nhom,
+  	a.zodiac,
+  	a.ancestral_home AS ancestralHome,
+  	a.sex,
+    a.main_media as mainMedia,
+    c2.country_name as birthCountry
+  	FROM ART_ARTIST a 
+  	left join art_country c on c.id = a.nationality 
+    left join art_country c2 on c2.id = a.birth_country
+  	{#paras}
+  	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+  
+  <!--查询作品列表 -->
+	<sql id="artMediumList" orderBy="medium.id desc">
+		SELECT 
+		medium.id AS id,
+		medium.medium_name AS mediumName,
+		medium.up_medium_id AS upId,
+		medium.tree_code AS treeCode,
+		medium.tree_level AS treeLevel,
+		medium.medium_side AS mediumSide,
+		medium.medium_category AS mediumCategory 
+		FROM ART_MEDIUM medium {#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+  <sql id="artArtistExperienceList" orderBy="aae.ID desc">
+	SELECT aae.ID AS id,
+	aae.ART_ID AS artId,
+	YEAR AS year,
+	C_EXPERIENCE AS cExperience,
+	E_EXPERIENCE AS eExperience 
+	FROM ART_ARTIST_EXPERIENCE aae
+	LEFT JOIN ART_ARTIST aa ON aa.id = aae.art_id 
+	{#paras}  
+	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+  <sql id="artArtistAlbumList" orderBy="aaa.ID desc">
+  	SELECT aaa.Id AS id,
+  	aaa.ARTIST_ID AS artId,
+  	aaa.PHOTO AS photo,
+  	PHOTO_DESC AS photoDesc 
+  	FROM ART_ARTIST_ALBUM aaa  
+  	LEFT JOIN ART_ARTIST aa ON aa.id = aaa.artist_id 
+  	{#paras}  
+	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+  <sql id="artArtistEduList" orderBy="aae.ID desc">
+  	SELECT aae.ID AS id,
+  	aae.ARTIST_ID AS artId,
+  	EDU_TIME AS eduTime,
+  	EDU_DESC AS eduDesc 
+  	FROM ART_ARTIST_EDU aae 
+  	LEFT JOIN ART_ARTIST aa ON aa.id = aae.artist_id 
+  	{#paras}
+  	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+  <sql id="artArtistHonorsList" orderBy="aah.ID desc">
+  	SELECT aah.ID AS id,
+  	aah.ARTIST_ID AS artId,
+  	HONOR_TIME AS honorTime,
+  	HONOR_DESC AS honorDesc
+  	FROM ART_ARTIST_HONORS aah
+  	LEFT JOIN ART_ARTIST aa ON aa.id = aah.artist_id
+  	{#paras}
+  	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+  <sql id="artArtistCollectorList" orderBy="aac.ID desc">
+  	SELECT aac.ID AS id,
+  	aac.ARTIST_ID AS artId,
+  	COLLECTOR AS collector,
+  	COLLECT_DESC AS collectDesc
+  	FROM ART_ARTIST_COLLECTOR aac
+  	LEFT JOIN ART_ARTIST aa ON aa.id = aac.artist_id
+  	{#paras}
+  	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+  <sql id="artArtistCoopList" orderBy="aac.ID desc">
+  	SELECT aac.ID AS id,
+  	aac.ARTIST_ID AS artId,
+  	COOP_NAME AS coopName,
+  	COOP_DESC AS coopDesc
+  	FROM ART_ARTIST_COOP aac
+  	LEFT JOIN ART_ARTIST aa ON aa.id = aac.artist_id
+  	{#paras}
+  	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+  <sql id="artArtistDonationList" orderBy="aad.ID desc">
+  	SELECT aad.ID AS id,
+  	aad.ARTIST_ID AS artId,
+  	DONATION_TIME AS donationTime,
+  	DONATION_DESC AS donationDesc
+  	FROM ART_ARTIST_DONATION aad
+  	LEFT JOIN ART_ARTIST aa ON aa.id = aad.artist_id
+  	{#paras}
+  	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+</sqls>

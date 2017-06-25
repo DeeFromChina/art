@@ -1,0 +1,34 @@
+#Update values
+#Thu Jul 07 10:17:54 CST 2016
+GenDao=true
+db.Column.nationality=nationality,VARCHAR,nationality,string,64, ,N,N,Y, ,
+GenWeb=false
+db.Column.e_resume=e_resume,VARCHAR,eResume,string,4000, ,N,N,Y,\u7B80\u5386(\u82F1\u6587),
+db.Column.id=id,INTEGER,id,integer,10,0,Y,N,N, ,
+db.Column.c_resume=c_resume,VARCHAR,cResume,string,4000, ,N,N,Y,\u7B80\u5386(\u4E2D\u6587),
+db.Column.e_name=e_name,VARCHAR,eName,string,30, ,N,N,Y,\u82F1\u6587\u540D,
+FilePath.Annotation=1
+FilePath.JspPath=
+FilePath.Dao=com.golead.art.artist.dao
+db.Column.city=city,VARCHAR,city,string,64, ,N,N,Y,\u57CE\u5E02,
+java.ClassName=ArtArtist
+FilePath.SpringCfgFile=
+db.SequenceName=
+projectAnnotation=1
+FilePath.Service=com.golead.art.artist.service
+db.Table=art_artist
+GenService=false
+FilePath.JavaDaoPath=/src/dao
+db.Schema=
+db.PKGenerator=native
+FilePath.Vo=com.golead.art.artist.model
+FilePath.SpringDaoCfgFile=
+db.Column.province=province,VARCHAR,province,string,64, ,N,N,Y,\u7701\u4EFD,
+FilePath.ActionPath=
+FilePath.ActionPackage=
+FilePath.StrutsCfgFile=
+FilePath.JavaServicePath=/src/service
+db.Column.photo=photo,VARCHAR,photo,string,30, ,N,N,Y,\u76F8\u7247,
+db.Column.birthdate=birthdate,TIMESTAMP,birthdate,date,19, ,N,N,Y,\u51FA\u751F\u65E5\u671F,
+db.Column.district=district,VARCHAR,district,string,64, ,N,N,Y,\u533A\u53BF,
+db.Column.c_name=c_name,VARCHAR,cName,string,30, ,N,N,Y,\u4E2D\u6587\u540D,

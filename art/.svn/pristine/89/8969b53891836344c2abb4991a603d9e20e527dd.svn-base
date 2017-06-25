@@ -1,0 +1,170 @@
+package com.golead.art.literature.service.impl;
+
+import java.io.Serializable;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.golead.art.literature.dao.ArtLiteratureOtherDao;
+import com.golead.art.literature.model.ArtLiteratureOther;
+import com.golead.art.literature.service.ArtLiteratureOtherService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.DAOException;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+@Service
+public class ArtLiteratureOtherServiceImpl extends BaseServiceImpl implements ArtLiteratureOtherService {
+   private static final long serialVersionUID = 1L;
+
+   public ArtLiteratureOther getArtLiteratureOther(Serializable id) throws ServiceException {
+      try {
+         return artLiteratureOtherDao.get(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void createArtLiteratureOther(ArtLiteratureOther artLiteratureOther) throws ServiceException {
+      try {
+         artLiteratureOtherDao.save(artLiteratureOther);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void updateArtLiteratureOther(Map<String, String> artLiteratureOtherMap) throws ServiceException {
+      try {
+         Integer pkId = new Integer(artLiteratureOtherMap.get(ArtLiteratureOther.PROP_ID));
+         ArtLiteratureOther tmp = artLiteratureOtherDao.get(pkId);
+         ConvertUtil.mapToObject(tmp, artLiteratureOtherMap, true);
+         artLiteratureOtherDao.update(tmp);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtLiteratureOther(Serializable id) throws ServiceException {
+      try {
+         artLiteratureOtherDao.delete(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtLiteratureOthers(Serializable[] ids) throws ServiceException {
+      try {
+         artLiteratureOtherDao.deleteAll(ids);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public PageQuery queryArtLiteratureOther(PageQuery pageQuery) throws ServiceException {
+      try {
+         createSqlFilter(pageQuery);
+         return jdbcDao.queryBySqlId("artLiteratureOtherList", pageQuery);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private void createSqlFilter(PageQuery page) {
+      StringBuffer tmp = new StringBuffer();
+      
+      Map<String, String> map = page.getParameters();
+      
+      String artArtistId = map.get("artistId");
+      
+      if (artArtistId != null && !"".equals(artArtistId)) {
+         if(tmp.length()>0)tmp.append(" AND ");
+         tmp.append(" alo.artist_id = ").append(artArtistId.trim());
+      }
+
+      String cName = map.get("cName");
+      if (cName != null && !"".equals(cName)) {
+         if(tmp.length()>0)tmp.append(" AND ");
+         tmp.append(" aa.c_name LIKE '%").append(cName.trim()).append("%'");
+      }
+
+      String literatureTitle = map.get("literatureTitle");
+      if (literatureTitle != null && !"".equals(literatureTitle)) {
+         if(tmp.length()>0)tmp.append(" AND ");
+         tmp.append(" alo.literature_title like '%").append(literatureTitle.trim()).append("%'");
+      }
+
+      if (tmp.length() > 0) {
+         page.getParameters().put("paras", tmp.toString());
+      }
+   }
+
+   @Resource
+   private ArtLiteratureOtherDao artLiteratureOtherDao;
+
+   public void setArtLiteratureOtherDao(ArtLiteratureOtherDao artLiteratureOtherDao) {
+      this.artLiteratureOtherDao = artLiteratureOtherDao;
+   }
+}

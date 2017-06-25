@@ -1,0 +1,212 @@
+package com.golead.art.auction.service.impl;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.util.List;
+import java.util.Map;
+
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+import com.golead.art.auction.dao.ArtAuctionWordsDao;
+import com.golead.art.auction.model.ArtAuctionWords;
+import com.golead.art.auction.service.ArtAuctionWordsService;
+
+import javax.annotation.Resource; 
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtAuctionWordsServiceImpl extends BaseServiceImpl implements ArtAuctionWordsService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtAuctionWords getArtAuctionWords(Serializable id) throws ServiceException {
+		try {
+			return artAuctionWordsDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtAuctionWords(ArtAuctionWords artAuctionWords) throws ServiceException {
+		try {
+			artAuctionWordsDao.save(artAuctionWords);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtAuctionWords(Map<String, String> artAuctionWordsMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artAuctionWordsMap.get(ArtAuctionWords.PROP_ID));
+			ArtAuctionWords tmp = artAuctionWordsDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artAuctionWordsMap, true);			
+			artAuctionWordsDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionWords(Serializable id) throws ServiceException {
+		try {
+			artAuctionWordsDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionWordss(Serializable[] ids) throws ServiceException {
+		try {
+			artAuctionWordsDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	public String importWords(String path, int auctionId) throws ServiceException {
+		String message = "";
+		try {
+			FileInputStream fileInputStream = new FileInputStream(path);
+			HSSFWorkbook wb = new HSSFWorkbook(fileInputStream);
+			HSSFSheet sht = wb.getSheetAt(0);
+			if (sht != null) {
+				for (int rowNum = 2; rowNum < sht.getLastRowNum(); rowNum++) {
+					HSSFRow hssfRow = sht.getRow(rowNum);
+					if(hssfRow == null) continue;
+					if (hssfRow.getCell(0) == null) {
+						message = "成功操作到第" + String.valueOf(rowNum-1) + "行";
+						break;
+					}
+					if(("").equals(getValue(hssfRow.getCell(0)))) {
+						message = "成功操作到第" + String.valueOf(rowNum-1) + "行";
+						break;
+					}
+					ArtAuctionWords artAuctionWords = new ArtAuctionWords();
+					String str = "";
+					str = getValue(hssfRow.getCell(0));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到文章主题";
+						break;
+					}
+					artAuctionWords.setWordsTheme(str);
+					str = getValue(hssfRow.getCell(1));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到出处";
+						break;
+					}
+					artAuctionWords.setWordsSource(str);
+					str = getValue(hssfRow.getCell(2));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到时间";
+						break;
+					}
+					artAuctionWords.setWordsTime(hssfRow.getCell(0).getDateCellValue());
+					artAuctionWords.setAuctionId(auctionId);
+					createArtAuctionWords(artAuctionWords);
+				}
+			}
+			fileInputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		File file = new File(path);
+		if(file.exists() && file.isFile()){
+			file.delete();
+		}
+		return message;
+	}
+	
+	private String getValue(HSSFCell hssfCell) {
+		if (hssfCell.getCellType() == hssfCell.CELL_TYPE_BOOLEAN) {
+			// 返回布尔类型的值
+			return String.valueOf(hssfCell.getBooleanCellValue());
+		} else if (hssfCell.getCellType() == hssfCell.CELL_TYPE_NUMERIC) {
+			// 返回数值类型的值
+			DecimalFormat df = new DecimalFormat("0");
+			return df.format(hssfCell.getNumericCellValue());
+		} else if (hssfCell.getCellType() == hssfCell.CELL_TYPE_FORMULA) {
+			// 返回数值类型的值
+			return String.valueOf(hssfCell.getNumericCellValue());
+		} else {
+			// 返回字符串类型的值
+			return String.valueOf(hssfCell.getStringCellValue());
+		}
+	}
+
+	public PageQuery queryArtAuctionWords(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artAuctionWordsList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+		String paras = "";
+		Map<String, String> map = page.getParameters();
+		String auctionId = map.get("auctionId");
+		paras = " aaw.auction_id like '%" + auctionId.trim() + "%' ";
+		if (paras.length() > 0) {
+			page.getParameters().put("paras", paras);
+		}
+	}
+	
+    @Resource
+	private ArtAuctionWordsDao	artAuctionWordsDao;
+
+	public void setArtAuctionWordsDao(ArtAuctionWordsDao artAuctionWordsDao) {
+		this.artAuctionWordsDao = artAuctionWordsDao;
+	}
+}
+

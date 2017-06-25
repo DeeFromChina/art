@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="auction" extends="default" namespace="/auction">
+		<action name="ArtAuctionHouses" class="com.golead.art.auction.ArtAuctionHousesAction">
+			<result name="LIST">/jsp/auction/houses/artAuction_houses_list.jsp</result>
+			<result name="ADD">/jsp/auction/houses/artAuction_houses_add.jsp</result>
+			<result name="EDIT">/jsp/auction/houses/artAuction_houses_edit.jsp</result>
+			<result name="VIEW">/jsp/auction/houses/artAuction_houses_view.jsp</result>
+			<result name="IMPORT">/jsp/auction/houses/artAuction_houses_import.jsp</result>
+		</action>
+		
+	</package>
+</struts>

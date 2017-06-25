@@ -1,0 +1,122 @@
+package com.golead.art.artist;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.golead.art.artist.service.ArtArtistExperienceService;
+import com.golead.common.service.system.SysUserService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtistExperienceAction extends BaseAction {
+	
+	private final static SimpleDateFormat dateFormate = new SimpleDateFormat("yyyy-mm-dd");
+	private final static SimpleDateFormat datetimeFormate = new SimpleDateFormat("yyyy-mm-dd hh:mm:ss");
+	
+	private Log log = LogFactory.getLog(ArtArtistExperienceService.class);
+	
+	private List<Map<String, Object>> result;
+	
+	@Resource
+	private ArtArtistExperienceService artArtistExperienceService;
+	
+	@Resource
+	private SysUserService sysUserService;
+
+	@Override
+	public String doExecute() throws Exception {
+		String forward = "";
+		String action = getForm().getAction();
+		
+		if (action == null) {
+			forward = LIST;
+		}
+		try {
+			if (LIST.equalsIgnoreCase(action)) forward = list();
+			else if (PAGE.equalsIgnoreCase(action)) forward = page();
+			else if (ADD.equalsIgnoreCase(action)) forward = add();
+			else if (SAVE.equalsIgnoreCase(action)) forward = SAVE;
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.put("errMsg", e.getMessage());
+			forward = ERROR;
+		}
+		return forward;
+	}
+	
+	public String list() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'list()' method");
+		initForm();
+		return LIST;
+	}
+	
+	public String page() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'page()' method");
+		try {
+			initForm();
+			PageQuery pq = getForm().getQuery();
+			pq = artArtistExperienceService.queryArtArtistExperience(pq);
+			List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+			for (Map<String, Object> item : pq.getRecordSet()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				map.put("id", item.get("id"));
+				map.put("data", new Object[]{
+					""
+					,formateDate(item.get("year"))
+					,item.get("cExperience")
+					,item.get("eExperience")
+				});
+				list.add(map);
+			}
+			String res = genGridJson(pq, list);
+			setResponse(res);
+		} catch (ServiceException e) {
+			setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+		} catch (Exception e) {
+			e.printStackTrace();
+			setResponse("{exit:1,message:\"数据访问错误。\"}");
+		}
+		return null;
+	}
+	
+	public String add() throws Exception {
+		if (log.isDebugEnabled()) log.debug("Entering 'add()' method");
+		
+		initForm(ADD);
+		return ADD;
+	}
+	
+	public void initForm() throws Exception {
+		initForm("");
+	}
+	
+	public void initForm(String flag) throws Exception {
+		if (ADD.equalsIgnoreCase(flag)) {
+			
+		} else if (EDIT.equalsIgnoreCase(flag)) {
+			
+		}
+	}
+
+	private String formateDate(Object obj) {
+		if (obj == null) return null;
+		return dateFormate.format(obj);
+	}
+	
+	private String formateDatetime(Object obj) {
+		if (obj == null) return null;
+		return datetimeFormate.format(obj);
+	}
+}

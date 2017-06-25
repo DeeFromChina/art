@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+  <sql id="artActivityAbmbList" orderBy="a.abmb_name asc">
+  select a.id,a.abmb_name as abmbName,a.abmb_number as abmbNumber,a.sponsor,a.art_director as artDirector,a.abmb_year as abmbYear,
+     a.abmb_month as abmbMonth,a.city,c.country_name as country from art_activity_abmb a
+     left join art_country c on c.id=a.country_id
+  	{#paras}
+  	<parameters id="paras" prefix="where" suffix="" />
+  </sql>
+ 
+</sqls>

@@ -1,0 +1,515 @@
+package com.golead.art.artist.service.impl;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import com.golead.common.model.SysCode;
+import com.golead.common.service.system.SysCodeService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+
+import com.golead.art.artist.dao.ArtArtistDao;
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.artist.service.ArtArtistAlbumService;
+import com.golead.art.artist.service.ArtArtistCollectService;
+import com.golead.art.artist.service.ArtArtistCoopService;
+import com.golead.art.artist.service.ArtArtistDonationService;
+import com.golead.art.artist.service.ArtArtistEduService;
+import com.golead.art.artist.service.ArtArtistExperienceService;
+import com.golead.art.artist.service.ArtArtistHonorsService;
+import com.golead.art.artist.service.ArtArtistService;
+import com.golead.art.util.service.AdministrativeDivisionService;
+import com.golead.art.utils.FileUtils;
+
+
+
+
+
+
+
+
+
+
+
+import javax.annotation.Resource; 
+
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtArtistServiceImpl extends BaseServiceImpl implements ArtArtistService {
+	private static final long serialVersionUID = 1L;
+	
+	public ArtArtist getArtArtist(Serializable id) throws ServiceException {
+		try {
+			return artArtistDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtArtist(ArtArtist artArtist, File files, String filesName) throws ServiceException {
+		try {
+			StringBuffer fileName = new StringBuffer();
+			if (files != null) {
+				String cName = String.valueOf(System.currentTimeMillis());
+				String[] endName = filesName.split("\\.");
+				fileName.append(filesName + "/" + cName + "." + endName[endName.length-1]);
+			}
+			artArtist.setPhoto(fileName.toString());
+			artArtistDao.save(artArtist);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtArtist(Map<String, String> artArtistMap, File files, String filesName, String path) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artArtistMap.get(ArtArtist.PROP_ID));
+			ArtArtist tmp = artArtistDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artArtistMap, true);			
+			File[] file = new File(path).listFiles();
+			if (filesName != null) {
+				StringBuffer fileName = new StringBuffer();
+				if (files != null) {
+					String cName = String.valueOf(System.currentTimeMillis());
+					String[] endName = filesName.split("\\.");
+					FileUtils.fileUpload(path + File.separator + cName + "." + endName[endName.length-1], files);
+					fileName.append(filesName + "/" + cName + "." + endName[endName.length-1]);
+					String oldPhoto = tmp.getPhoto();
+					for (File oldFile : file) {
+						if (oldFile.getName().equals(oldPhoto.split("/")[1])) {
+							oldFile.delete();
+						}
+					}
+				}
+				tmp.setPhoto(fileName.toString());
+			}
+			artArtistDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtist(Serializable id) throws ServiceException {
+		try {
+			artArtistDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public List<Map<String, Object>> queryArtArtistInformation(Map<String, String> parameters) throws ServiceException {
+		try {
+			StringBuffer sb = new StringBuffer();
+			if (!("").equals(parameters.get("id"))) {
+				sb.append(" aa.id = " + parameters.get("id") + " ");
+			}
+			parameters.put("paras", sb.toString());
+			return jdbcDao.queryBySqlId("artArtistList",parameters);
+		} catch (DAOException e) {
+	          e.printStackTrace();
+	          throw new ServiceException("数据库操作错误。");
+		} catch (ServiceException se) {
+	          se.printStackTrace();
+	          throw se;
+		} catch (Exception e) {
+	          e.printStackTrace();
+	          throw new ServiceException("系统错误。");
+		}
+	}
+	
+	public void deleteArtArtists(Serializable[] ids) throws ServiceException {
+		try {
+			artArtistDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteAllWithArtArtists(Serializable[] ids) throws ServiceException {
+		try {
+			PageQuery pq = new PageQuery();
+			List<Integer> experiences = new ArrayList<Integer>();
+			List<Integer> albums = new ArrayList<Integer>();
+			List<Integer> edus = new ArrayList<Integer>();
+			List<Integer> honors = new ArrayList<Integer>();
+			List<Integer> collects = new ArrayList<Integer>();
+			List<Integer> coops = new ArrayList<Integer>();
+			List<Integer> donations = new ArrayList<Integer>();
+			for (Serializable id : ids) {
+				pq.getParameters().put("artistId", id.toString());
+				pq = artArtistExperienceService.queryArtArtistExperience(pq);
+				if (pq.getRecordSet() != null) {
+					for (Map<String, Object> item : pq.getRecordSet()) {
+						experiences.add(Integer.valueOf(item.get("id").toString()));
+					}
+				}
+				pq = artArtistAlbumService.queryArtArtistAlbum(pq);
+				if (pq.getRecordSet() != null) {
+					for (Map<String, Object> item : pq.getRecordSet()) {
+						albums.add(Integer.valueOf(item.get("id").toString()));
+					}
+				}
+				pq = artArtistEduService.queryArtArtistEdu(pq);
+				if (pq.getRecordSet() != null) {
+					for (Map<String, Object> item : pq.getRecordSet()) {
+						edus.add(Integer.valueOf(item.get("id").toString()));
+					}
+				}
+				pq = artArtistHonorsService.queryArtArtistHonors(pq);
+				if (pq.getRecordSet() != null) {
+					for (Map<String, Object> item : pq.getRecordSet()) {
+						honors.add(Integer.valueOf(item.get("id").toString()));
+					}
+				}
+				pq = artArtistCollectService.queryArtArtistCollect(pq);
+				if (pq.getRecordSet() != null) {
+					for (Map<String, Object> item : pq.getRecordSet()) {
+						collects.add(Integer.valueOf(item.get("id").toString()));
+					}
+				}
+				pq = artArtistCoopService.queryArtArtistCoop(pq);
+				if (pq.getRecordSet() != null) {
+					for (Map<String, Object> item : pq.getRecordSet()) {
+						coops.add(Integer.valueOf(item.get("id").toString()));
+					}
+				}
+				pq = artArtistDonationService.queryArtArtistDonation(pq);
+				if (pq.getRecordSet() != null) {
+					for (Map<String, Object> item : pq.getRecordSet()) {
+						donations.add(Integer.valueOf(item.get("id").toString()));
+					}
+				}
+				String path = ServletActionContext.getServletContext().getRealPath("");
+				String pathOfAlbums = path + File.separator +"upload" + File.separator + "artist" + File.separator + "album" + File.separator + id.toString();
+				deleteFile(pathOfAlbums);
+			}
+			
+			Integer[] experiencesIds = delete(experiences);
+			Integer[] albumsIds = delete(albums);
+			Integer[] edusIds = delete(edus);
+			Integer[] honorsIds = delete(honors);
+			Integer[] collectsIds = delete(collects);
+			Integer[] coopsIds = delete(coops);
+			Integer[] donationsIds = delete(donations);
+			
+			artArtistExperienceService.deleteArtArtistExperiences(experiencesIds);
+			artArtistAlbumService.deleteArtArtistAlbums(albumsIds);
+			artArtistEduService.deleteArtArtistEdus(edusIds);
+			artArtistHonorsService.deleteArtArtistHonorss(honorsIds);
+			artArtistCollectService.deleteArtArtistCollects(collectsIds);
+			artArtistCoopService.deleteArtArtistCoops(coopsIds);
+			artArtistDonationService.deleteArtArtistDonations(donationsIds);
+			artArtistDao.deleteAll(ids);
+		} catch (DAOException e) {
+			e.printStackTrace();
+			throw new ServiceException("数据库操作错误。");
+		} catch (ServiceException se) {
+			se.printStackTrace();
+			throw se;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ServiceException("系统错误。");
+		}
+	}
+	
+	public Integer[] delete(List<Integer> ids){
+		Integer[] del_ids = new Integer[ids.size()];
+		int i = 0;
+		for (Integer integer : ids) {
+			del_ids[i] = integer;
+			i++;
+		}
+		return del_ids;
+	}
+	
+	private void deleteFile(String path) throws Exception{
+		   try {
+	         File file = new File(path);
+	         if(file.exists()){
+	            File[] files = file.listFiles();
+	            for(File childFile : files){
+	               if(childFile.isFile()){
+	                  childFile.delete();
+	               }else{
+	                  deleteFile(childFile.getPath());
+	               }
+	            }
+	            File[] files2 = new File(path).listFiles();
+	            if(files2.length == 0){
+	               file.delete();
+	            }
+	         }
+	      }
+	      catch (Exception e) {
+	         e.printStackTrace();
+	      }
+		}
+	
+	public PageQuery queryArtArtist(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artArtistList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+		String paras = "";
+		Map<String, String> map = page.getParameters();
+		String cName = map.get("cName");
+		if (cName != null && cName.trim().length() > 0) {
+			if (paras.length() > 0)
+				paras += " and ";
+			paras += " aa.c_Name like '%" + cName.trim() + "%' OR aa.e_Name like '%" + cName.trim() + "%'";
+		}
+		if (paras.length() > 0) 
+			page.getParameters().put("paras", paras);
+	}
+	
+	public List<ArtArtist> findAllArtArtist() throws ServiceException{
+	   try {
+	          return artArtistDao.findAll();
+	        } catch (DAOException e) {
+	          e.printStackTrace();
+	          throw new ServiceException("数据库操作错误。");
+	        } catch (ServiceException se) {
+	          se.printStackTrace();
+	          throw se;
+	        } catch (Exception e) {
+	          e.printStackTrace();
+	          throw new ServiceException("系统错误。");
+	        }
+	}
+	
+	public String importArtArtist(String path) throws ServiceException {
+		String message = "";
+		try {
+			FileInputStream fileInputStream = new FileInputStream(path);
+			HSSFWorkbook wb = new HSSFWorkbook(fileInputStream);
+			HSSFSheet sht = wb.getSheetAt(0);
+			if (sht != null) {
+				for (int rowNum = 2; rowNum < sht.getLastRowNum(); rowNum++) {
+					HSSFRow hssfRow = sht.getRow(rowNum);
+					if(hssfRow == null) continue;
+					if (hssfRow.getCell(0) == null) {
+						message = "成功操作到第" + String.valueOf(rowNum-1) + "行";
+						break;
+					}
+					if(("").equals(getValue(hssfRow.getCell(0)))) {
+						message = "成功操作到第" + String.valueOf(rowNum-1) + "行";
+						break;
+					}
+					ArtArtist artArtist = new ArtArtist();
+					String str = "";
+					SysCode code = null;
+					String placeCode = "";
+					Date birthDate = null;
+					str = getValue(hssfRow.getCell(0));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到中文名";
+						break;
+					}
+					artArtist.setCname(str);
+					str = getValue(hssfRow.getCell(1));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到英文名";
+						break;
+					}
+					artArtist.setEname(str);
+					str = getValue(hssfRow.getCell(2));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到性别";
+						break;
+					}
+					code = sysCodeService.findCodeByName(str);
+					artArtist.setSex(code.getItemValue());
+					birthDate = hssfRow.getCell(3).getDateCellValue();
+					if ("".equals(birthDate)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到出生日期";
+						break;
+					}
+					artArtist.setBirthdate(birthDate);
+					str = getValue(hssfRow.getCell(4));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到国籍";
+						break;
+					}
+					artArtist.setNationality(str);
+					str = getValue(hssfRow.getCell(5));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到出生地点";
+						break;
+					}
+					placeCode = administrativeDivisionService.findCodeByName(str).get(0).get("area_code").toString();
+					artArtist.setBirthplace(placeCode);
+					str = getValue(hssfRow.getCell(6));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到现居与工作";
+						break;
+					}
+					placeCode = administrativeDivisionService.findCodeByName(str).get(0).get("area_code").toString();
+					artArtist.setNhom(placeCode);
+					str = getValue(hssfRow.getCell(7));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到祖籍";
+						break;
+					}
+					placeCode = administrativeDivisionService.findCodeByName(str).get(0).get("area_code").toString();
+					artArtist.setAncestralHome(placeCode);
+					str = getValue(hssfRow.getCell(8));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到艺术家类型";
+						break;
+					}
+					code = sysCodeService.findCodeByName(str);
+					artArtist.setArtistType(code.getItemValue());
+					str = getValue(hssfRow.getCell(9));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到星座";
+						break;
+					}
+					code = sysCodeService.findCodeByName(str);
+					artArtist.setZodiac(code.getItemValue());
+					str = getValue(hssfRow.getCell(10));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到个人主页";
+						break;
+					}
+					artArtist.setPersonalPage(str);
+					str = getValue(hssfRow.getCell(11));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到简历";
+						break;
+					}
+					artArtist.setCresume(str);
+					str = getValue(hssfRow.getCell(12));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到出生国家";
+						break;
+					}
+					artArtist.setBirthCountry(str);
+					artArtistDao.save(artArtist);
+				}
+			}
+			fileInputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		File file = new File(path);
+		if(file.exists() && file.isFile()){
+			file.delete();
+		}
+		return message;
+	}
+	
+	private String getValue(HSSFCell hssfCell) {
+		if (hssfCell.getCellType() == hssfCell.CELL_TYPE_BOOLEAN) {
+			// 返回布尔类型的值
+			return String.valueOf(hssfCell.getBooleanCellValue());
+		} else if (hssfCell.getCellType() == hssfCell.CELL_TYPE_NUMERIC) {
+			// 返回数值类型的值
+			DecimalFormat df = new DecimalFormat("0");
+			return df.format(hssfCell.getNumericCellValue());
+		} else if (hssfCell.getCellType() == hssfCell.CELL_TYPE_FORMULA) {
+			// 返回数值类型的值
+			return String.valueOf(hssfCell.getNumericCellValue());
+		} else {
+			// 返回字符串类型的值
+			return String.valueOf(hssfCell.getStringCellValue());
+		}
+	}
+	
+    @Resource
+	private ArtArtistDao	artArtistDao;
+    
+    @Resource
+    private ArtArtistExperienceService artArtistExperienceService;
+    
+    @Resource
+    private ArtArtistAlbumService artArtistAlbumService;
+    
+    @Resource
+    private ArtArtistEduService artArtistEduService;
+    
+    @Resource
+    private ArtArtistHonorsService artArtistHonorsService;
+    
+    @Resource
+    private ArtArtistCollectService artArtistCollectService;
+    
+    @Resource
+    private ArtArtistCoopService artArtistCoopService;
+    
+    @Resource
+    private ArtArtistDonationService artArtistDonationService;
+    
+    @Resource
+    private AdministrativeDivisionService administrativeDivisionService;
+    
+    @Resource
+    private SysCodeService sysCodeService;
+
+	public void setArtArtistDao(ArtArtistDao artArtistDao) {
+		this.artArtistDao = artArtistDao;
+	}
+}
+

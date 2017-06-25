@@ -1,0 +1,137 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+	pageEncoding="utf-8"%>
+<%@ taglib uri="/struts-tags" prefix="s"%>
+<%@ taglib uri="/WEB-INF/tag/gl-tag.tld" prefix="gl"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<%@include file="/common/header.jsp"%>
+
+<script language="javascript">
+	var hyperlink = "../system/sysUserDigtalSign.do";
+	var fulllink = contextpath + "system/sysUserDigtalSign.do";
+
+	function closedialog(ret) {
+		if(ret=='true') {
+			goSearch();
+		}	
+		editMode="";
+	}
+
+	function init() {
+		goSearch();
+	}
+
+	function goSearch() {
+		gosignGridSearch();
+	}
+	
+	function goUpload(id) {
+		var url_link=fulllink+'?action=upload&record.id='+id;
+	    editMode="UPLOAD";
+	    openWindow("上传电子签名",url_link,500, 150);
+		
+	}
+	
+	function eXcell_button(cell){                             //excell name is defined here
+	    if (cell){                                                     //default pattern, just copy it
+	        this.cell = cell;
+	        this.grid = this.cell.parentNode.grid;
+	        eXcell_ro.call(this);                                //use methods of "ed" excell
+	    }
+	    this.setValue=function(val) {
+			if(val==null||val.length==0) {
+				this.setCValue("","");
+	    	    return;
+			}	
+			
+			var array = val.split("^");
+			if(array[1] == "1") {
+				var imgSrc = sign_grid.getUserData(array[0], "imgSrc");
+				var timestamp = sign_grid.getUserData(array[0], "timestamp");
+				
+				if(imgSrc != "")
+					this.setCValue("<img height='50px' src='<%= CONTEXT_PATH %>"+imgSrc+"?ts="+timestamp+"'/>",array[0]);
+				
+			} else if(array[1] == "2") {
+				this.setCValue("<input type='button' class='btnStyle' onclick='goUpload("+array[0]+")' value='上传电子签名'>",array[0]);
+			}
+	    }
+	    this.getValue=function(){
+	       return this.cell.firstChild.value; // get button label
+	    }
+	} 
+	eXcell_button.prototype = new eXcell; 
+	
+</script>
+
+<style type="text/css">
+html, body {
+	width: 100%;
+	height: 100%;
+}
+</style>
+</head>
+
+<body onload="init()">
+	<div class="special-padding" id="mainDiv">
+		<s:form action="sysUserDigtalSign" id="signForm" method="post" namespace="/system">
+			<s:hidden name="query.order" />
+			<s:hidden name="query.orderDirection" />
+			<s:hidden name="query.pageNumber" />
+			<s:hidden name="query.recordCount" />
+			<s:hidden name="query.pageCount" />
+			<s:hidden name="query.parameters.orgId" />
+			<table width="100%" id="tbl" cellpadding="0" cellspacing="0" class="queryTable">
+				<tbody>
+					<tr>
+						<td class="textL">
+						&nbsp;&nbsp;账号：<s:textfield style="width:100px;" name="query.parameters.userAccount"/>
+        				&nbsp;&nbsp;用户名：<s:textfield style="width:100px;" name="query.parameters.userName" />
+  						&nbsp;&nbsp;<gl:button name="btnQuery" onClick="goSearch()">查询</gl:button>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+			<gl:grid styleClass="pageTurn" id="sign" page="true" form="signForm" property="query" cellPadding="0" cellSpacing="0">
+			var grid = new dhtmlXGridObject();
+			grid.setImagePath(imagePath);
+			var headAlign=[tCenter,tCenter,tLeft,tCenter,tCenter];
+			grid.setHeader("姓名,账号,单位,电子签名,操作");
+			grid.setInitWidthsP("20,20,20,20,20");
+			grid.setColAlign("center,center,left,center,center");
+			grid.setColTypes("ro,ro,ro,button,button");
+			grid.setColSorting("str,str,str,str,str");
+			grid.setSkin("dhx_terrace");
+			grid.enableColSpan(true);
+			grid.init();
+
+			var gDiv=$$('sign_box');
+			</gl:grid>
+		</s:form>
+	</div>
+	<%@include file="/common/dialog.jsp"%>
+	<script type="text/javascript">
+    if(window.addEventListener) {
+ 	     window.addEventListener("resize",goResize,false); 
+    }
+    else {
+ 	     window.attachEvent('onresize',goResize);
+    }
+    
+	 var mDiv=window.document.getElementById('mainDiv');
+	 var tDiv=window.document.getElementById('tbl');
+	    
+    function goResize(){
+   	 var he;
+	   if(isIE()) he=window.document.body.offsetHeight; else he=window.innerHeight;
+
+		 mDiv.style.height=he-42+"px";
+		 gDiv.style.height=mDiv.offsetHeight-tDiv.offsetHeight - 10 +"px";
+		 tDiv.style.width=mDiv.offsetWidth-4+"px";
+		 gDiv.style.width=mDiv.offsetWidth-6+"px";
+    }
+    goResize();   
+</script> 
+</body>
+</html>

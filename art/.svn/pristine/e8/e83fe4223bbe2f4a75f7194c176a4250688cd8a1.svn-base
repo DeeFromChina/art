@@ -1,0 +1,126 @@
+package com.golead.art.works.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.works.dao.ArtWorksActivityDao;
+import com.golead.art.works.model.ArtWorksActivity;
+import com.golead.art.works.service.ArtWorksActivityService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtWorksActivityServiceImpl extends BaseServiceImpl implements ArtWorksActivityService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtWorksActivity getArtWorksActivity(Serializable id) throws ServiceException {
+		try {
+			return artWorksActivityDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtWorksActivity(ArtWorksActivity artWorksActivity) throws ServiceException {
+		try {
+			artWorksActivityDao.save(artWorksActivity);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtWorksActivity(Map<String, String> artWorksActivityMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artWorksActivityMap.get(ArtWorksActivity.PROP_ID));
+			ArtWorksActivity tmp = artWorksActivityDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artWorksActivityMap, true);			
+			artWorksActivityDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtWorksActivity(Serializable id) throws ServiceException {
+		try {
+			artWorksActivityDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtWorksActivitys(Serializable[] ids) throws ServiceException {
+		try {
+			artWorksActivityDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtWorksActivity(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artWorksActivityList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtWorksActivityDao	artWorksActivityDao;
+
+	public void setArtWorksActivityDao(ArtWorksActivityDao artWorksActivityDao) {
+		this.artWorksActivityDao = artWorksActivityDao;
+	}
+}
+

@@ -1,0 +1,195 @@
+<%@ page language="java" contentType="text/html;charset=UTF-8"
+	import="com.golead.core.util.Const,com.golead.core.web.UserSession"%>
+<%@page import="java.text.SimpleDateFormat"%>
+<%@page import="java.util.Date"%>
+<%@ taglib uri="/WEB-INF/tag/gl-tag.tld" prefix="gl"%>
+<%
+   String path = request.getContextPath();
+			String CONTEXT_PATH = request.getScheme() + "://"
+					+ request.getServerName() + ":" + request.getServerPort()
+					+ path + "/";
+%>
+<%
+   UserSession userSession = (UserSession) request.getSession()
+					.getAttribute(Const.SESSION);
+			String userString = "当前用户： " + userSession.getUserName() + "("
+					+ userSession.getAccountName() + ")";
+%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="x-ua-compatible" content="ie=7;ie=8" />
+<link rel="stylesheet" type="text/css"
+	href="<%=CONTEXT_PATH%>dhtmlx/dhtmlx.css" />
+<link rel="stylesheet" type="text/css"
+	href="<%=CONTEXT_PATH%>dhtmlx/dhtmlx_custom.css" />
+<script src="<%=CONTEXT_PATH%>dhtmlx/dhtmlx.js"></script>
+<script language="javascript" src="<%=CONTEXT_PATH%>js/ctrl_util.js"></script>
+<style type="text/css">
+html,body {
+	width: 100%;
+	height: 100%;
+	border: none;
+	overflow: hidden;
+}
+/* --------------以下为新增css---------------- */
+#topBanner {
+	height: 20px;
+	position: relative;
+	background-color: #aaccee;
+}
+
+#container {
+	width: 100%;
+	height: 100%;
+	zoom: 1;
+	overflow: hidden;
+	position: absolute;
+}
+
+#back_frame {
+	position: absolute;
+	left: 0px;
+	top: 0px;
+	height: 100%;
+	width: 100%;
+	display: none;
+}
+</style>
+<script type="text/javascript">
+	 var contextpath = "<%=CONTEXT_PATH%>";	
+	 var imgPath="<%=CONTEXT_PATH%>dhtmlx/imgs/icon/";
+	 
+    var editMode;       
+
+   function go(link,title,fName){
+   	  var f="leaf.gif";
+   	  if(fName) f=fName;
+      var img="<img src='"+imgPath+f+"' />";  
+
+      var t="<font style='font-size:14px; font-weight:bold'>"+title+"</font>";
+      dhxToolbar.removeItem("img");
+      dhxToolbar.removeItem("title");
+   	  dhxToolbar.addText("img", 0,img);
+   	  dhxToolbar.addText("title", 1,t);
+   	  if(title=='首页'||title=='帮助') centerPanel.hideToolbar(); else centerPanel.showToolbar();
+      var cont=window.document.getElementById('container');
+      cont.src=contextpath+link;
+   }
+   function changetitle(title){
+   	  var t="&lt;font style='font-size:12px; font-weight:bold'&gt;"+title+"&lt;/font&gt;";
+      dhxToolbar.removeItem("title");
+   	  dhxToolbar.addText("title", 0,t);
+   }
+   function showmain(){
+   		window.location.href='<%=CONTEXT_PATH%>main.jsp';
+   }
+   function logout(){
+   	if(confirm('是否真的要注销并重新登录?')==true){
+   		window.location.href='<%=CONTEXT_PATH%>login.do?action=logout';
+   	}
+   }
+   function checklogin(){
+   		var url='<%=CONTEXT_PATH%>login.do?action=checklogin';
+   		var loader=dhtmlxAjax.postSync(url,'');
+   		var value = loader.xmlDoc.responseText;
+   		if(value!='OK'){
+   			alert('您还未登录系统');
+   			window.location.href='login.jsp';
+   		}
+   }
+   
+   function goCategray()  {
+//        var url_link=contextpath+'jsp/demo/standard/stdCategary_list.jsp';
+		var url_link=contextpath+'/meta/stdCategory.do';
+       editMode=="CATEGRAY";
+       openWindow("数据分类管理",url_link,800,500,this);	  
+   }
+   
+   function goChangePwd()  {
+       var url_link=contextpath+'/system/sysUser.do?action=MYPWD';
+       editMode=="PWD";
+       openWindow("修改密码",url_link,300,170,this);	  
+   }
+   
+   function goProperty()  {
+       var url_link=contextpath+'/system/sysProperty.do';
+       editMode=="PROPERTY";
+       openWindow("首选项",url_link,500,300,this);
+   }
+   function goPlan(){
+	   alert("数据录入点击事件！");
+   }
+   function goHelp(){
+	   
+   }
+   
+</script>
+</head>
+<body onload="">
+	<div id="topBanner" style="display: none;">
+		<div id="sysMenu"></div>
+	</div>
+	<script type="text/javascript">
+	 var dhxLayout = new dhtmlXLayoutObject(document.body, "1C");
+	 dhxLayout.setSkin("dhx_terrace");
+	 var centerPanel=dhxLayout.cells("a");
+	  
+	 var menu = centerPanel.attachMenu();
+   var menustr="<menu>";
+	<gl:menu id="div1" code="A10" title="艺术家管理" img="css/navImg/men.gif">
+			<item code="" onclick="go('','艺术家维护','3-8.png')" text="艺术家维护" img="css/navImg/3-8.png" />
+			<item code="" onclick="go('','艺术家经历','3-8.png')" text="艺术家经历" img="css/navImg/3-8.png" />
+	</gl:menu>
+	<gl:menu id="div2" code="A20" title="作品管理" img="css/navImg/1-1.png">
+		<item code="" onclick="go('','作品维护','1-2.png')" text="作品维护" img="css/navImg/1-2.png" />
+		<item code="" onclick="go('','作品浏览','9-9.png')" text="作品浏览" img="css/navImg/9-9.png" />
+	</gl:menu>
+	<gl:menu id="div3" code="A30" title="拍卖管理" img="css/navImg/5-1.png">
+			<item code="" onclick="go('','拍卖场所维护','6-4.gif')" text="拍卖场所维护" img="css/navImg/6-4.gif" />
+			<item code="" onclick="go('','拍卖行维护','6-4.gif')" text="拍卖行维护" img="css/navImg/6-4.gif" />
+			<item code="" onclick="go('','作品拍卖','5-3.gif')" text="作品拍卖" img="css/navImg/5-3.gif" />
+	</gl:menu>
+	<gl:menu id="div4" code="A40" title="文献管理" img="css/navImg/1-3.png">
+		<item code="" onclick="go('','作品活动信息','1-2.png')" text="作品活动信息" img="css/navImg/1-2.png" />
+		<item code="" onclick="go('','作品收藏','1-2.png')" text="作品收藏" img="css/navImg/1-2.png" />
+		<item code="" onclick="go('','作品收录','1-2.png')" text="作品收录" img="css/navImg/1-2.png" />
+		<item code="" onclick="go('','作品相关文字','1-2.png')" text="作品相关文字" img="css/navImg/1-2.png" />
+		<item code="" onclick="go('','作品相关视频/声音','1-2.png')" text="作品相关视频/声音" img="css/navImg/1-2.png" />
+	</gl:menu>
+	<gl:menu code="A99" id="div9" title="系统管理" img="css/navImg/settings-icon16.png">
+		<item code="A9901" onclick="go('system/sysOrg.do','组织机构管理','7-1.gif')" text="组织机构管理" img="css/navImg/7-1.gif" />
+		<item code="A9902" onclick="go('system/sysRole.do','角色权限管理','7-2.gif')" text="角色权限管理" img="css/navImg/7-2.gif" />
+		<item code="A9903" onclick="go('system/sysUser.do','用户管理','7-3.gif')" text="用户管理" img="css/navImg/7-3.gif" />
+		<item code="A9904" onclick="go('system/sysCode.do','系统代码管理','7-7.gif')" text="系统代码管理" img="css/navImg/7-7.gif" />
+		<item code="" type="separator" />
+		<item code="" onclick="goChangePwd()" text="修改密码" img="css/navImg/8-9.png" />
+	</gl:menu>
+   menustr+="</menu>";
+   menu.loadStruct(menustr);
+   menu.attachEvent("onClick", menuclick);
+
+   function menuclick(id){
+   	eval(menu.getUserData(id,"onclick"));
+   } 
+//dashboardAction.do
+</script>
+	<div id="mainFrame">
+		<iframe id="container" src="blank.jsp"
+			style="overflow-y: hidden !important; overflow-x: hidden !important; width: 100%; height: 100%;"
+			frameborder="0"></iframe>
+	</div>
+	<iframe id="back_frame" name="back_frame" src="#"
+		allowtransparency="true" frameborder="0" scrolling="no"></iframe>
+	<script type="text/javascript">
+	 centerPanel.hideHeader();
+	 centerPanel.attachObject("mainFrame");
+   var dhxToolbar = centerPanel.attachToolbar();
+   dhxToolbar.addText("title", 0,"");
+   centerPanel.hideToolbar();
+</script>
+	<%@include file="/common/topDialog.jsp"%>
+</body>
+</html>

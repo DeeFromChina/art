@@ -1,0 +1,242 @@
+package com.golead.art.literature.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_literature_activity table.
+ */
+@Entity  
+@Table(name="art_literature_activity")  
+public class ArtLiteratureActivity implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+
+   @Column(name = "curator")
+   private java.lang.String curator;   // 策展人
+
+   @Column(name = "category")
+   private java.lang.String category;   // 类别，1：个展，2：群展
+
+   @Column(name = "exhibitors")
+   private java.lang.String exhibitors;   // 机构/参展单元及机构
+
+   @Column(name = "province")
+   private java.lang.String province;   // 省份
+
+   @Column(name = "activity_time")
+   private java.util.Date activityTime;   // 时间
+
+   @Column(name = "number")
+   private java.lang.Integer number;   // 届数
+
+   @Column(name = "activity_name")
+   private java.lang.String activityName;   // 名称
+
+   @Column(name = "place")
+   private java.lang.String place;   // 地点
+
+   @Column(name = "activity_type")
+   private java.lang.String activityType;   // 活动类型，1：展览，2：艺博会
+
+   @Column(name = "city")
+   private java.lang.String city;   // 城市
+
+   @Column(name = "country")
+   private java.lang.String country;   // 国家
+
+   // Constructors
+   public ArtLiteratureActivity() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.String getCurator() { 
+      return this.curator; 
+   }
+   public void setCurator(java.lang.String curator) { 
+      this.curator = curator; 
+   }
+
+
+   public java.lang.String getCategory() { 
+      return this.category; 
+   }
+   public void setCategory(java.lang.String category) { 
+      this.category = category; 
+   }
+
+
+   public java.lang.String getExhibitors() { 
+      return this.exhibitors; 
+   }
+   public void setExhibitors(java.lang.String exhibitors) { 
+      this.exhibitors = exhibitors; 
+   }
+
+
+   public java.lang.String getProvince() { 
+      return this.province; 
+   }
+   public void setProvince(java.lang.String province) { 
+      this.province = province; 
+   }
+
+
+   public java.util.Date getActivityTime() { 
+      return this.activityTime; 
+   }
+   public void setActivityTime(java.util.Date activityTime) { 
+      this.activityTime = activityTime; 
+   }
+
+
+   public java.lang.Integer getNumber() { 
+      return this.number; 
+   }
+   public void setNumber(java.lang.Integer number) { 
+      this.number = number; 
+   }
+
+
+   public java.lang.String getActivityName() { 
+      return this.activityName; 
+   }
+   public void setActivityName(java.lang.String activityName) { 
+      this.activityName = activityName; 
+   }
+
+
+   public java.lang.String getPlace() { 
+      return this.place; 
+   }
+   public void setPlace(java.lang.String place) { 
+      this.place = place; 
+   }
+
+
+   public java.lang.String getActivityType() { 
+      return this.activityType; 
+   }
+   public void setActivityType(java.lang.String activityType) { 
+      this.activityType = activityType; 
+   }
+
+
+   public java.lang.String getCity() { 
+      return this.city; 
+   }
+   public void setCity(java.lang.String city) { 
+      this.city = city; 
+   }
+
+
+   public java.lang.String getCountry() { 
+      return this.country; 
+   }
+   public void setCountry(java.lang.String country) { 
+      this.country = country; 
+   }
+
+
+   public static String REF_CLASS = "ArtLiteratureActivity";
+   public static String PROP_ID = "id";
+   public static String PROP_CURATOR = "curator";
+   public static String PROP_CATEGORY = "category";
+   public static String PROP_EXHIBITORS = "exhibitors";
+   public static String PROP_PROVINCE = "province";
+   public static String PROP_ACTIVITY_TIME = "activityTime";
+   public static String PROP_NUMBER = "number";
+   public static String PROP_ACTIVITY_NAME = "activityName";
+   public static String PROP_PLACE = "place";
+   public static String PROP_ACTIVITY_TYPE = "activityType";
+   public static String PROP_CITY = "city";
+   public static String PROP_COUNTRY = "country";
+
+   public static String REF_TABLE = "art_literature_activity";
+   public static String COL_ID = "id";
+   public static String COL_CURATOR = "curator";
+   public static String COL_CATEGORY = "category";
+   public static String COL_EXHIBITORS = "exhibitors";
+   public static String COL_PROVINCE = "province";
+   public static String COL_ACTIVITY_TIME = "activity_time";
+   public static String COL_NUMBER = "number";
+   public static String COL_ACTIVITY_NAME = "activity_name";
+   public static String COL_PLACE = "place";
+   public static String COL_ACTIVITY_TYPE = "activity_type";
+   public static String COL_CITY = "city";
+   public static String COL_COUNTRY = "country";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.literature.model.ArtLiteratureActivity)) return false;
+      else {
+         com.golead.art.literature.model.ArtLiteratureActivity o = (com.golead.art.literature.model.ArtLiteratureActivity) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtLiteratureActivity:");
+		buffer.append(" id:").append(id);
+		buffer.append(" curator:").append(dealNull(curator));
+		buffer.append(" category:").append(dealNull(category));
+		buffer.append(" exhibitors:").append(dealNull(exhibitors));
+		buffer.append(" province:").append(dealNull(province));
+		buffer.append(" activityTime:").append(dealNull(activityTime));
+		buffer.append(" number:").append(dealNull(number));
+		buffer.append(" activityName:").append(dealNull(activityName));
+		buffer.append(" place:").append(dealNull(place));
+		buffer.append(" activityType:").append(dealNull(activityType));
+		buffer.append(" city:").append(dealNull(city));
+		buffer.append(" country:").append(dealNull(country));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"curator\":\"").append(dealNull(curator)).append("\"");
+		buffer.append(",\"category\":\"").append(dealNull(category)).append("\"");
+		buffer.append(",\"exhibitors\":\"").append(dealNull(exhibitors)).append("\"");
+		buffer.append(",\"province\":\"").append(dealNull(province)).append("\"");
+		buffer.append(",\"activityTime\":\"").append(dealNull(activityTime)).append("\"");
+		buffer.append(",\"number\":\"").append(dealNull(number)).append("\"");
+		buffer.append(",\"activityName\":\"").append(dealNull(activityName)).append("\"");
+		buffer.append(",\"place\":\"").append(dealNull(place)).append("\"");
+		buffer.append(",\"activityType\":\"").append(dealNull(activityType)).append("\"");
+		buffer.append(",\"city\":\"").append(dealNull(city)).append("\"");
+		buffer.append(",\"country\":\"").append(dealNull(country)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

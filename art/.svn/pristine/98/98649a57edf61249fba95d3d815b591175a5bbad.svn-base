@@ -1,0 +1,126 @@
+package com.golead.art.works.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.works.dao.ArtWorksAttachmentDao;
+import com.golead.art.works.model.ArtWorksAttachment;
+import com.golead.art.works.service.ArtWorksAttachmentService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtWorksAttachmentServiceImpl extends BaseServiceImpl implements ArtWorksAttachmentService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtWorksAttachment getArtWorksAttachment(Serializable id) throws ServiceException {
+		try {
+			return artWorksAttachmentDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtWorksAttachment(ArtWorksAttachment artWorksAttachment) throws ServiceException {
+		try {
+			artWorksAttachmentDao.save(artWorksAttachment);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtWorksAttachment(Map<String, String> artWorksAttachmentMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artWorksAttachmentMap.get(ArtWorksAttachment.PROP_ID));
+			ArtWorksAttachment tmp = artWorksAttachmentDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artWorksAttachmentMap, true);			
+			artWorksAttachmentDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtWorksAttachment(Serializable id) throws ServiceException {
+		try {
+			artWorksAttachmentDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtWorksAttachments(Serializable[] ids) throws ServiceException {
+		try {
+			artWorksAttachmentDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtWorksAttachment(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artWorksAttachmentList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtWorksAttachmentDao	artWorksAttachmentDao;
+
+	public void setArtWorksAttachmentDao(ArtWorksAttachmentDao artWorksAttachmentDao) {
+		this.artWorksAttachmentDao = artWorksAttachmentDao;
+	}
+}
+

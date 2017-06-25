@@ -1,0 +1,7 @@
+package com.golead.art.job.service;
+
+public interface CheckArtAuctionService {
+   
+   public void executeCheck() throws Exception;
+
+}

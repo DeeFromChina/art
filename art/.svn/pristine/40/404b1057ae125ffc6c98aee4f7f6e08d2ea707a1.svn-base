@@ -1,0 +1,362 @@
+package com.golead.art.literature.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_literature table.
+ */
+@Entity  
+@Table(name="art_literature")  
+public class ArtLiterature implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+   @Column(name = "press")
+   private java.lang.String press;   // 出版社
+
+   @Column(name = "literature_type")
+   private java.lang.String literatureType;   // 收录类型，1:画册，2:杂志，3:报纸
+
+   @Column(name = "relevant_pages")
+   private java.lang.String relevantPages;   // 相关页
+
+   @Column(name = "executive_editor")
+   private java.lang.String executiveEditor;   // 执行主编
+
+   @Column(name = "publication_time")
+   private java.util.Date publicationTime;   // 出版时间
+
+   @Column(name = "adviser")
+   private java.lang.String adviser;   // 顾问
+
+   @Column(name = "attachment")
+   private java.lang.String attachment;   // 附件，多个用;隔开
+
+   @Column(name = "period")
+   private java.lang.String period;   // 期数
+
+   @Column(name = "subeditor")
+   private java.lang.String subeditor;   // 副主编
+
+   @Column(name = "content_name")
+   private java.lang.String contentName;   // 内容名称
+
+   @Column(name = "page_count")
+   private java.lang.Integer pageCount;   // 总页数
+
+
+   @Column(name = "literature_column")
+   private java.lang.String literatureColumn;   // 栏目
+
+   @Column(name = "literature_name")
+   private java.lang.String literatureName;   // 名称
+
+   @Column(name = "author")
+   private java.lang.Integer author;   // 作者
+
+   @Column(name = "editor")
+   private java.lang.String editor;   // 主编
+
+   @Column(name = "category")
+   private java.lang.String category;   // 类别，画册(1:个人，0:非个，代码集：ALBUM_CATEGORY)，杂志(1:美术，0:非美，MAGAZINE_CATEGORY)，3:报纸(1:美术
+
+   @Column(name = "page_segment")
+   private java.lang.String pageSegment;   // 页码段
+
+   @Column(name = "total_period")
+   private java.lang.String totalPeriod;   // 总期数
+
+   @Column(name = "content_type")
+   private java.lang.String contentType;   // 内容类型
+
+   // Constructors
+   public ArtLiterature() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.String getPress() { 
+      return this.press; 
+   }
+   public void setPress(java.lang.String press) { 
+      this.press = press; 
+   }
+
+
+   public java.lang.String getLiteratureType() { 
+      return this.literatureType; 
+   }
+   public void setLiteratureType(java.lang.String literatureType) { 
+      this.literatureType = literatureType; 
+   }
+
+
+   public java.lang.String getRelevantPages() { 
+      return this.relevantPages; 
+   }
+   public void setRelevantPages(java.lang.String relevantPages) { 
+      this.relevantPages = relevantPages; 
+   }
+
+
+   public java.lang.String getExecutiveEditor() { 
+      return this.executiveEditor; 
+   }
+   public void setExecutiveEditor(java.lang.String executiveEditor) { 
+      this.executiveEditor = executiveEditor; 
+   }
+
+
+   public java.util.Date getPublicationTime() { 
+      return this.publicationTime; 
+   }
+   public void setPublicationTime(java.util.Date publicationTime) { 
+      this.publicationTime = publicationTime; 
+   }
+
+
+   public java.lang.String getAdviser() { 
+      return this.adviser; 
+   }
+   public void setAdviser(java.lang.String adviser) { 
+      this.adviser = adviser; 
+   }
+
+
+   public java.lang.String getAttachment() { 
+      return this.attachment; 
+   }
+   public void setAttachment(java.lang.String attachment) { 
+      this.attachment = attachment; 
+   }
+
+
+   public java.lang.String getPeriod() { 
+      return this.period; 
+   }
+   public void setPeriod(java.lang.String period) { 
+      this.period = period; 
+   }
+
+
+   public java.lang.String getSubeditor() { 
+      return this.subeditor; 
+   }
+   public void setSubeditor(java.lang.String subeditor) { 
+      this.subeditor = subeditor; 
+   }
+
+
+   public java.lang.String getContentName() { 
+      return this.contentName; 
+   }
+   public void setContentName(java.lang.String contentName) { 
+      this.contentName = contentName; 
+   }
+
+
+   public java.lang.Integer getPageCount() { 
+      return this.pageCount; 
+   }
+   public void setPageCount(java.lang.Integer pageCount) { 
+      this.pageCount = pageCount; 
+   }
+
+
+   public java.lang.String getLiteratureColumn() { 
+      return this.literatureColumn; 
+   }
+   public void setLiteratureColumn(java.lang.String literatureColumn) { 
+      this.literatureColumn = literatureColumn; 
+   }
+
+
+   public java.lang.String getLiteratureName() { 
+      return this.literatureName; 
+   }
+   public void setLiteratureName(java.lang.String literatureName) { 
+      this.literatureName = literatureName; 
+   }
+
+
+   public java.lang.Integer getAuthor() { 
+      return this.author; 
+   }
+   public void setAuthor(java.lang.Integer author) { 
+      this.author = author; 
+   }
+
+
+   public java.lang.String getEditor() { 
+      return this.editor; 
+   }
+   public void setEditor(java.lang.String editor) { 
+      this.editor = editor; 
+   }
+
+
+   public java.lang.String getCategory() { 
+      return this.category; 
+   }
+   public void setCategory(java.lang.String category) { 
+      this.category = category; 
+   }
+
+
+   public java.lang.String getPageSegment() { 
+      return this.pageSegment; 
+   }
+   public void setPageSegment(java.lang.String pageSegment) { 
+      this.pageSegment = pageSegment; 
+   }
+
+
+   public java.lang.String getTotalPeriod() { 
+      return this.totalPeriod; 
+   }
+   public void setTotalPeriod(java.lang.String totalPeriod) { 
+      this.totalPeriod = totalPeriod; 
+   }
+
+
+   public java.lang.String getContentType() { 
+      return this.contentType; 
+   }
+   public void setContentType(java.lang.String contentType) { 
+      this.contentType = contentType; 
+   }
+
+
+   public static String REF_CLASS = "ArtLiterature";
+   public static String PROP_PRESS = "press";
+   public static String PROP_LITERATURE_TYPE = "literatureType";
+   public static String PROP_RELEVANT_PAGES = "relevantPages";
+   public static String PROP_EXECUTIVE_EDITOR = "executiveEditor";
+   public static String PROP_PUBLICATION_TIME = "publicationTime";
+   public static String PROP_ADVISER = "adviser";
+   public static String PROP_ATTACHMENT = "attachment";
+   public static String PROP_PERIOD = "period";
+   public static String PROP_SUBEDITOR = "subeditor";
+   public static String PROP_CONTENT_NAME = "contentName";
+   public static String PROP_PAGE_COUNT = "pageCount";
+   public static String PROP_ID = "id";
+   public static String PROP_LITERATURE_COLUMN = "literatureColumn";
+   public static String PROP_LITERATURE_NAME = "literatureName";
+   public static String PROP_AUTHOR = "author";
+   public static String PROP_EDITOR = "editor";
+   public static String PROP_CATEGORY = "category";
+   public static String PROP_PAGE_SEGMENT = "pageSegment";
+   public static String PROP_TOTAL_PERIOD = "totalPeriod";
+   public static String PROP_CONTENT_TYPE = "contentType";
+
+   public static String REF_TABLE = "art_literature";
+   public static String COL_PRESS = "press";
+   public static String COL_LITERATURE_TYPE = "literature_type";
+   public static String COL_RELEVANT_PAGES = "relevant_pages";
+   public static String COL_EXECUTIVE_EDITOR = "executive_editor";
+   public static String COL_PUBLICATION_TIME = "publication_time";
+   public static String COL_ADVISER = "adviser";
+   public static String COL_ATTACHMENT = "attachment";
+   public static String COL_PERIOD = "period";
+   public static String COL_SUBEDITOR = "subeditor";
+   public static String COL_CONTENT_NAME = "content_name";
+   public static String COL_PAGE_COUNT = "page_count";
+   public static String COL_ID = "id";
+   public static String COL_LITERATURE_COLUMN = "literature_column";
+   public static String COL_LITERATURE_NAME = "literature_name";
+   public static String COL_AUTHOR = "author";
+   public static String COL_EDITOR = "editor";
+   public static String COL_CATEGORY = "category";
+   public static String COL_PAGE_SEGMENT = "page_segment";
+   public static String COL_TOTAL_PERIOD = "total_period";
+   public static String COL_CONTENT_TYPE = "content_type";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.literature.model.ArtLiterature)) return false;
+      else {
+         com.golead.art.literature.model.ArtLiterature o = (com.golead.art.literature.model.ArtLiterature) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtLiterature:");
+		buffer.append(" id:").append(id);
+		buffer.append(" press:").append(dealNull(press));
+		buffer.append(" literatureType:").append(dealNull(literatureType));
+		buffer.append(" relevantPages:").append(dealNull(relevantPages));
+		buffer.append(" executiveEditor:").append(dealNull(executiveEditor));
+		buffer.append(" publicationTime:").append(dealNull(publicationTime));
+		buffer.append(" adviser:").append(dealNull(adviser));
+		buffer.append(" attachment:").append(dealNull(attachment));
+		buffer.append(" period:").append(dealNull(period));
+		buffer.append(" subeditor:").append(dealNull(subeditor));
+		buffer.append(" contentName:").append(dealNull(contentName));
+		buffer.append(" pageCount:").append(dealNull(pageCount));
+		buffer.append(" literatureColumn:").append(dealNull(literatureColumn));
+		buffer.append(" literatureName:").append(dealNull(literatureName));
+		buffer.append(" author:").append(dealNull(author));
+		buffer.append(" editor:").append(dealNull(editor));
+		buffer.append(" category:").append(dealNull(category));
+		buffer.append(" pageSegment:").append(dealNull(pageSegment));
+		buffer.append(" totalPeriod:").append(dealNull(totalPeriod));
+		buffer.append(" contentType:").append(dealNull(contentType));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"press\":\"").append(dealNull(press)).append("\"");
+		buffer.append(",\"literatureType\":\"").append(dealNull(literatureType)).append("\"");
+		buffer.append(",\"relevantPages\":\"").append(dealNull(relevantPages)).append("\"");
+		buffer.append(",\"executiveEditor\":\"").append(dealNull(executiveEditor)).append("\"");
+		buffer.append(",\"publicationTime\":\"").append(dealNull(publicationTime)).append("\"");
+		buffer.append(",\"adviser\":\"").append(dealNull(adviser)).append("\"");
+		buffer.append(",\"attachment\":\"").append(dealNull(attachment)).append("\"");
+		buffer.append(",\"period\":\"").append(dealNull(period)).append("\"");
+		buffer.append(",\"subeditor\":\"").append(dealNull(subeditor)).append("\"");
+		buffer.append(",\"contentName\":\"").append(dealNull(contentName)).append("\"");
+		buffer.append(",\"pageCount\":\"").append(dealNull(pageCount)).append("\"");
+		buffer.append(",\"literatureColumn\":\"").append(dealNull(literatureColumn)).append("\"");
+		buffer.append(",\"literatureName\":\"").append(dealNull(literatureName)).append("\"");
+		buffer.append(",\"author\":\"").append(dealNull(author)).append("\"");
+		buffer.append(",\"editor\":\"").append(dealNull(editor)).append("\"");
+		buffer.append(",\"category\":\"").append(dealNull(category)).append("\"");
+		buffer.append(",\"pageSegment\":\"").append(dealNull(pageSegment)).append("\"");
+		buffer.append(",\"totalPeriod\":\"").append(dealNull(totalPeriod)).append("\"");
+		buffer.append(",\"contentType\":\"").append(dealNull(contentType)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

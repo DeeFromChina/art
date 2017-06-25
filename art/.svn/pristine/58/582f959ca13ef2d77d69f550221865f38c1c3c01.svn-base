@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="activity" extends="default" namespace="/activity">
+		<action name="activityAbmb" class="com.golead.art.activity.ArtActivityAbmbAction">
+			<result name="LIST">/jsp/activity/abmb/abmb_list.jsp</result>
+			<result name="ADD">/jsp/activity/abmb/abmb_add.jsp</result>
+			<result name="EDIT">/jsp/activity/abmb/abmb_edit.jsp</result>
+			<result name="VIEW">/jsp/activity/abmb/abmb_view.jsp</result>
+			<result name="WORKSLIST">/jsp/activity/abmb/abmb_works.jsp</result>
+		</action>
+		<action name="ArtActivityExhibit" class="com.golead.art.activity.ArtActivityExhibitAction">
+			<result name="LIST">/jsp/activity/artActivityExhibit/artActivityExhibit_list.jsp</result>
+			<result name="ADD">/jsp/activity/artActivityExhibit/artActivityExhibit_add.jsp</result>
+		</action>
+		<action name="ArtWorksExhibit" class="com.golead.art.activity.ArtWorksExhibitAction">
+			<result name="LIST">/jsp/activity/artWorksExhibit/artWorksExhibit_list.jsp</result>
+			<result name="ADD">/jsp/activity/artWorksExhibit/artWorksExhibit_add.jsp</result>
+		</action>
+		<action name="ArtActivityExhibitArtist" class="com.golead.art.activity.ArtActivityExhibitArtistAction">
+			<result name="LIST">/jsp/activity/artActivityExhibitArtist/artActivityExhibitArtist_list.jsp</result>
+			<result name="ADD">/jsp/activity/artActivityExhibitArtist/artActivityExhibitArtist_add.jsp</result>
+		</action>
+	</package>
+</struts>

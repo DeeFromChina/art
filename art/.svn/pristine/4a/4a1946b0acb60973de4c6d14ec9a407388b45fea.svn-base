@@ -1,0 +1,52 @@
+package com.golead.art.works.dao.impl;
+
+import java.io.Serializable;
+import com.golead.core.exception.DAOException;
+import com.golead.core.dao.impl.HibernateDaoImpl;
+import com.golead.art.works.model.ArtPublicationCatalog;
+import com.golead.art.works.dao.ArtPublicationCatalogDao;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ArtPublicationCatalogDaoImpl extends HibernateDaoImpl<ArtPublicationCatalog> implements ArtPublicationCatalogDao {
+
+	public Class getReferenceClass() {
+		return ArtPublicationCatalog.class;
+	}
+
+	public ArtPublicationCatalog cast(Object object) {
+		return (ArtPublicationCatalog) object;
+	}
+
+	public ArtPublicationCatalog get(Serializable id)  throws DAOException{
+		return (ArtPublicationCatalog) super.get(id);
+	}
+
+	public ArtPublicationCatalog load(Serializable id)  throws DAOException{
+		return (ArtPublicationCatalog) super.load(id);
+	}
+
+	public Serializable save(ArtPublicationCatalog artPublicationCatalog)  throws DAOException{
+		return super.save(artPublicationCatalog);
+	}
+
+	public void saveOrUpdate(ArtPublicationCatalog artPublicationCatalog)  throws DAOException{
+		super.saveOrUpdate(artPublicationCatalog);
+	}
+
+	public void update(ArtPublicationCatalog artPublicationCatalog)  throws DAOException{
+		super.update(artPublicationCatalog);
+	}
+
+	public void delete(ArtPublicationCatalog artPublicationCatalog)  throws DAOException{
+		super.delete(artPublicationCatalog);
+	}
+
+	public void refresh(ArtPublicationCatalog artPublicationCatalog)  throws DAOException{
+		super.refresh(artPublicationCatalog);
+	}
+
+	public String getTableName() {
+		return ArtPublicationCatalog.REF_TABLE;
+	}
+}

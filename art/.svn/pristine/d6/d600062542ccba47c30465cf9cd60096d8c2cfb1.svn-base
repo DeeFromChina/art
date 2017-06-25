@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+
+  	<!--查询作品列表 -->
+	<sql id="artWorksList" orderBy="works.id desc">
+		SELECT 
+		works.id AS id,
+		works.works_no AS no,
+		works.create_time AS createTime,
+		works.create_period AS createPeriod,
+		works.works_series AS worksSeries,
+		works.works_c_name AS chineseName,
+		works.works_e_name AS englishName,
+		works.medium_in AS mediumIn,
+		works.medium_cn AS mediumCn,
+		works.size_cm AS sizeCm,
+		works.size_in AS sizeIn,
+		works.size_rule AS sizeRule,
+		works.signature AS signature,
+		works.works_category AS worksCategory,
+		works.thumbnail AS thumbnail,
+		works.works_theme AS worksTheme,
+		works.style_content AS styleContent,
+		works.create_place AS createPlace,
+		works.create_cause AS createCause,
+		works.create_to AS createTo,
+		works.create_from AS createFrom,
+		works.part_size AS partSize,
+		works.works_status AS worksStatus,
+		works.artist_id AS artistId,
+		artist.c_name AS c_name,
+		artist.e_name AS e_name 
+		FROM ART_WORKS works 
+		LEFT JOIN art_artist artist ON artist.id = works.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+  	<!--查询作品列表 -->
+	<sql id="artWorksPeriodList" orderBy="period.id desc">
+		SELECT 
+		period.id AS id,
+		period.period_type AS periodType,
+		period.period_name AS periodName,
+		period.works_id AS worksid,
+		works.id AS worksId,
+		works.works_no AS no,
+		works.create_time AS createTime,
+		works.create_period AS createPeriod,
+		works.works_series AS worksSeries,
+		works.works_c_name AS chineseName,
+		works.works_e_name AS englishName,
+		works.medium_in AS mediumIn,
+		works.medium_cn AS mediumCn,
+		works.size_cm AS sizeCm,
+		works.size_in AS sizeIn,
+		works.size_rule AS sizeRule,
+		works.signature AS signature,
+		works.works_category AS worksCategory,
+		works.thumbnail AS thumbnail,
+		works.works_theme AS worksTheme,
+		works.style_content AS styleContent,
+		works.create_place AS createPlace,
+		works.create_cause AS createCause,
+		works.create_to AS createTo,
+		works.create_from AS createFrom,
+		works.part_size AS partSize,
+		works.works_status AS worksStatus,
+		works.artist_id AS artistId,
+		artist.c_name AS c_name,
+		artist.e_name AS e_name 
+		FROM ART_WORKS_PERIOD period  
+		LEFT JOIN art_works works ON works.id = period.works_id  
+		LEFT JOIN art_artist artist ON artist.id = works.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	
+</sqls>

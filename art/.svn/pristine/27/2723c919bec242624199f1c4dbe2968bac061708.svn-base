@@ -1,0 +1,117 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+	pageEncoding="utf-8"%>
+<%@ taglib uri="/struts-tags" prefix="s"%>
+<%@ taglib uri="/WEB-INF/tag/gl-tag.tld" prefix="gl"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<%@include file="/common/header.jsp"%>
+
+<script language="javascript">
+	var hyperlink = contextpath + "literature/ArtLiteratureWords.do";
+	var fulllink = contextpath + "literature/ArtLiteratureWords.do";
+
+	function goAdd() {
+		editMode = "ADD";
+		openWindow("添加", fulllink + '?action=ADD', 0.7, 0.9);
+	}
+
+	function goDel() {
+		var id = findMultiSelected("删除", ArtLiteratureWords_grid);
+		if (id == "")
+			return;
+		var res = confirm("是否要删除？");
+		if (res == true) {
+			var data = ajaxSubmit(fulllink + "?action=delete&ids=" + id,
+					"ArtLiteratureWordsForm");
+			if (data.exit > 0) {
+				alert(data.message);
+				return;
+			} else {
+				goSearch();
+			}
+		}
+	}
+
+	function goModify() {
+		var id = findSelected("修改", ArtLiteratureWords_grid);
+		if (id == "")
+			return;
+		url_link = fulllink + '?action=EDIT&record.id=' + id;
+		editMode = "EDIT";
+		openWindow("修改", url_link, 0.7, 0.9);
+	}
+
+	function view(id) {
+		/*  var url_link=fulllink+'?action=VIEW&record.id='+id;
+		 editMode="VIEW";
+		 openWindow("查看纸媒",url_link,0.7,0.95);	 */
+		url_link = fulllink + '?action=EDIT&record.id=' + id;
+		editMode = "EDIT";
+		openWindow("修改纸媒", url_link, 0.7, 0.9);
+	}
+
+	function goSearch() {
+		goArtLiteratureWordsGridSearch();
+	}
+
+	function renew() {
+		var order = getElement("query.order");
+		order.value = "";
+		var desc = getElement("query.orderDirection");
+		desc.value = "";
+		var pn = getElement("query.pageNumber");
+		pn.value = "1";
+		var ps = getElement("query.pageSize");
+		ps.value = "10";
+		goSearch();
+	}
+
+	function init() {
+		showMessage('<s:property value="errorMessage" escape="false"/>');
+		renew();
+	}
+</script>
+
+<style type="text/css">
+html, body {
+	width: 100%;
+	height: 100%;
+}
+</style>
+</head>
+<body>
+	<div class="special-padding" id="mainDiv">
+		<s:form action="ArtLiteratureWords" id="ArtLiteratureWordsForm"
+			method="post" namespace="/literature" enctype="multipart/form-data">
+			<s:hidden name="query.order" />
+			<s:hidden name="query.orderDirection" />
+			<s:hidden name="query.pageNumber" />
+			<s:hidden name="query.recordCount" />
+			<s:hidden name="query.pageCount" />
+			<table width="99%" id="tbl" cellpadding="0" cellspacing="0"
+				class="queryTable">
+			</table>
+			<table id="btn" width="99%" cellspacing="1" cellpadding="1"
+				class="controlTable">
+			</table>
+			<gl:grid styleClass="pageTurn" id="ArtLiteratureWords" page="true"
+				form="ArtLiteratureWordsForm" property="query" cellPadding="0"
+				cellSpacing="0">
+				var grid = new dhtmlXGridObject();
+         	    grid.setImagePath(imagePath);
+				var headAlign = [tCenter,tCenter,tCenter,tCenter,tCenter,tCenter,tCenter,tCenter,tCenter,tCenter,tCenter,tCenter,tCenter,tCenter,tCenter,tCenter];
+				grid.setHeader("#master_checkbox,艺术家,文献标题,作者,刊登时间,出版物名称,出版物期数,出版社,栏目,相关页,文献类型,文献提及作品,引用文献,文献相关人物,文献相关展览,文献相关事件",null, headAlign);
+				grid.setInitWidthsP("5,10,15,10,10,15,15,15,15,15,10,15,15,15,15,15");
+				grid.setColAlign("center,center,center,center,center,center,center,center,center,center,center,center,center,center,center,center");
+				grid.setColTypes("ch,ro,link,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro,ro");
+				grid.setColSorting("na,str,str,str,str,str,str,str,str,str,str,str,str,str,str,str");
+				grid.init();
+				var gDiv = $$('ArtLiteratureWords_box');
+			</gl:grid>
+		</s:form>
+	</div>
+	<%@include file="/common/dialog.jsp"%>
+	<%@include file="/common/resize1.jsp"%>
+</body>
+</html>

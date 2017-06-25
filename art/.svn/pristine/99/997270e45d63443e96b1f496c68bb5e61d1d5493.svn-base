@@ -1,0 +1,126 @@
+package com.golead.art.literature.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.literature.dao.ArtLiteratureDao;
+import com.golead.art.literature.model.ArtLiterature;
+import com.golead.art.literature.service.ArtLiteratureService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtLiteratureServiceImpl extends BaseServiceImpl implements ArtLiteratureService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtLiterature getArtLiterature(Serializable id) throws ServiceException {
+		try {
+			return artLiteratureDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtLiterature(ArtLiterature artLiterature) throws ServiceException {
+		try {
+			artLiteratureDao.save(artLiterature);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtLiterature(Map<String, String> artLiteratureMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artLiteratureMap.get(ArtLiterature.PROP_ID));
+			ArtLiterature tmp = artLiteratureDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artLiteratureMap, true);			
+			artLiteratureDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtLiterature(Serializable id) throws ServiceException {
+		try {
+			artLiteratureDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtLiteratures(Serializable[] ids) throws ServiceException {
+		try {
+			artLiteratureDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtLiterature(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artLiteratureList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtLiteratureDao	artLiteratureDao;
+
+	public void setArtLiteratureDao(ArtLiteratureDao artLiteratureDao) {
+		this.artLiteratureDao = artLiteratureDao;
+	}
+}
+

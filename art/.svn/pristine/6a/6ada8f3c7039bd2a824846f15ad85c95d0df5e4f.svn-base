@@ -1,0 +1,26 @@
+package com.golead.art.auction.service;
+
+import java.io.Serializable;
+import java.util.Map;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.dao.model.PageQuery;
+
+import com.golead.art.auction.model.ArtAuctionWords;
+
+public interface ArtAuctionWordsService {
+
+	public ArtAuctionWords getArtAuctionWords(Serializable id) throws ServiceException;
+
+	public void createArtAuctionWords(ArtAuctionWords artAuctionWords) throws ServiceException;
+
+	public void updateArtAuctionWords(Map<String, String> artAuctionWordsMap) throws ServiceException;
+
+	public void deleteArtAuctionWords(Serializable id) throws ServiceException;
+
+	public PageQuery queryArtAuctionWords(PageQuery pageQuery) throws ServiceException;
+
+	public void deleteArtAuctionWordss(Serializable[] ids) throws ServiceException;  
+	
+	public String importWords(String path, int auctionId) throws ServiceException;
+}
+

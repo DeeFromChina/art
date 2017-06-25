@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+    <sql id="wxMenuButtonParentTree">
+        SELECT
+            aau.id
+            ,aau.account_name AS accountName
+            ,aau.user_name AS userName
+            ,aau.user_status AS userStatus
+            ,aau.reopen_time AS reopenTime
+            ,aau.no_comment AS noComment
+            ,aau.recomment_time AS recommentTime
+        FROM
+            art_app_user aau
+        {#paras}
+        <parameters id="paras" prefix="where" suffix="" />
+    </sql>
+</sqls>

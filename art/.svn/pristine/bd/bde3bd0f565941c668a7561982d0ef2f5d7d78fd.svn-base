@@ -1,0 +1,247 @@
+package com.golead.art.literature;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
+
+import com.golead.art.artist.service.ArtArtistService;
+import com.golead.art.literature.service.ArtLiteratureOtherService;
+import com.golead.art.utils.QTool;
+import com.golead.art.works.service.ArtSysLogService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtLiteratureOtherAction extends BaseAction {
+
+   private Log                       log       = LogFactory.getLog(ArtLiteratureOtherAction.class);
+
+   public static String              FILE_PATH = ServletActionContext.getServletContext().getRealPath("upload/literature/other");
+
+   private File                      importFile;
+
+   private List<File>                files;
+
+   private String                    filesFileName;
+
+   private List<Map<String, String>> cookie    = new ArrayList<Map<String, String>>();
+
+   @Resource
+   private ArtLiteratureOtherService artLiteratureOtherService;
+
+   @Resource
+   private ArtArtistService          artArtistService;
+
+   @Resource
+   private ArtSysLogService          artSysLogService;
+
+   @Override
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = getForm().getAction();
+
+      if (action == null) {
+         action = LIST;
+      }
+      if (log.isDebugEnabled()) log.debug("action" + action);
+      initForm();
+      try {
+         if (LIST.equalsIgnoreCase(action)) forward = list();
+         else if (PAGE.equalsIgnoreCase(action)) forward = page();
+         else if (ADD.equalsIgnoreCase(action)) forward = add();
+         else if (SAVE.equalsIgnoreCase(action)) forward = save();
+         else if (EDIT.equalsIgnoreCase(action)) forward = edit();
+         else if (UPDATE.equalsIgnoreCase(action)) forward = update();
+         else if (DELETE.equalsIgnoreCase(action)) forward = delete();
+         else if (VIEW.equalsIgnoreCase(action)) forward = view();
+
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   public String list() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'list' method");
+      return LIST;
+   }
+
+   public String page() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'page' method");
+      try {
+         PageQuery pageQuery = getForm().getQuery();
+         pageQuery = artLiteratureOtherService.queryArtLiteratureOther(pageQuery);
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         for (Map<String, Object> item : pageQuery.getRecordSet()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+
+            String cName = item.get("cName") == null || "".equals(item.get("cName")) ? "" : item.get("cName") + "";
+
+            String literatureTitle = item.get("literatureTitle") == null || "".equals(item.get("literatureTitle")) ? "" : item.get("literatureTitle") + "^javascript:view(" + item.get("id") + ");^_self";
+
+            String currerTime = item.get("currerTime") == null || "".equals(item.get("currerTime")) ? "" : item.get("currerTime") + "";
+
+            String attachmentSource = item.get("attachmentSource") == null || "".equals(item.get("attachmentSource")) ? "" : item.get("attachmentSource") + "";
+
+            String press = item.get("press") == null || "".equals(item.get("press")) ? "" : item.get("press") + "";
+
+            String publicationPeriod = item.get("publicationPeriod") == null || "".equals(item.get("publicationPeriod")) ? ""
+                  : item.get("publicationPeriod") + "";
+
+            String pubName = item.get("pubName") == null || "".equals(item.get("pubName")) ? "" : item.get("pubName") + "";
+
+            String relevantPages = item.get("relevantPages") == null || "".equals(item.get("relevantPages")) ? "" : item.get("relevantPages") + "";
+
+            String auther = item.get("auther") == null || "".equals(item.get("auther")) ? "" : item.get("auther") + "";
+            map.put("id", item.get("id"));
+            map.put("data",
+                  new Object[] { "", cName, literatureTitle, auther, currerTime, pubName, press, publicationPeriod, relevantPages, attachmentSource });
+            list.add(map);
+         }
+         String res = genGridJson(pageQuery, list);
+         artSysLogService.createArtSysLog(currentUser.getUserName(), "其他收录管理", "其他收录管理", "查询条件为：" + QTool.getParamter(pageQuery.getParameters()));
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+
+   public String add() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'addMedium' method");
+      try {
+         initForm();
+         return "ADD";
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+   }
+
+   public String save() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'saveMedium' method");
+      try {
+
+         artSysLogService.createArtSysLog(currentUser.getUserName(), "其他收录管理", "其他收录管理", "添加其他收录：" + "");
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (ServiceException e) {
+         addMessage(getForm(), e.getMessage());
+         return ADD;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         addMessage(getForm(), "保存操作失败!");
+         return ADD;
+      }
+   }
+
+   public String edit() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'editMedium' method");
+      try {
+         Map<String, String> record = form.getRecord();
+         return EDIT;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+   }
+
+   public String update() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'updateMedium' method");
+      try {
+         Map<String, String> record = form.getRecord();
+
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         addMessage(getForm(), e.getMessage());
+         initForm();
+         return EDIT;
+      }
+   }
+
+   public String delete() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'deleteMedium' method");
+      try {
+         StringBuffer log = new StringBuffer();
+
+         artSysLogService.createArtSysLog(currentUser.getUserName(), "其他收录管理", "其他收录管理", "删除其他收录：" + log.toString());
+         return page();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         return ERROR;
+      }
+   }
+
+   public String view() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'viewMedium' method");
+      try {
+         Map<String, String> record = form.getRecord();
+
+         return VIEW;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+   }
+
+   public void initForm() throws Exception {
+      setCode(getForm(), "COMMENT_LEVEL");
+   }
+
+   public File getImportFile() {
+      return importFile;
+   }
+
+   public void setImportFile(File importFile) {
+      this.importFile = importFile;
+   }
+
+   public List<File> getFiles() {
+      return files;
+   }
+
+   public void setFiles(List<File> files) {
+      this.files = files;
+   }
+
+   public String getFilesFileName() {
+      return filesFileName;
+   }
+
+   public void setFilesFileName(String filesFileName) {
+      this.filesFileName = filesFileName;
+   }
+
+   public List<Map<String, String>> getCookie() {
+      return cookie;
+   }
+
+   public void setCookie(List<Map<String, String>> cookie) {
+      this.cookie = cookie;
+   }
+
+}

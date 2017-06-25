@@ -1,0 +1,76 @@
+package com.golead.art.app.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import com.golead.art.app.appUser.dao.ArtAppUserDao;
+import com.golead.art.app.appUser.model.ArtAppUser;
+import com.golead.art.app.appUser.service.ArtAppUserService;
+import com.golead.art.app.service.UserFristService;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.service.impl.BaseServiceImpl;
+
+public class UserFristServiceImpl extends BaseServiceImpl implements UserFristService {
+
+   @Override
+   public List<Map<String, Object>> selectArt(Map<String, String> parameters) throws ServiceException {
+      String pageName = parameters.get("pageName");
+      if (pageName.equalsIgnoreCase("login")) return login(parameters);// 登陆
+      //      else if (pageName.equalsIgnoreCase("listCode")) return sysCode(parameters);// 查询代码信息
+
+      return null;
+   }
+
+   private List<Map<String, Object>> login(Map<String, String> parameters) throws ServiceException {
+      System.out.println("login...");
+      try {
+         String account = returnString(parameters.get("account"));
+         String password = returnString(parameters.get("password"));
+         if("".equals(account) || "".equals(password)){
+            return null;
+         }
+         int id = isLogin(account, password);
+         if(id == 0){
+            throw new ServiceException("没有找到用户！");
+         }
+         String sql = "SELECT u.id AS userId FROM art_app_user u WHERE u.id=" + id;
+         return jdbcDao.queryBySql(sql);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   private int isLogin(String account, String password){
+      List<ArtAppUser> artAppUsers = artAppUserDao.findByField(ArtAppUser.PROP_ACCOUNT_NAME, account);
+      if(artAppUsers != null && artAppUsers.size() == 1){
+         ArtAppUser artAppUser = artAppUsers.get(0);
+         if(password.equals(returnString(artAppUser.getPassword()))){
+            return artAppUser.getId();
+         }
+      }
+      artAppUsers = artAppUserDao.findByField(ArtAppUser.PROP_PHONE_NUMBER, account);
+      if(artAppUsers != null && artAppUsers.size() == 1){
+         ArtAppUser artAppUser = artAppUsers.get(0);
+         if(password.equals(returnString(artAppUser.getPassword()))){
+            return artAppUser.getId();
+         }
+      }
+      return 0;
+   }
+
+   private String returnString(Object obj) {
+      if (obj == null) { return ""; }
+      return obj.toString();
+   }
+
+
+   @Resource
+   private ArtAppUserDao artAppUserDao;
+}

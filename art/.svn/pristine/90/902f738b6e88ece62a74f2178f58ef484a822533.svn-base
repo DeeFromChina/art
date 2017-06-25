@@ -1,0 +1,31 @@
+#Update values
+#Fri Jul 08 14:43:09 CST 2016
+GenDao=true
+db.Column.house_id=house_id,INTEGER,houseId,integer,10,0,N,N,Y,\u62CD\u5356\u884C,
+GenWeb=false
+db.Column.id=id,INTEGER,id,integer,10,0,Y,N,N, ,
+FilePath.Annotation=1
+db.Column.auction_time=auction_time,TIMESTAMP,auctionTime,date,19, ,N,N,Y,\u62CD\u5356\u65F6\u95F4,
+FilePath.JspPath=
+FilePath.Dao=com.golead.art.auction.dao
+db.Column.place_id=place_id,INTEGER,placeId,integer,10,0,N,N,Y,\u62CD\u573A,
+java.ClassName=ArtAuction
+FilePath.SpringCfgFile=
+db.SequenceName=
+db.Column.works_source=works_source,VARCHAR,worksSource,string,200, ,N,N,Y,\u4F5C\u54C1\u6765\u6E90,
+projectAnnotation=1
+db.Table=art_auction
+FilePath.Service=com.golead.art.auction.service
+GenService=false
+FilePath.JavaDaoPath=/src/dao
+db.Schema=
+db.PKGenerator=native
+FilePath.Vo=com.golead.art.auction.model
+db.Column.auxtion_no=auxtion_no,VARCHAR,auxtionNo,string,30, ,N,N,Y,\u62CD\u5356\u7F16\u53F7,
+FilePath.SpringDaoCfgFile=
+db.Column.identity=identity,VARCHAR,identity,string,64, ,N,N,Y,\u6807\u8BC6,
+db.Column.auction_desc=auction_desc,VARCHAR,auctionDesc,string,500, ,N,N,Y,\u62CD\u5356\u8BF4\u660E,
+FilePath.ActionPath=
+FilePath.ActionPackage=
+FilePath.StrutsCfgFile=
+FilePath.JavaServicePath=/src/service

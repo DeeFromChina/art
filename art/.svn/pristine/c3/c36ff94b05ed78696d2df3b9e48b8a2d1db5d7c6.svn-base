@@ -1,0 +1,126 @@
+package com.golead.art.literature.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.literature.dao.ArtLiteratureNetworkDao;
+import com.golead.art.literature.model.ArtLiteratureNetwork;
+import com.golead.art.literature.service.ArtLiteratureNetworkService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtLiteratureNetworkServiceImpl extends BaseServiceImpl implements ArtLiteratureNetworkService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtLiteratureNetwork getArtLiteratureNetwork(Serializable id) throws ServiceException {
+		try {
+			return artLiteratureNetworkDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtLiteratureNetwork(ArtLiteratureNetwork artLiteratureNetwork) throws ServiceException {
+		try {
+			artLiteratureNetworkDao.save(artLiteratureNetwork);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtLiteratureNetwork(Map<String, String> artLiteratureNetworkMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artLiteratureNetworkMap.get(ArtLiteratureNetwork.PROP_ID));
+			ArtLiteratureNetwork tmp = artLiteratureNetworkDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artLiteratureNetworkMap, true);			
+			artLiteratureNetworkDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtLiteratureNetwork(Serializable id) throws ServiceException {
+		try {
+			artLiteratureNetworkDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtLiteratureNetworks(Serializable[] ids) throws ServiceException {
+		try {
+			artLiteratureNetworkDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtLiteratureNetwork(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artLiteratureNetworkList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtLiteratureNetworkDao	artLiteratureNetworkDao;
+
+	public void setArtLiteratureNetworkDao(ArtLiteratureNetworkDao artLiteratureNetworkDao) {
+		this.artLiteratureNetworkDao = artLiteratureNetworkDao;
+	}
+}
+

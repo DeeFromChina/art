@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>                     
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+
+<beans>
+	<bean id="generalControl" class="com.golead.art.job.service.GeneralControl">
+		<property name="popObjects">
+			<map>
+				<entry key="checkArtAuction" value="checkArtAuction"/>
+			</map>
+		</property>
+	</bean>
+	
+	<!-- 生成作品拍卖-->
+	<bean id="checkArtAuction" class="com.golead.art.job.service.impl.ArtAuctionGeneImpl" autowire="byName"/>	
+	
+	<bean id="job1"	class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+		<property name="targetObject" ref="generalControl" />
+		<property name="targetMethod" value="scanExecuteJob" />
+		<property name="concurrent" value="false" />
+	</bean>
+
+    <!-- 每天零时启动任务 "0 15 10 ? * *" 每天上午10:15触发 -->
+	<bean id="checkJob" class="org.springframework.scheduling.quartz.CronTriggerBean">
+		<property name="jobDetail" ref="job1" />
+		<property name="cronExpression">
+			<value>0 04 14 * * ? *</value>
+		</property>
+	</bean>
+	
+	<bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			<list>
+				<ref local="checkJob" />
+			</list>
+		</property>
+	</bean>
+	
+</beans>                     

@@ -1,0 +1,126 @@
+package com.golead.art.auction.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.auction.dao.ArtAuctionHousesDao;
+import com.golead.art.auction.model.ArtAuctionHouses;
+import com.golead.art.auction.service.ArtAuctionHousesService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtAuctionHousesServiceImpl extends BaseServiceImpl implements ArtAuctionHousesService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtAuctionHouses getArtAuctionHouses(Serializable id) throws ServiceException {
+		try {
+			return artAuctionHousesDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtAuctionHouses(ArtAuctionHouses artAuctionHouses) throws ServiceException {
+		try {
+			artAuctionHousesDao.save(artAuctionHouses);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtAuctionHouses(Map<String, String> artAuctionHousesMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artAuctionHousesMap.get(ArtAuctionHouses.PROP_ID));
+			ArtAuctionHouses tmp = artAuctionHousesDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artAuctionHousesMap, true);			
+			artAuctionHousesDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionHouses(Serializable id) throws ServiceException {
+		try {
+			artAuctionHousesDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionHousess(Serializable[] ids) throws ServiceException {
+		try {
+			artAuctionHousesDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtAuctionHouses(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artAuctionHousesList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtAuctionHousesDao	artAuctionHousesDao;
+
+	public void setArtAuctionHousesDao(ArtAuctionHousesDao artAuctionHousesDao) {
+		this.artAuctionHousesDao = artAuctionHousesDao;
+	}
+}
+

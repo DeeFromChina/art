@@ -1,0 +1,320 @@
+<%@page language="java" pageEncoding="UTF-8"%>
+<%@taglib uri="/struts-tags" prefix="s" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="/WEB-INF/tag/gl-tag.tld" prefix="gl"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<%@include file="/common/header.jsp" %>
+<script language="javascript">		
+	var contextpath = "<%=CONTEXT_PATH%>";
+	var fulllink = contextpath + "works/artWorks.do";	
+	var periodlink = contextpath + "works/artPeriod.do";	
+	var partSize;
+	var i = 0;
+	var ret=new Object();
+
+	function goCancel(){
+		parent.closedialog('false');
+	}
+
+	function goSubmit() {
+		if(checkFormInput()){
+		    var url =fulllink+"?action=UPDATE";
+		  	document.forms[0].action=url;
+			document.forms[0].submit();
+		} 
+		/* var fileName = document.getElementById('file').value;
+		var format = fileName.split(".");
+		var i = format.length;
+		if(format[i-1] != "jpg" && format[i-1] != "jpeg" && format[i-1] != "gif" && format[i-1] != "png"){
+			alert("只能上传图片格式！");
+		} */
+	}
+	
+	function checkPartSize_l(){
+		var isPass = true;
+		$(".partSize_l").each(function(){
+			if(!checkNumeric(this,"局部尺寸",400,true,true)) {
+				isPass = false;
+				return false;
+			}
+		});
+		return isPass;
+	}
+	
+	function checkFormInput(){
+		if(!checkString(getElement('record.no'),"作品编号",30,true)) return;
+		if(!checkString(getElement('record.artArtistName'),"作者",30,true)) return;
+		if (!checkString(getElement('record.chineseName'), "作品名称", 30, true)) return;
+		if(!checkString(getElement('record.englishName'),"英文名称",30,true)) return;
+		if(!checkString(getElement('record.createTime'),"创作时间",30,true)) return; 
+		if(!checkNumeric(getElement('record.createFrom'),"创作时间段",30,true)) return;
+		if(!checkNumeric(getElement('record.createTo'),"创作时间段",30,true)) return;
+		if (!checkString(getElement('record.worksSeries'), "作品系列", 30, true)) return;
+		if(!checkString(getElement('record.worksTheme'),"作品题材",30,true)) return;
+		if(!checkString(getElement('record.sizeCm'),"尺寸(cm)",30,true)) return; 
+		if(!checkString(getElement('record.sizeIn'),"尺寸(in)",30,true)) return;
+		if(!checkString(getElement('record.sizeRule'),"尺寸(尺)",30,true)) return;
+		if(!checkPartSize_l()) return;
+		/* if (!checkString(getElement('record.thumbnailName'), "缩略图", 30, true)) return; */
+		if(!checkString(getElement('record.medium'),"媒介",30,true)) return;
+		if(!checkString(getElement('record.signature'),"签名",30,true)) return; 
+		if(!checkString(getElement('record.styleContent'),"风格技法",30,true)) return;
+		if(!checkString(getElement('record.createPlace'),"创作地点",30,true)) return;
+		if(!checkString(getElement('record.worksCategory'),"作品类别",30,true)) return;
+		if(!checkString(getElement('record.worksStatus'),"作品地位",30,true)) return; 
+		if(!checkString(getElement('record.createCause'),"创作缘由",30,true)) return;
+		if(!checkString(getElement('record.backStory'),"背景故事",30,true)) return;
+		return true;
+	}
+	
+	function closedialog(ret) {
+		var res=ret['ret'];
+	     if(res==true) {
+	    	 getElement('record.artArtistId').value=ret['str'];
+	    	 getElement('record.artArtistName').value=ret['str1'];
+	     }
+		if(ret=='true') {
+			goSearch();
+		}
+		editMode="";
+	}
+
+	
+	function init(){
+		showMessage('<s:property value="errorMessage" escape="false"/>');
+		calendar1 = initCalendar("createTime","imgCreateTime");
+	}
+	
+	function goArtArtist(){
+		var url_link=contextpath+'works/artWorks.do?action=ARTIST&ids='+$$("artWorksForm_record_artArtistId").value;
+	    openWindow("选择作者",url_link,200,300);	
+	}
+	
+	function goThumbnail(){
+		var url_link=contextpath+'works/artWorks.do?action=THUMBNAIL&id='+$$("artWorksForm_record_id").value;
+	    openWindow("选择缩略图",url_link,200,300);	
+	}
+	
+	function addFileRow(){
+		 var t  = document.getElementById('tblUpload');
+		 var rows = t.rows.length;
+		 if(rows>=5){
+			 alert("超过最大上传文件数！");
+			 return;
+		 } else {
+			 var x=t.insertRow(rows);
+			 var one=x.insertCell(0);
+			 one.className="textL";
+			 var two=x.insertCell(1);
+			 one.innerHTML='<input type="text" class="partSize_l" name="record.partSize_l" style="width:30%;"/>&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;<input type="text" class="partSize_l" name="record.partSize_w" style="width:30%;"/>';
+			 two.innerHTML='<input type="button" style="width:50px;" name="del" value="删除" onclick="delRow(this)"/>';
+		 }
+	  }
+	
+	function delRow(obj) { 
+	     obj.parentNode.parentNode.removeNode(true);
+	}
+	
+	</script>
+<style type="text/css"> 
+   html, body {width:100%; height:100%; margin:0px; padding:0px; overflow:hidden;}
+</style>
+</head>
+ 
+<body onload="init()">
+	<s:form action="artWorks" id="artWorksForm" method="post" namespace="/works">
+			<s:hidden name="record.id"/>
+			<div id="tblForm"></div>
+			<div id="page_0">
+			<div id="formDiv" class="formDiv" style="padding:0px;">
+			<table cellpadding="0" cellspacing="0" width="90%" class="formTable">
+				<tr>
+					<td width="10%" class="textR"><font color="red">*</font>作品编号：</td>
+					<td width="20%"><s:textfield name="record.no"/></td>
+					<td width="10%" class="textR"><font color="red">*</font>作者：</td>
+					<td width="20%" class="textL">
+							<s:textfield readonly="true" name="record.artArtistName" style="width:80%;" />
+  	                        <s:hidden name="record.artArtistId" />
+  	                        <gl:button name="btnArtArtist" styleClass="btnFormStyle" onClick="goArtArtist()">角色</gl:button>
+  	                </td>
+				</tr>
+				<tr>
+					<td width="10%" class="textR"><font color="red">*</font>作品名称：</td>
+					<td width="20%"><s:textfield name="record.chineseName"/></td>
+					<td width="10%" class="textR"><font color="red">*</font>英文名称：</td>
+					<td width="20%"><s:textfield name="record.englishName"/></td>
+					<%-- <td width="15%" class="textR"><font color="red">*</font>缩略图：</td>
+					<td width="35%" class="textL">
+						<s:textfield name="record.thumbnailName" style="width:80%;" />
+  	                    <s:hidden name="record.id" />
+						<gl:button name="btnThumbnail" styleClass="btnFormStyle" onClick="goThumbnail()">添加缩略图</gl:button>
+						<!-- <input type="file" name="record.thumbnail" multiple="multiple" id="file"/> -->
+					</td> --%>
+					
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>创作时间：</td>
+					<td width="35%" class="textL">
+						<s:textfield name="record.createTime" cssStyle="width:80%;" readonly="true" id="createTime" />
+						<img id="imgCreateTime" style="cursor: pointer;" src="<%=CONTEXT_PATH%>dhtmlx/imgs/icon/7-4.gif" />
+					</td>
+					<td width="15%" class="textR"><font color="red">*</font>创作时间段：</td>
+					<td width="35%"  class="textL">
+						<s:textfield name="record.createFrom" cssStyle="width:30%;"/>&nbsp;年
+						&nbsp;&nbsp;&nbsp;~&nbsp;&nbsp;&nbsp;
+						<s:textfield name="record.createTo" cssStyle="width:30%;"/>&nbsp;年
+					</td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>作品系列：</td>
+					<td width="35%"><s:textfield name="record.worksSeries"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>作品题材：</td>
+					<td width="35%"><s:textfield name="record.worksTheme"/></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>尺寸(cm)：</td>
+					<td width="35%"><s:textfield name="record.sizeCm"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>尺寸(in)：</td>
+					<td width="35%"><s:textfield name="record.sizeIn" /></td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>尺寸(尺)：</td>
+					<td width="35%"><s:textfield name="record.sizeRule"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>创作地点：</td>
+					<td width="35%"><s:textfield name="record.createPlace"/></td>
+				</tr>
+				<tr >
+					<td><font color="red">*</font>局部尺寸：</td>
+					<td colspan="3" class="textL">
+					<table  id="tblUpload" cellpadding="0" cellspacing="0" width="100%"  class="formTable" align="left">
+					   <!-- <tr>
+						   <td class="textL">
+							   <input type="text" class="partSize_l" name="record.partSize_l" style="width:30%;"/>&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;<input type="text" class="partSize_l" name="record.partSize_w" style="width:30%;"/>
+						   </td>
+					      <td width="10%"><input type="button" style="width:50px;" value="增加" onclick="addFileRow()"/></td>
+					   </tr> -->
+						   <s:iterator value="partSizeList" id="partSize" status="ps">
+							   <s:if test='#partSize.id=="0"'>
+								   <tr>
+								      <td class="textL">
+										   <input type="text" class="partSize_l" name="record.partSize_l" value="${partSize.l_0}" style="width:30%;"/>&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;<input type="text" class="partSize_l" name="record.partSize_w" value="${partSize.w_0}" style="width:30%;"/>
+									   </td>
+								      <td width="10%"><input type="button" style="width:50px;" value="增加" onclick="addFileRow()"/></td>
+								   </tr>
+							   </s:if>
+							   <s:if  test='#partSize.id!="0" && #partSize.id != undefined'>
+							   	<c:set var='l' value="l_${ps.index}" scope="page"/>
+							   	<c:set var='w' value="w_${ps.index}" scope="page"/>
+							   		<tr>
+								      <td class="textL">
+										   <input type="text" class="partSize_l" name="record.partSize_l" value="${partSize[l]}" style="width:30%;"/>&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;<input type="text" class="partSize_l" name="record.partSize_w" value="${partSize[w]}" style="width:30%;"/>
+									   </td>
+								      <td><input type="button" style="width:50px;" name="del" value="删除" onclick="delRow(this)"/></td>
+								   </tr>
+							   </s:if>
+						 </s:iterator>
+					</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>媒介：</td>
+					<td width="35%"><s:select list="codeSets.MEDIUM_TYPE" listKey="value" listValue="codeName" name="record.medium"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>签名：</td>
+					<td width="35%"><s:select list="codeSets.SIGNATURE" listKey="value" listValue="codeName" name="record.signature"/></td>
+				</tr>
+				
+				<tr>
+					<td class="textR" valign="top"><font color="red">*</font>风格技法：</td>
+					<td colspan="3" valign="top">
+						<s:textarea style="height:160px;" name="record.styleContent" ></s:textarea>
+					</td>
+				</tr>
+				
+				<tr>
+					<td width="15%" class="textR"><font color="red">*</font>作品类别：</td>
+					<td width="35%"><s:select list="codeSets.ART_TYPE" listKey="value" listValue="codeName" name="record.worksCategory"/></td>
+					<td width="15%" class="textR"><font color="red">*</font>作品地位：</td>
+					<td width="35%"><s:textfield name="record.worksStatus"/></td>
+				</tr>
+				<tr>
+					<td class="textR" valign="top"><font color="red">*</font>创作缘由：</td>
+					<td colspan="3" valign="top">
+						<s:textarea style="height:160px;" name="record.createCause" ></s:textarea>
+					</td>
+				</tr>
+				<tr>
+					<td class="textR" valign="top"><font color="red">*</font>背景故事：</td>
+					<td colspan="3" valign="top">
+						<s:textarea style="height:160px;" name="record.backStory" ></s:textarea>
+					</td>
+				</tr>
+		 	</table>
+		 </div>
+		 </div>
+		 <iframe  id="page_1" width="100%" height="100%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_2" width="100%" height="100%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_3" width="100%" height="100%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_4" width="100%" height="100%" scrolling="no" frameborder="0"></iframe> 
+</s:form>
+
+<div id="btnDiv" class="btnDiv">
+	<gl:button name="btnAdd" onClick="goSubmit()" >保存</gl:button>
+     &nbsp;
+	 <gl:button name="btnAdd" onClick="goCancel()" >关闭</gl:button>
+</div>
+
+<script type="text/javascript"> 
+ 
+</script>
+
+<%-- <%@include file="/common/resize.jsp" %> --%>
+<%@include file="/common/dialog.jsp"%>
+<script type="text/javascript"> 
+var mainbody=window.document.body;
+if(window.addEventListener) {
+	     window.addEventListener("resize",goResize,false); 
+}
+else {
+	     window.attachEvent('onresize',goResize);
+}
+
+var fDiv=window.document.getElementById('formDiv');
+var bDiv=window.document.getElementById('btnDiv');
+var btbl=window.document.getElementById('tblForm');
+
+function goResize(){
+   fDiv.style.width=mainbody.offsetWidth-fDiv.offsetLeft*2+"px";
+   bDiv.style.width=mainbody.offsetWidth-bDiv.offsetLeft*2+"px";
+   fDiv.style.height=mainbody.offsetHeight-bDiv.offsetHeight-fDiv.offsetTop*2+10+"px";
+   bDiv.style.top=fDiv.offsetHeight+fDiv.offsetTop*2-5+"px";
+   if(btbl){
+	   btbl.style.width=fDiv.offsetWidth-fDiv.offsetLeft-9+"px";
+	   btbl.style.height=fDiv.offsetHeight-fDiv.offsetTop-12+"px";
+   }
+}
+goResize();  
+
+var tabbar = new dhtmlXTabBar("tblForm", "top");
+tabbar.setSkin('dhx_terrace');
+tabbar.setArrowsMode("auto");
+tabbar.addTab("a0", "作品基本信息", "120px");
+tabbar.addTab("a1", "作品时期", "120px");
+tabbar.addTab("a2", "意义与评价", "120px");
+tabbar.addTab("a3", "个案研究", "120px");
+tabbar.addTab("a4", "相关作品", "120px");
+tabbar.tabs("a0").attachObject("formDiv");
+tabbar.tabs("a0").setActive();
+tabbar.tabs("a1").attachObject("page_1");
+tabbar.tabs("a2").attachObject("page_2");
+tabbar.tabs("a3").attachObject("page_3");
+tabbar.tabs("a4").attachObject("page_4");
+tabbar.enableAutoReSize(true);
+window.frames["page_1"].location.href=periodlink+'?action=LIST&record.id='+$$('artWorksForm_record_id').value;
+window.frames["page_2"].location.href=periodlink+'?action=LIST&record.id='+$$('artWorksForm_record_id').value;
+window.frames["page_3"].location.href=periodlink+'?action=LIST&record.id='+$$('artWorksForm_record_id').value;
+window.frames["page_4"].location.href=periodlink+'?action=LIST&record.id='+$$('artWorksForm_record_id').value;
+</script>
+</body>
+</html>

@@ -1,0 +1,126 @@
+package com.golead.art.activity.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.activity.dao.ArtActivityAbmbDao;
+import com.golead.art.activity.model.ArtActivityAbmb;
+import com.golead.art.activity.service.ArtActivityAbmbService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtActivityAbmbServiceImpl extends BaseServiceImpl implements ArtActivityAbmbService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtActivityAbmb getArtActivityAbmb(Serializable id) throws ServiceException {
+		try {
+			return artActivityAbmbDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtActivityAbmb(ArtActivityAbmb artActivityAbmb) throws ServiceException {
+		try {
+			artActivityAbmbDao.save(artActivityAbmb);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtActivityAbmb(Map<String, String> artActivityAbmbMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artActivityAbmbMap.get(ArtActivityAbmb.PROP_ID));
+			ArtActivityAbmb tmp = artActivityAbmbDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artActivityAbmbMap, true);			
+			artActivityAbmbDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtActivityAbmb(Serializable id) throws ServiceException {
+		try {
+			artActivityAbmbDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtActivityAbmbs(Serializable[] ids) throws ServiceException {
+		try {
+			artActivityAbmbDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtActivityAbmb(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artActivityAbmbList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtActivityAbmbDao	artActivityAbmbDao;
+
+	public void setArtActivityAbmbDao(ArtActivityAbmbDao artActivityAbmbDao) {
+		this.artActivityAbmbDao = artActivityAbmbDao;
+	}
+}
+

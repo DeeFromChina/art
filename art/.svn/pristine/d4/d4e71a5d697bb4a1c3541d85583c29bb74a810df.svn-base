@@ -1,0 +1,126 @@
+package com.golead.art.works.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.works.dao.ArtWorksCollectDao;
+import com.golead.art.works.model.ArtWorksCollect;
+import com.golead.art.works.service.ArtWorksCollectService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtWorksCollectServiceImpl extends BaseServiceImpl implements ArtWorksCollectService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtWorksCollect getArtWorksCollect(Serializable id) throws ServiceException {
+		try {
+			return artWorksCollectDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtWorksCollect(ArtWorksCollect artWorksCollect) throws ServiceException {
+		try {
+			artWorksCollectDao.save(artWorksCollect);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtWorksCollect(Map<String, String> artWorksCollectMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artWorksCollectMap.get(ArtWorksCollect.PROP_ID));
+			ArtWorksCollect tmp = artWorksCollectDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artWorksCollectMap, true);			
+			artWorksCollectDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtWorksCollect(Serializable id) throws ServiceException {
+		try {
+			artWorksCollectDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtWorksCollects(Serializable[] ids) throws ServiceException {
+		try {
+			artWorksCollectDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtWorksCollect(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artWorksCollectList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtWorksCollectDao	artWorksCollectDao;
+
+	public void setArtWorksCollectDao(ArtWorksCollectDao artWorksCollectDao) {
+		this.artWorksCollectDao = artWorksCollectDao;
+	}
+}
+

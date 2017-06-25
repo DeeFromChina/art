@@ -1,0 +1,182 @@
+package com.golead.art.auction.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_auction table.
+ */
+@Entity  
+@Table(name="art_auction")  
+public class ArtAuction implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+
+   @Column(name = "identity")
+   private java.lang.String identity;   // 标识
+
+   @Column(name = "works_source")
+   private java.lang.String worksSource;   // 作品来源
+
+   @Column(name = "place_id")
+   private java.lang.Integer placeId;   // 拍场
+
+   @Column(name = "auction_time")
+   private java.util.Date auctionTime;   // 拍卖时间
+
+   @Column(name = "house_id")
+   private java.lang.Integer houseId;   // 拍卖行
+
+   @Column(name = "auction_desc")
+   private java.lang.String auctionDesc;   // 拍卖说明
+
+   @Column(name = "auxtion_no")
+   private java.lang.String auxtionNo;   // 拍卖编号
+
+   // Constructors
+   public ArtAuction() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.String getIdentity() { 
+      return this.identity; 
+   }
+   public void setIdentity(java.lang.String identity) { 
+      this.identity = identity; 
+   }
+
+
+   public java.lang.String getWorksSource() { 
+      return this.worksSource; 
+   }
+   public void setWorksSource(java.lang.String worksSource) { 
+      this.worksSource = worksSource; 
+   }
+
+
+   public java.lang.Integer getPlaceId() { 
+      return this.placeId; 
+   }
+   public void setPlaceId(java.lang.Integer placeId) { 
+      this.placeId = placeId; 
+   }
+
+
+   public java.util.Date getAuctionTime() { 
+      return this.auctionTime; 
+   }
+   public void setAuctionTime(java.util.Date auctionTime) { 
+      this.auctionTime = auctionTime; 
+   }
+
+
+   public java.lang.Integer getHouseId() { 
+      return this.houseId; 
+   }
+   public void setHouseId(java.lang.Integer houseId) { 
+      this.houseId = houseId; 
+   }
+
+
+   public java.lang.String getAuctionDesc() { 
+      return this.auctionDesc; 
+   }
+   public void setAuctionDesc(java.lang.String auctionDesc) { 
+      this.auctionDesc = auctionDesc; 
+   }
+
+
+   public java.lang.String getAuxtionNo() { 
+      return this.auxtionNo; 
+   }
+   public void setAuxtionNo(java.lang.String auxtionNo) { 
+      this.auxtionNo = auxtionNo; 
+   }
+
+
+   public static String REF_CLASS = "ArtAuction";
+   public static String PROP_ID = "id";
+   public static String PROP_IDENTITY = "identity";
+   public static String PROP_WORKS_SOURCE = "worksSource";
+   public static String PROP_PLACE_ID = "placeId";
+   public static String PROP_AUCTION_TIME = "auctionTime";
+   public static String PROP_HOUSE_ID = "houseId";
+   public static String PROP_AUCTION_DESC = "auctionDesc";
+   public static String PROP_AUXTION_NO = "auxtionNo";
+
+   public static String REF_TABLE = "art_auction";
+   public static String COL_ID = "id";
+   public static String COL_IDENTITY = "identity";
+   public static String COL_WORKS_SOURCE = "works_source";
+   public static String COL_PLACE_ID = "place_id";
+   public static String COL_AUCTION_TIME = "auction_time";
+   public static String COL_HOUSE_ID = "house_id";
+   public static String COL_AUCTION_DESC = "auction_desc";
+   public static String COL_AUXTION_NO = "auxtion_no";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.auction.model.ArtAuction)) return false;
+      else {
+         com.golead.art.auction.model.ArtAuction o = (com.golead.art.auction.model.ArtAuction) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtAuction:");
+		buffer.append(" id:").append(id);
+		buffer.append(" identity:").append(dealNull(identity));
+		buffer.append(" worksSource:").append(dealNull(worksSource));
+		buffer.append(" placeId:").append(dealNull(placeId));
+		buffer.append(" auctionTime:").append(dealNull(auctionTime));
+		buffer.append(" houseId:").append(dealNull(houseId));
+		buffer.append(" auctionDesc:").append(dealNull(auctionDesc));
+		buffer.append(" auxtionNo:").append(dealNull(auxtionNo));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"identity\":\"").append(dealNull(identity)).append("\"");
+		buffer.append(",\"worksSource\":\"").append(dealNull(worksSource)).append("\"");
+		buffer.append(",\"placeId\":\"").append(dealNull(placeId)).append("\"");
+		buffer.append(",\"auctionTime\":\"").append(dealNull(auctionTime)).append("\"");
+		buffer.append(",\"houseId\":\"").append(dealNull(houseId)).append("\"");
+		buffer.append(",\"auctionDesc\":\"").append(dealNull(auctionDesc)).append("\"");
+		buffer.append(",\"auxtionNo\":\"").append(dealNull(auxtionNo)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

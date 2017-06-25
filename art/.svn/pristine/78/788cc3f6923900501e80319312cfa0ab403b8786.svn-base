@@ -1,0 +1,168 @@
+package com.golead.art.works.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+import com.golead.art.artist.model.ArtArtistWorksPeriod;
+import com.golead.art.artist.service.ArtArtistWorksPeriodService;
+import com.golead.art.works.dao.ArtWorksPeriodDao;
+import com.golead.art.works.model.ArtWorksPeriod;
+import com.golead.art.works.service.ArtWorksPeriodService;
+
+import javax.annotation.Resource; 
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtWorksPeriodServiceImpl extends BaseServiceImpl implements ArtWorksPeriodService {
+   private static final long serialVersionUID = 1L;
+
+   public ArtWorksPeriod getArtWorksPeriod(Serializable id) throws ServiceException {
+      try {
+         return artWorksPeriodDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+   }
+
+   public void createArtWorksPeriod(ArtWorksPeriod artWorksPeriod) throws ServiceException {
+      try {
+         artWorksPeriodDao.save(artWorksPeriod);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+   }
+
+   public void updateArtWorksPeriod(Map<String, String> artWorksPeriodMap) throws ServiceException {
+      try {
+         Integer pkId = new Integer(artWorksPeriodMap.get(ArtWorksPeriod.PROP_ID));
+         ArtWorksPeriod tmp = artWorksPeriodDao.get(pkId);
+         ConvertUtil.mapToObject(tmp, artWorksPeriodMap, true);  
+         artWorksPeriodMap.put("id", artWorksPeriodMap.get("artistworksPeriodId"));
+         artArtistWorksPeriodService.updateArtArtistWorksPeriod(artWorksPeriodMap);
+         artWorksPeriodDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+   }
+
+   public void deleteArtWorksPeriod(Serializable id) throws ServiceException {
+      try {
+         artWorksPeriodDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+   }
+
+   public void deleteArtWorksPeriods(Serializable[] ids) throws ServiceException {
+      try {
+         artWorksPeriodDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+   }
+
+   public PageQuery queryArtWorksPeriod(PageQuery pageQuery) throws ServiceException {
+      try {
+        createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artWorksPeriodList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+   }
+   
+   private void createSqlFilter(PageQuery page) {
+      String paras = " 1=1 ";
+      Map<String, String> map = page.getParameters();
+      
+      String worksId = map.get("id");
+      if (worksId != null && worksId.trim().length() > 0) {
+         paras += " AND works.id =" + worksId.trim();
+      }
+      
+      if (paras.length() > 0) page.getParameters().put("paras", paras);
+   }
+   
+   public void createArtWorksPeriodAndArtArtistWorksPeriod(Map<String, String> map) throws ServiceException{
+      try {
+         ArtWorksPeriod artWorksPeriod = new ArtWorksPeriod();
+         artWorksPeriod.setPeriodType(map.get("periodType"));
+         artWorksPeriod.setPeriodName(map.get("periodName"));
+         artWorksPeriod.setWorksId(Integer.valueOf(map.get("worksId")));
+         createArtWorksPeriod(artWorksPeriod);
+         ArtArtistWorksPeriod artArtistWorksPeriod = new ArtArtistWorksPeriod();
+         artArtistWorksPeriod.setArtistId(Integer.valueOf(map.get("artistId")));
+         artArtistWorksPeriod.setPeriodName(map.get("periodName"));
+         artArtistWorksPeriod.setPeriodType(map.get("periodType"));
+         artArtistWorksPeriodService.createArtArtistWorksPeriod(artArtistWorksPeriod);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+   }
+   
+    @Resource
+   private ArtWorksPeriodDao  artWorksPeriodDao;
+    
+    @Resource
+    private ArtArtistWorksPeriodService  artArtistWorksPeriodService;
+
+   public void setArtWorksPeriodDao(ArtWorksPeriodDao artWorksPeriodDao) {
+      this.artWorksPeriodDao = artWorksPeriodDao;
+   }
+}
+

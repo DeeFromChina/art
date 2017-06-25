@@ -1,0 +1,65 @@
+ body { 
+font: normal 11px auto "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;  
+background: #c6e6FF;
+}  
+a { 
+color: #c75f3e; 
+}  
+table { 
+width: 100%; 
+padding: 0; 
+border-top: 2px solid black; 
+border-left: 2px solid black; 
+border-right: 1px solid black; 
+border-bottom: 1px solid black; 
+margin:auto;
+}  
+caption { 
+padding: 0 0 3px 0; 
+width: 100%; 
+font: 11px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; 
+text-align: center; 
+}  
+th { 
+font: bold 18px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; 
+border-right: 1px solid #333333; 
+border-bottom: 1px solid #333333; 
+letter-spacing: 2px; 
+text-transform: uppercase; 
+text-align: left; 
+padding: 6px 6px 6px 12px; 
+background: #FF9900  no-repeat; 
+}  
+th.nobg { 
+border-top: 0; 
+border-left: 0; 
+border-right: 1px solid #C1DAD7; 
+background: none; 
+}  
+td { 
+border-right: 1px solid #333333; 
+border-bottom: 1px solid #333333; 
+background: #fff; 
+font-size:18px; 
+padding: 6px 6px 6px 12px;  
+}  
+td.alt { 
+background: #F5FAFA; 
+color: #797268; 
+} 
+
+th.spec { 
+border-left: 1px solid #C1DAD7; 
+border-top: 0; 
+background: #fff no-repeat; 
+font: bold 10px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif;
+} 
+
+th.specalt { 
+border-left: 1px solid #C1DAD7; 
+border-top: 0; 
+background: #f5fafa no-repeat; 
+font: bold 10px "Trebuchet MS", Verdana, Arial, Helvetica, sans-serif; 
+color: #797268;
+align: center;
+} 

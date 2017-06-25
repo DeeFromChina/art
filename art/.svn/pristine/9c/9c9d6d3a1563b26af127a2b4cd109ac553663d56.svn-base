@@ -1,0 +1,63 @@
+<%@page language="java" pageEncoding="UTF-8"%>
+<%@taglib uri="/struts-tags" prefix="s"%>
+<%@taglib uri="/WEB-INF/tag/gl-tag.tld" prefix="gl"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<%@include file="/common/header.jsp"%>
+<style type="text/css">
+html, body { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+	<s:hidden name="record.currentUser" id="currentUser"></s:hidden>
+	<div id="div_left" style="background-color: #ffffff; height: 100%; width: 100%;"></div>
+
+	<script type="text/javascript">
+
+		var dhxLayout = new dhtmlXLayoutObject(document.body, "2U");
+    	dhxLayout.setSkin("dhx_terrace");
+    	var leftPanel=dhxLayout.cells("a");
+    	var rightPanel=dhxLayout.cells("b");
+    	leftPanel.hideHeader();
+    	leftPanel.attachObject("div_left");
+    	leftPanel.setWidth(250);
+    	rightPanel.hideHeader();
+
+    	var formDateStart = null;
+    	var formDateEnd = null;
+    	dhxLayout.attachEvent("onContentLoaded", function(id){
+    		 
+    		if(id == "b") {
+        	    var ifr = rightPanel.getFrame();
+        	    formDateStart = ifr.contentWindow.document.getElementById("formDateStart");
+        	    formDateEnd = ifr.contentWindow.document.getElementById("formDateEnd");
+    		}
+    	 
+    	});
+    	
+		var tree = new dhtmlXTreeObject("div_left","100%","100%",0);
+		tree.setImagePath("<%=CONTEXT_PATH%>dhtmlx/imgs/dhxtree_terrace/");
+		tree.attachEvent("onSelect", function(id){
+			viewCodesetGrid(id);
+		});
+		tree.attachEvent("onXLE", function(){
+			var array = tree.getSubItems("0").split(',');
+			tree.selectItem(array[0]);
+		});
+    	tree.setSkin('dhx_terrace');
+		tree.setXMLAutoLoading("<%=CONTEXT_PATH%>system/sysOrg.do?action=getTree&showDepts=0");
+		tree.loadXML("<%=CONTEXT_PATH%>system/sysOrg.do?action=getTree&id=0&filteByUser=1&showDepts=0");
+		
+		function viewCodesetGrid(id){
+			var type = tree.getUserData(id, "type");
+			var orgCode = tree.getUserData(id, "orgCode");
+			var url = "<%=CONTEXT_PATH%>system/sysUserDigtalSign.do?action=LIST";
+			
+			url += "&query.parameters.orgId=" + id.replace("org","");
+			rightPanel.attachURL(url);
+		}
+
+	</script>
+</body>
+</html>

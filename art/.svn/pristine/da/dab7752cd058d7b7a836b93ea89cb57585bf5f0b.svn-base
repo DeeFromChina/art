@@ -1,0 +1,126 @@
+package com.golead.art.artist.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.works.dao.ArtArtistCollectAgencyDao;
+import com.golead.art.artist.model.ArtArtistCollectAgency;
+import com.golead.art.artist.service.ArtArtistCollectAgencyService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtArtistCollectAgencyServiceImpl extends BaseServiceImpl implements ArtArtistCollectAgencyService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtArtistCollectAgency getArtArtistCollectAgency(Serializable id) throws ServiceException {
+		try {
+			return artArtistCollectAgencyDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtArtistCollectAgency(ArtArtistCollectAgency artArtistCollectAgency) throws ServiceException {
+		try {
+			artArtistCollectAgencyDao.save(artArtistCollectAgency);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtArtistCollectAgency(Map<String, String> artArtistCollectAgencyMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artArtistCollectAgencyMap.get(ArtArtistCollectAgency.PROP_ID));
+			ArtArtistCollectAgency tmp = artArtistCollectAgencyDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artArtistCollectAgencyMap, true);			
+			artArtistCollectAgencyDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistCollectAgency(Serializable id) throws ServiceException {
+		try {
+			artArtistCollectAgencyDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistCollectAgencys(Serializable[] ids) throws ServiceException {
+		try {
+			artArtistCollectAgencyDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtArtistCollectAgency(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artArtistCollectAgencyList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtArtistCollectAgencyDao	artArtistCollectAgencyDao;
+
+	public void setArtArtistCollectAgencyDao(ArtArtistCollectAgencyDao artArtistCollectAgencyDao) {
+		this.artArtistCollectAgencyDao = artArtistCollectAgencyDao;
+	}
+}
+

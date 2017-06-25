@@ -1,0 +1,52 @@
+package com.golead.art.literature.dao.impl;
+
+import java.io.Serializable;
+import com.golead.core.exception.DAOException;
+import com.golead.core.dao.impl.HibernateDaoImpl;
+import com.golead.art.literature.model.ArtLiteratureInclude;
+import com.golead.art.literature.dao.ArtLiteratureIncludeDao;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ArtLiteratureIncludeDaoImpl extends HibernateDaoImpl<ArtLiteratureInclude> implements ArtLiteratureIncludeDao {
+
+	public Class getReferenceClass() {
+		return ArtLiteratureInclude.class;
+	}
+
+	public ArtLiteratureInclude cast(Object object) {
+		return (ArtLiteratureInclude) object;
+	}
+
+	public ArtLiteratureInclude get(Serializable id)  throws DAOException{
+		return (ArtLiteratureInclude) super.get(id);
+	}
+
+	public ArtLiteratureInclude load(Serializable id)  throws DAOException{
+		return (ArtLiteratureInclude) super.load(id);
+	}
+
+	public Serializable save(ArtLiteratureInclude artLiteratureInclude)  throws DAOException{
+		return super.save(artLiteratureInclude);
+	}
+
+	public void saveOrUpdate(ArtLiteratureInclude artLiteratureInclude)  throws DAOException{
+		super.saveOrUpdate(artLiteratureInclude);
+	}
+
+	public void update(ArtLiteratureInclude artLiteratureInclude)  throws DAOException{
+		super.update(artLiteratureInclude);
+	}
+
+	public void delete(ArtLiteratureInclude artLiteratureInclude)  throws DAOException{
+		super.delete(artLiteratureInclude);
+	}
+
+	public void refresh(ArtLiteratureInclude artLiteratureInclude)  throws DAOException{
+		super.refresh(artLiteratureInclude);
+	}
+
+	public String getTableName() {
+		return ArtLiteratureInclude.REF_TABLE;
+	}
+}

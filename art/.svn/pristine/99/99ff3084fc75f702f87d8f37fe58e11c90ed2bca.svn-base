@@ -1,0 +1,137 @@
+package com.golead.art.artist.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_artist_experience table.
+ */
+@Entity  
+@Table(name="art_artist_experience")  
+public class ArtArtistExperience implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+   @Column(name = "art_id")
+   private java.lang.Integer artId;   // 艺术家ID
+
+
+   @Column(name = "c_experience")
+   private java.lang.String cExperience;   // 经历(中文)
+
+   @Column(name = "e_experience")
+   private java.lang.String eExperience;   // 经历(英文)
+
+   @Column(name = "year")
+   private java.lang.String year;   // 年份
+
+   // Constructors
+   public ArtArtistExperience() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.Integer getArtId() { 
+      return this.artId; 
+   }
+   public void setArtId(java.lang.Integer artId) { 
+      this.artId = artId; 
+   }
+
+
+   public java.lang.String getCexperience() { 
+      return this.cExperience; 
+   }
+   public void setCexperience(java.lang.String cExperience) { 
+      this.cExperience = cExperience; 
+   }
+
+
+   public java.lang.String getEexperience() { 
+      return this.eExperience; 
+   }
+   public void setEexperience(java.lang.String eExperience) { 
+      this.eExperience = eExperience; 
+   }
+
+
+   public java.lang.String getYear() { 
+      return this.year; 
+   }
+   public void setYear(java.lang.String year) { 
+      this.year = year; 
+   }
+
+
+   public static String REF_CLASS = "ArtArtistExperience";
+   public static String PROP_ART_ID = "artId";
+   public static String PROP_ID = "id";
+   public static String PROP_C_EXPERIENCE = "cExperience";
+   public static String PROP_E_EXPERIENCE = "eExperience";
+   public static String PROP_YEAR = "year";
+
+   public static String REF_TABLE = "art_artist_experience";
+   public static String COL_ART_ID = "art_id";
+   public static String COL_ID = "id";
+   public static String COL_C_EXPERIENCE = "c_experience";
+   public static String COL_E_EXPERIENCE = "e_experience";
+   public static String COL_YEAR = "year";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.artist.model.ArtArtistExperience)) return false;
+      else {
+         com.golead.art.artist.model.ArtArtistExperience o = (com.golead.art.artist.model.ArtArtistExperience) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtArtistExperience:");
+		buffer.append(" id:").append(id);
+		buffer.append(" artId:").append(dealNull(artId));
+		buffer.append(" cExperience:").append(dealNull(cExperience));
+		buffer.append(" eExperience:").append(dealNull(eExperience));
+		buffer.append(" year:").append(dealNull(year));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"artId\":\"").append(dealNull(artId)).append("\"");
+		buffer.append(",\"cExperience\":\"").append(dealNull(cExperience)).append("\"");
+		buffer.append(",\"eExperience\":\"").append(dealNull(eExperience)).append("\"");
+		buffer.append(",\"year\":\"").append(dealNull(year)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

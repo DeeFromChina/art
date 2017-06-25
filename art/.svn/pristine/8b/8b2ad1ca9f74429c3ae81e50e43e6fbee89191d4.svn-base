@@ -1,0 +1,126 @@
+package com.golead.art.auction.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.auction.dao.ArtAuctionTempDao;
+import com.golead.art.auction.model.ArtAuctionTemp;
+import com.golead.art.auction.service.ArtAuctionTempService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtAuctionTempServiceImpl extends BaseServiceImpl implements ArtAuctionTempService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtAuctionTemp getArtAuctionTemp(Serializable id) throws ServiceException {
+		try {
+			return artAuctionTempDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtAuctionTemp(ArtAuctionTemp artAuctionTemp) throws ServiceException {
+		try {
+			artAuctionTempDao.save(artAuctionTemp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtAuctionTemp(Map<String, String> artAuctionTempMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artAuctionTempMap.get(ArtAuctionTemp.PROP_ID));
+			ArtAuctionTemp tmp = artAuctionTempDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artAuctionTempMap, true);			
+			artAuctionTempDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionTemp(Serializable id) throws ServiceException {
+		try {
+			artAuctionTempDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionTemps(Serializable[] ids) throws ServiceException {
+		try {
+			artAuctionTempDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtAuctionTemp(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artAuctionTempList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtAuctionTempDao	artAuctionTempDao;
+
+	public void setArtAuctionTempDao(ArtAuctionTempDao artAuctionTempDao) {
+		this.artAuctionTempDao = artAuctionTempDao;
+	}
+}
+

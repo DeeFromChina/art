@@ -1,0 +1,202 @@
+package com.golead.art.artist;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.golead.art.artist.model.ArtArtistEdu;
+import com.golead.art.artist.service.ArtArtistEduService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtistEduAction extends BaseAction {
+
+	private Log log = LogFactory.getLog(ArtistEduAction.class);
+	
+	private final static SimpleDateFormat dateFormate = new SimpleDateFormat("yyyy-MM-dd");
+	private final static SimpleDateFormat datetimeFormate = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+	
+	@Resource
+	private ArtArtistEduService artArtistEduService;
+	
+	@Override
+	public String doExecute() throws Exception {
+		String forward = "";
+		String action = getForm().getAction();
+		if (action == null)
+			forward = LIST;
+		try {
+			if (LIST.equalsIgnoreCase(action)) forward = listEdu();
+			else if (PAGE.equalsIgnoreCase(action)) forward = pageEdu();
+			else if (ADD.equalsIgnoreCase(action)) forward = addEdu();
+			else if (SAVE.equalsIgnoreCase(action)) forward = saveEdu();
+			else if (EDIT.equalsIgnoreCase(action)) forward = editEdu();
+			else if (UPDATE.equalsIgnoreCase(action)) forward = updateEdu();
+			else if (DELETE.equalsIgnoreCase(action)) forward = deleteEdu();
+			else if (VIEW.equalsIgnoreCase(action)) forward = viewEdu();
+		} catch (Exception e) {
+			e.printStackTrace();
+			request.put("errMsg", e.getMessage());
+			forward = ERROR;
+		}
+		return forward;
+	}
+	
+	public String listEdu() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'listEdu()' method");
+		initForm();
+		return LIST;
+	}
+	
+	public String pageEdu() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'pageEdu()' method");
+		try {
+			initForm();
+			PageQuery pq = getForm().getQuery();
+			String artistId = getForm().getRecord().get("artistId");
+			pq.getParameters().put("artistId", artistId);
+			pq = artArtistEduService.queryArtArtistEdu(pq);
+			List<Map<String, Object>> list = new ArrayList<Map<String,Object>>();
+			for (Map<String, Object> item : pq.getRecordSet()) {
+				Map<String, Object> map = new HashMap<String, Object>();
+				String eduLink = "^javascript:view(" + item.get("id") + ")^_self";
+				map.put("id", item.get("id"));
+				map.put("data", new Object[]{
+					""
+					,item.get("eduTime") + eduLink
+					,item.get("eduDesc")
+				});
+				list.add(map);
+			}
+			String res = genGridJson(pq, list);
+			setResponse(res);
+		} catch (ServiceException e) {
+			setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+		} catch (Exception e) {
+			e.printStackTrace();
+			setResponse("{exit:1,message:\"数据访问错误。\"}");
+		}
+		return null;
+	}
+	
+	public String addEdu() throws Exception {
+		if(log.isDebugEnabled())
+			log.debug("Entering 'addEdu()' method");
+		try {
+			initForm();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+		return ADD;
+	}
+	
+	public String saveEdu() throws Exception {
+		if(log.isDebugEnabled())
+			log.debug("Entering 'saveEdu()' method");
+		try {
+			initForm();
+			ArtArtistEdu artArtistEdu = new ArtArtistEdu();
+			artArtistEdu.setArtistId(Integer.valueOf(getForm().getRecord().get("artistId")));
+			artArtistEdu.setEduDesc(getForm().getRecord().get("eduDesc"));
+			artArtistEdu.setEduTime(getForm().getRecord().get("eduTime"));
+			artArtistEduService.createArtArtistEdu(artArtistEdu);
+			return returnForward(RETURN_NORMAL);
+		} catch (ServiceException e) {
+			addMessage(getForm(), e.getMessage());
+			return ADD;
+		} catch (Exception e) {
+			e.printStackTrace();
+			addMessage(getForm(), "保存操作失败!");
+			return ADD;
+		}
+	}
+	
+	public String editEdu() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'editEdu()' method");
+		try {
+			initForm();
+			String id = getForm().getRecord().get("id");
+			ArtArtistEdu artArtistEdu = artArtistEduService.getArtArtistEdu(Integer.valueOf(id));
+			ConvertUtil.objectToMap(getForm().getRecord(), artArtistEdu);
+			return EDIT;
+		} catch (Exception e) {
+			e.printStackTrace();
+			return ERROR;
+		}
+	}
+	
+	public String updateEdu() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'editEdu()' method");
+		try {
+			initForm();
+			artArtistEduService.updateArtArtistEdu(getForm().getRecord());
+			return returnForward(RETURN_NORMAL);
+		} catch (Exception e) {
+			addMessage(form, e.getMessage());
+			initForm();
+			return EDIT;
+		}
+	}
+	
+	public String deleteEdu() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'editEdu()' method");
+		try {
+			String[] id = ids.split(",");
+			Integer[] del_ids = new Integer[id.length];
+			for (int i = 0; i < id.length; i++) {
+				del_ids[i] = Integer.valueOf(id[i]);
+			}
+			artArtistEduService.deleteArtArtistEdus(del_ids);
+		} catch (Exception e) {
+			addMessage(form, e.getMessage());
+			initForm();
+			return ERROR;
+		}
+		return pageEdu();
+	}
+	
+	public String viewEdu() throws Exception {
+		if (log.isDebugEnabled()) 
+			log.debug("Entering 'editEdu()' method");
+		try {
+			initForm();
+			ArtArtistEdu artArtistEdu = artArtistEduService.getArtArtistEdu(Integer.valueOf(ids));
+			ConvertUtil.objectToMap(getForm().getRecord(), artArtistEdu);
+			return VIEW;
+		} catch (Exception e) {
+			addMessage(form, e.getMessage());
+			initForm();
+			return ERROR;
+		}
+	}
+	
+	public void initForm() throws Exception {
+		setCode(getForm(), "");
+	}
+	
+	private String formateDate(Object obj) {
+		if(obj == null) return "";
+		return dateFormate.format(obj);
+	}
+	
+	private String formateDatetime(Object obj) {
+		if(obj == null) return "";
+		return datetimeFormate.format(obj);
+	}
+
+}

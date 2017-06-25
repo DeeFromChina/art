@@ -1,0 +1,85 @@
+package com.golead.art.job.service.impl;
+
+import java.awt.image.BufferedImage;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.util.List;
+import java.util.Map;
+
+import javax.imageio.ImageIO;
+
+import net.coobird.thumbnailator.Thumbnails;
+
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.auction.model.ArtAuctionHouses;
+import com.golead.art.job.service.CheckArtAuctionService;
+
+public class ArtAuctionGeneImpl extends BaseCheckAuctionImpl implements CheckArtAuctionService {
+
+   public void executeCheck() throws Exception {
+      // 采集数据
+      List<Map<String, Object>> list = new DataCollectHandler().executeCollect();
+      // 艺术家库
+      List<ArtArtist> artists = artArtistDao.findAll();
+      // 拍卖行库
+      List<ArtAuctionHouses> houses = artAuctionHousesDao.findAll();
+
+      if (list != null && list.size() > 0) {
+         for (Map<String, Object> map : list) {
+            artAuctiosService.createArtAuction(map, artists, houses);
+         }
+      }
+      // 下载图片
+      download(list);
+   }
+
+   
+
+   public void download(List<Map<String, Object>> list) throws Exception {
+      URL url = null;
+      String path = System.getProperty("artApplication.root") + "updload/auction/";
+      for (Map<String, Object> map : list) {
+         try {
+            String imageUrl = map.get("imageUrl") == null ? null : map.get("imageUrl").toString();//图片
+            if (imageUrl != null) {
+               url = new URL(imageUrl);
+               String imageName = path + File.separator + imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+               String extension = imageUrl.substring(imageUrl.lastIndexOf(".") + 1);
+               DataInputStream dataInputStream = new DataInputStream(url.openStream());
+               FileOutputStream fileOutputStream = new FileOutputStream(new File(imageName));
+
+               byte[] buffer = new byte[1024];
+               int length;
+
+               while ((length = dataInputStream.read(buffer)) > 0) {
+                  fileOutputStream.write(buffer, 0, length);
+               }
+
+               dataInputStream.close();
+               fileOutputStream.close();
+               BufferedImage bufferedImage = ImageIO.read(new File(imageName));
+               int width = bufferedImage.getWidth();
+               int height = bufferedImage.getHeight();
+               //压缩计算  
+               float resizeTimes = 0.3f; /* 这个参数是要转化成的倍数,如果是1就是转化成1倍 */
+
+               /* 调整后的图片的宽度和高度 */
+               int toWidth = (int) (width * resizeTimes);
+               int toHeight = (int) (height * resizeTimes);
+               Thumbnails.of(path).size(toWidth, toHeight).outputFormat(extension).outputQuality(0.6f).toFile(path + File.separator + "thumbnail");//保存小图
+            }
+         }
+         catch (MalformedURLException e) {
+            e.printStackTrace();
+         }
+         catch (IOException e) {
+            e.printStackTrace();
+         }
+      }
+   }
+
+}

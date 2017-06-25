@@ -1,0 +1,294 @@
+package com.golead.art.auction.service.impl;
+
+import java.io.Serializable;
+import java.text.SimpleDateFormat;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.auction.dao.ArtAuctionDao;
+import com.golead.art.auction.dao.ArtAuctionHousesDao;
+import com.golead.art.auction.model.ArtAuction;
+import com.golead.art.auction.model.ArtAuctionHouses;
+import com.golead.art.auction.service.ArtAuctionService;
+import com.golead.art.works.dao.ArtWorksDao;
+import com.golead.art.works.model.ArtWorks;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.DAOException;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+@Service
+public class ArtAuctionServiceImpl extends BaseServiceImpl implements ArtAuctionService {
+   private static final long serialVersionUID = 1L;
+
+   private SimpleDateFormat  outFormat        = new SimpleDateFormat("yyyy-MM-dd");
+
+   public ArtAuction getArtAuction(Serializable id) throws ServiceException {
+      try {
+         return artAuctionDao.get(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void createArtAuction(ArtAuction artAuction) throws ServiceException {
+      try {
+         artAuctionDao.save(artAuction);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void updateArtAuction(Map<String, String> artAuctionMap) throws ServiceException {
+      try {
+         Integer pkId = new Integer(artAuctionMap.get(ArtAuction.PROP_ID));
+         ArtAuction tmp = artAuctionDao.get(pkId);
+         ConvertUtil.mapToObject(tmp, artAuctionMap, true);
+         artAuctionDao.update(tmp);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtAuction(Serializable id) throws ServiceException {
+      try {
+         artAuctionDao.delete(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtAuctions(Serializable[] ids) throws ServiceException {
+      try {
+         artAuctionDao.deleteAll(ids);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public PageQuery queryArtAuction(PageQuery pageQuery) throws ServiceException {
+      try {
+         createSqlFilter(pageQuery);
+         return jdbcDao.queryBySqlId("artAuctionList", pageQuery);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private void createSqlFilter(PageQuery page) {
+   }
+
+   public void createArtAuction(Map<String, Object> map, List<ArtArtist> artists, List<ArtAuctionHouses> houses) throws ServiceException {
+      try {
+         String author = map.get("author") == null ? "" : map.get("author").toString();//作者
+         String number = map.get("number") == null ? null : map.get("number").toString();//编号
+         String cnName = map.get("cnName") == null ? null : map.get("cnName").toString();//作品中文名
+         String enName = map.get("enName") == null ? null : map.get("enName").toString();//作品英文名
+         String createYear = map.get("createYear") == null || "".equals(map.get("createYear")) ? null : map.get("createYear").toString();//创作年份
+         String sizeCm = map.get("sizeCm") == null ? null : map.get("sizeCm").toString();//尺寸
+         String auctionPlace = map.get("auctionPlace") == null ? null : map.get("auctionPlace").toString();//拍卖会
+         String auctionTime = map.get("createDate") == null || "".equals(map.get("createDate")) ? null : map.get("createDate").toString();//拍卖时间
+         String worksCategory = map.get("type") == null ? null : map.get("type").toString();//类别
+         String auctionHouse = map.get("auctionCompany") == null ? null : map.get("auctionCompany").toString();//拍卖行
+         String nationality = map.get("country") == null ? null : map.get("country").toString();//国家
+         String source = map.get("source") == null ? null : map.get("source").toString();//来源
+         String auctionLocal = map.get("auctionLocal") == null ? null : map.get("auctionLocal").toString();//拍卖地
+         String priceUnit = map.get("priceUnit") == null ? null : map.get("priceUnit").toString();//价格单位
+         String lastPrice = map.get("lastPrice") == null || "".equals(map.get("lastPrice")) ? null : map.get("lastPrice").toString();//最底价
+         String maxPrice = map.get("maxPrice") == null || "".equals(map.get("maxPrice")) ? null : map.get("maxPrice").toString();//最高价
+         String price = map.get("price") == null || "".equals(map.get("price")) ? null : map.get("price").toString();//成交价
+         String imageUrl = map.get("imageUrl") == null || "".equals(map.get("imageUrl")) ? null : map.get("imageUrl").toString();//图片
+         Integer artistId = null;
+         Integer houseId = null;
+         for (ArtArtist artist : artists) {
+            // 查找是否能在艺术家库找到对应的艺术家
+            if (artist.getCname().indexOf(author) > -1 || artist.getEname().indexOf(author) > -1) {
+               artistId = artist.getId();
+               break;
+            }
+         }
+         for (ArtAuctionHouses house : houses) {
+            // 查找是否能在拍卖行库找到对应的拍卖行
+            if (house.getAuctionHouse().indexOf(auctionHouse) > -1) {
+               houseId = house.getId();
+               break;
+            }
+         }
+         imageUrl = imageUrl == null ? null : imageUrl.substring(imageUrl.lastIndexOf("/") + 1);
+         String storeName = imageUrl == null ? null : imageUrl.substring(0, imageUrl.lastIndexOf("."));
+         if (artistId != null) {
+            ArtWorks works = new ArtWorks();
+            works.setArtistId(artistId);
+            works.setCreateYear(createYear);
+            works.setWorksCName(cnName);
+            works.setWorksEName(enName);
+            works.setWorksNo(number);
+            works.setWorksImage(imageUrl);
+            works.setWorksStoreName(storeName);
+            works.setThumbnail(imageUrl);
+            works.setSizeCm(sizeCm);
+            works.setRepeatMarker("0");
+            Integer worksId = (Integer) artWorksDao.save(works);
+            houseId = saveAuctionHouse(auctionHouse, nationality, houseId);
+            ArtAuction auction = new ArtAuction();
+            auction.setArtId(artistId);
+            auction.setWorksId(worksId);
+            auction.setAuctionHousesId(houseId);
+            auction.setAuctionNo(number);
+            auction.setCreateYear(createYear);
+            auction.setAuction(auctionPlace);
+            auction.setAuctionTime(auctionTime == null ? null : outFormat.parse(auctionTime));
+            auction.setWorksCategory(worksCategory);
+            auction.setSaleName(auctionLocal);
+            auction.setWorksSource(source);
+            auction.setImageurl(imageUrl);
+            acuctionPrice(priceUnit, lastPrice, maxPrice, price, auction);
+            artAuctionDao.save(auction);
+         }
+         else {
+            houseId = saveAuctionHouse(auctionHouse, nationality, houseId);
+            ArtAuction auction = new ArtAuction();
+            auction.setAuctionHousesId(houseId);
+            auction.setAuctionNo(number);
+            auction.setCreateYear(createYear);
+            auction.setAuction(auctionPlace);
+            auction.setAuctionTime(auctionTime == null ? null : outFormat.parse(auctionTime));
+            auction.setWorksCategory(worksCategory);
+            auction.setImageurl(imageUrl);
+            artAuctionDao.save(auction);
+         }
+
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+
+   }
+
+   private void acuctionPrice(String priceUnit, String lastPrice, String maxPrice, String price, ArtAuction auction) {
+      if (priceUnit.toUpperCase().equals("RMB") || priceUnit.toUpperCase().equals("￥")) {//
+         auction.setCtradePrice(price == null ? null : Double.valueOf(price));
+         auction.setChighestPrice(maxPrice == null ? null : Double.valueOf(maxPrice));
+         auction.setClowestPrice(lastPrice == null ? null : Double.valueOf(lastPrice));
+         auction.setCtranPrice(price == null ? null : Double.valueOf(price));
+      }
+      if (priceUnit.toUpperCase().equals("HK$") || priceUnit.toUpperCase().equals("港幣")) {//港币
+         auction.setHkTradePrice(price == null ? null : Double.valueOf(price));
+         auction.setHkHighestPrice(maxPrice == null ? null : Double.valueOf(maxPrice));
+         auction.setHkLowestPrice(lastPrice == null ? null : Double.valueOf(lastPrice));
+         auction.setHkTranPrice(price == null ? null : Double.valueOf(price));
+      }
+      if (priceUnit.toUpperCase().equals("￡") || priceUnit.toUpperCase().equals("英鎊")) {//英镑
+         auction.setPtradePrice(price == null ? null : Double.valueOf(price));
+         auction.setPhighestPrice(maxPrice == null ? null : Double.valueOf(maxPrice));
+         auction.setPlowestPrice(lastPrice == null ? null : Double.valueOf(lastPrice));
+         auction.setPtranPrice(price == null ? null : Double.valueOf(price));
+      }
+      if (priceUnit.toUpperCase().equals("$")) {//美元
+         auction.setDtradePrice(price == null ? null : Double.valueOf(price));
+         auction.setDhighestPrice(maxPrice == null ? null : Double.valueOf(maxPrice));
+         auction.setDlowestPrice(lastPrice == null ? null : Double.valueOf(lastPrice));
+         auction.setDtranPrice(price == null ? null : Double.valueOf(price));
+      }
+      if (priceUnit.toUpperCase().equals("€") || priceUnit.toUpperCase().equals("歐元")) {//欧元
+         auction.setEtradePrice(price == null ? null : Double.valueOf(price));
+         auction.setEhighestPrice(maxPrice == null ? null : Double.valueOf(maxPrice));
+         auction.setElowestPrice(lastPrice == null ? null : Double.valueOf(lastPrice));
+         auction.setEtranPrice(price == null ? null : Double.valueOf(price));
+      }
+   }
+
+   private Integer saveAuctionHouse(String auctionHouse, String nationality, Integer houseId) {
+      if (houseId == null) {
+         ArtAuctionHouses house = new ArtAuctionHouses();
+         house.setAuctionHouse(auctionHouse);
+         house.setNationality(nationality);
+         houseId = (Integer) artAuctionHousesDao.save(house);
+      }
+      return houseId;
+   }
+
+   @Resource
+   private ArtAuctionDao       artAuctionDao;
+
+   @Resource
+   private ArtAuctionHousesDao artAuctionHousesDao;
+
+   @Resource
+   private ArtWorksDao         artWorksDao;
+}

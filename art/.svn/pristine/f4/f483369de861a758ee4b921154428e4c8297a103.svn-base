@@ -1,0 +1,52 @@
+package com.golead.art.works.dao.impl;
+
+import java.io.Serializable;
+import com.golead.core.exception.DAOException;
+import com.golead.core.dao.impl.HibernateDaoImpl;
+import com.golead.art.works.model.ArtPublicationContent;
+import com.golead.art.works.dao.ArtPublicationContentDao;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ArtPublicationContentDaoImpl extends HibernateDaoImpl<ArtPublicationContent> implements ArtPublicationContentDao {
+
+	public Class getReferenceClass() {
+		return ArtPublicationContent.class;
+	}
+
+	public ArtPublicationContent cast(Object object) {
+		return (ArtPublicationContent) object;
+	}
+
+	public ArtPublicationContent get(Serializable id)  throws DAOException{
+		return (ArtPublicationContent) super.get(id);
+	}
+
+	public ArtPublicationContent load(Serializable id)  throws DAOException{
+		return (ArtPublicationContent) super.load(id);
+	}
+
+	public Serializable save(ArtPublicationContent artPublicationContent)  throws DAOException{
+		return super.save(artPublicationContent);
+	}
+
+	public void saveOrUpdate(ArtPublicationContent artPublicationContent)  throws DAOException{
+		super.saveOrUpdate(artPublicationContent);
+	}
+
+	public void update(ArtPublicationContent artPublicationContent)  throws DAOException{
+		super.update(artPublicationContent);
+	}
+
+	public void delete(ArtPublicationContent artPublicationContent)  throws DAOException{
+		super.delete(artPublicationContent);
+	}
+
+	public void refresh(ArtPublicationContent artPublicationContent)  throws DAOException{
+		super.refresh(artPublicationContent);
+	}
+
+	public String getTableName() {
+		return ArtPublicationContent.REF_TABLE;
+	}
+}

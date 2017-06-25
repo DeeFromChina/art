@@ -1,0 +1,226 @@
+package com.golead.art.base;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.golead.art.activity.model.ArtActivityAbmb;
+import com.golead.art.activity.service.ArtActivityAbmbService;
+import com.golead.art.activity.service.ArtActivityExhibitService;
+import com.golead.art.activity.service.ArtAgencyService;
+import com.golead.art.artist.model.ArtCountry;
+import com.golead.art.artist.service.ArtArtistService;
+import com.golead.art.artist.service.ArtCountryService;
+import com.golead.art.auction.service.ArtAuctionHousesService;
+import com.golead.art.works.service.ArtWorksService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtCountryAction extends BaseAction {
+
+   private final Log               logger = LogFactory.getLog(ArtCountryAction.class);
+
+   @Resource
+   private ArtCountryService       artCountryService;
+
+   @Resource
+   private ArtWorksService         artWorksService;
+
+   @Resource
+   private ArtActivityAbmbService  artActivityAbmbService;
+
+   @Resource
+   private ArtArtistService        artArtistService;
+
+   @Resource
+   private ArtActivityExhibitService        artActivityExhibitService;
+   
+   @Resource
+   private ArtAgencyService        artAgencyService;
+
+   @Resource
+   private ArtAuctionHousesService artAuctionHousesService;
+
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = form.getAction();
+
+      if (action == null) action = LIST;
+      if (logger.isDebugEnabled()) logger.debug("action:" + action);
+      try {
+         initForm();
+         if (LIST.equalsIgnoreCase(action)) forward = LIST;
+         else if (PAGE.equalsIgnoreCase(action)) forward = getPageDate();
+         else if (ADD.equalsIgnoreCase(action)) forward = addPeriod();
+         else if (SAVE.equalsIgnoreCase(action)) forward = savePeriod();
+         else if (EDIT.equalsIgnoreCase(action)) forward = editPeriod();
+         else if (UPDATE.equalsIgnoreCase(action)) forward = updatePeriod();
+         else if (VIEW.equalsIgnoreCase(action)) forward = view();
+         else if (DELETE.equalsIgnoreCase(action)) forward = delete();
+      }
+      catch (Exception e) {// 其他系统出错
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   public void initForm() throws Exception {
+      setCode(form, "ART_TYPE,DATE_YEAR,MEDIUM_TYPE,SIGNATURE,PERIOD_TYPE");
+   }
+
+   private String getPageDate() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'getPageDate' method");
+      try {
+         initForm();
+         String id = form.getRecord().get("id");
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         PageQuery pageQuery = form.getQuery();
+         pageQuery.getParameters().put("id", id);
+         pageQuery = artCountryService.queryArtCountry(pageQuery);
+         if (pageQuery.getRecordSet() != null) {
+            for (Map<String, Object> item : pageQuery.getRecordSet()) {
+               Map<String, Object> map = new HashMap<String, Object>();
+               map.put("id", item.get("id"));
+               map.put("data", new Object[] { "", item.get("countryName"), item.get("countryDesc") });
+               list.add(map);
+            }
+         }
+         String res = genGridJson(pageQuery, list);
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+
+   private String addPeriod() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'addWorks' method");
+      String forward = null;
+      try {
+         return ADD;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   private String savePeriod() throws Exception {
+      try {
+         ArtCountry artCountry = new ArtCountry();
+         ConvertUtil.convertToModel(artCountry, form.getRecord());
+         artCountryService.createArtCountry(artCountry);
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         addMessage(form, e.getMessage());
+         initForm();
+         return ADD;
+      }
+   }
+
+   private String editPeriod() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'editWorks' method");
+      String forward = null;
+      try {
+         String id = form.getRecord().get("id");
+         ArtCountry artCountry = artCountryService.getArtCountry(Integer.valueOf(id));
+         ConvertUtil.objectToMap(form.getRecord(), artCountry);
+         return EDIT;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   private String updatePeriod() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'updateWorks' method");
+      try {
+         artCountryService.updateArtCountry(form.getRecord());
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         addMessage(form, e.getMessage());
+         initForm();
+         return EDIT;
+      }
+   }
+
+   private String view() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'view' method");
+      try {
+         String id = form.getRecord().get("id");
+         ArtCountry artCountry = artCountryService.getArtCountry(Integer.valueOf(id));
+         ConvertUtil.objectToMap(form.getRecord(), artCountry);
+      }
+      catch (Exception e) {
+         initForm();
+         return ERROR;
+      }
+      return VIEW;
+   }
+
+   private String delete() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'delete' method");
+      try {
+         String[] idsList = ids.split(",");
+         Integer[] delids = new Integer[idsList.length];
+         for (int i = 0; i < delids.length; i++) {
+            delids[i] = Integer.valueOf(idsList[i]);
+         }
+         boolean isUsed = false;
+         if (artWorksService.findByCountry(ids) != 0) {
+            isUsed = true;
+         }
+         if (artActivityAbmbService.findByCountry(ids) != 0) {
+            isUsed = true;
+         }
+         if (artActivityExhibitService.findByCountry(ids) != 0) {
+            isUsed = true;
+         }
+         if (artAgencyService.findByCountry(ids) != 0) {
+            isUsed = true;
+         }
+         if (artArtistService.findByCountry(ids) != 0) {
+            isUsed = true;
+         }
+         if (artAuctionHousesService.findByCountry(ids) != 0) {
+            isUsed = true;
+         }
+         if (!isUsed) {
+            artCountryService.deleteArtCountrys(delids);
+            setResponse("{exit:0}");
+         }
+         else {
+            setResponse("{exit:1,message:\"有国家在被使用！\"}");
+         }
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         setResponse("{exit:1,message:\"删除操作失败!\"}");
+      }
+      return null;
+   }
+
+}

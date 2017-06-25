@@ -1,0 +1,126 @@
+package com.golead.art.artist.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.artist.dao.ArtArtistWorksPeriodDao;
+import com.golead.art.artist.model.ArtArtistWorksPeriod;
+import com.golead.art.artist.service.ArtArtistWorksPeriodService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtArtistWorksPeriodServiceImpl extends BaseServiceImpl implements ArtArtistWorksPeriodService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtArtistWorksPeriod getArtArtistWorksPeriod(Serializable id) throws ServiceException {
+		try {
+			return artArtistWorksPeriodDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtArtistWorksPeriod(ArtArtistWorksPeriod artArtistWorksPeriod) throws ServiceException {
+		try {
+			artArtistWorksPeriodDao.save(artArtistWorksPeriod);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtArtistWorksPeriod(Map<String, String> artArtistWorksPeriodMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artArtistWorksPeriodMap.get(ArtArtistWorksPeriod.PROP_ID));
+			ArtArtistWorksPeriod tmp = artArtistWorksPeriodDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artArtistWorksPeriodMap, true);			
+			artArtistWorksPeriodDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistWorksPeriod(Serializable id) throws ServiceException {
+		try {
+			artArtistWorksPeriodDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistWorksPeriods(Serializable[] ids) throws ServiceException {
+		try {
+			artArtistWorksPeriodDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtArtistWorksPeriod(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artArtistWorksPeriodList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtArtistWorksPeriodDao	artArtistWorksPeriodDao;
+
+	public void setArtArtistWorksPeriodDao(ArtArtistWorksPeriodDao artArtistWorksPeriodDao) {
+		this.artArtistWorksPeriodDao = artArtistWorksPeriodDao;
+	}
+}
+

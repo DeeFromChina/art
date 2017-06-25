@@ -1,0 +1,574 @@
+package com.golead.art.app.service.impl;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.stereotype.Service;
+
+import com.golead.art.app.service.ScreenFristService;
+import com.golead.art.artist.dao.ArtArtistDao;
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.artist.model.ArtArtistWorksSeries;
+import com.golead.art.works.dao.ArtWorksDao;
+import com.golead.art.works.model.ArtWorks;
+import com.golead.common.service.system.SysCodeService;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.service.impl.BaseServiceImpl;
+
+@Service
+public class ScreenFristServiceImpl extends BaseServiceImpl implements ScreenFristService {
+
+   @Override
+   public List<Map<String, Object>> selectScreen(Map<String, String> parameters) throws ServiceException {
+      try {
+         String pageName = parameters.get("pageName");
+         if (pageName.equalsIgnoreCase("series")) return series(parameters);// 作品系列
+         else if (pageName.equalsIgnoreCase("year")) return year(parameters);// 作品年代
+         else if (pageName.equalsIgnoreCase("selectYear")) return selectYear(parameters);// 作品选择年代
+         else if (pageName.equalsIgnoreCase("yearNum")) return yearNum(parameters);// 作品选择年代数量
+         else if (pageName.equalsIgnoreCase("liftTime")) return liftTime(parameters);// 人生时期
+         else if (pageName.equalsIgnoreCase("history")) return history(parameters);// 历史时期
+         else if (pageName.equalsIgnoreCase("chinaArt")) return chinaArt(parameters);// 中国艺术
+         else if (pageName.equalsIgnoreCase("westernArt")) return westernArt(parameters);// 西方艺术
+         else if (pageName.equalsIgnoreCase("material")) return material(parameters);// 媒体材料
+//         else if (pageName.equalsIgnoreCase("painting")) return painting(parameters);// 绘画类
+//         else if (pageName.equalsIgnoreCase("photograph")) return photograph(parameters);// 摄影类
+//         else if (pageName.equalsIgnoreCase("woodcut")) return woodcut(parameters);// 版画类
+//         else if (pageName.equalsIgnoreCase("social")) return social(parameters);// 社会功能
+//         else if (pageName.equalsIgnoreCase("writing")) return writing(parameters);// 习作类
+//         else if (pageName.equalsIgnoreCase("theme")) return theme(parameters);// 作品题材
+//         else if (pageName.equalsIgnoreCase("style")) return style(parameters);// 作品风格
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+
+      return null;
+   }
+
+   //作品系列
+   private List<Map<String, Object>> series(Map<String, String> parameters) throws ServiceException {
+      System.out.println("series...");
+      try {
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         artistSeries(list, parameters);
+         return list;
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   //作品年代
+   private List<Map<String, Object>> year(Map<String, String> parameters) throws ServiceException {
+      System.out.println("year...");
+      try {
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         artistYear(list, parameters);
+         return list;
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   //作品选择年代
+   private List<Map<String, Object>> selectYear(Map<String, String> parameters) throws ServiceException {
+      System.out.println("selectYear...");
+      try {
+         String FILE_PATH = ServletActionContext.getServletContext().getRealPath("/upload/");
+         int pageNum = 1;
+         if(isInteger(returnString(parameters.get("pageNum")))){
+            pageNum = Integer.valueOf(returnString(parameters.get("pageNum")));
+         }
+         String artistId = parameters.get("artistId");
+         if (!isInteger(returnString(parameters.get("artistId")))) { throw new ServiceException("艺术家id错误！"); }
+         ArtArtist artArtist = artArtistDao.get(Integer.valueOf(artistId));
+         if(artArtist == null){
+            throw new ServiceException("艺术家id错误！"); 
+         }
+         if (!isInteger(returnString(parameters.get("startYear")))) { throw new ServiceException("开始年代错误！"); };
+         int startYear = Integer.valueOf(returnString(parameters.get("startYear")));
+         int endYear = Integer.valueOf(returnString(parameters.get("endYear")));
+         if (!isInteger(returnString(parameters.get("endYear")))) {
+            endYear = startYear;
+         }
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         List<ArtWorks> artWorks = artWorksDao.findByField(ArtWorks.PROP_ARTIST_ID, Integer.valueOf(artistId));
+         int i = 0;
+         int pageSize = 10;
+         for(ArtWorks works : artWorks){
+            if(i<(pageSize*(pageNum-1))){
+               continue;
+            }
+            if(i>(pageSize*pageNum)){
+               break;
+            }
+            if(works.getCreateYear() == null){
+               continue;
+            }
+            if(!isInteger(works.getCreateYear())){
+               continue;
+            }
+            if(startYear<=Integer.valueOf(works.getCreateYear()) && Integer.valueOf(works.getCreateYear()) >= endYear){
+               Map<String, Object> map = new HashMap<String, Object>();
+               map.put("name", works.getWorksCName());
+               map.put("worksId", works.getId());
+               map.put("descript", works.getWorksStatus());
+               String photo = works.getThumbnail();
+               if(photo == null){
+                  map.put("photo", null);
+               }else{
+                  String appPath = "auction/" + artArtist.getFolderName() + "/" + works.getThumbnail();
+                  String path = FILE_PATH + File.separator + appPath;
+                  File file = new File(path);
+                  if (file.exists() && file.isFile()) {
+                     BufferedImage bufferedImage = ImageIO.read(file);
+                     int width = bufferedImage.getWidth();
+                     int height = bufferedImage.getHeight();
+                     map.put("width", width);
+                     map.put("height", height);
+                     map.put("photo", appPath);
+                  }else{
+                     map.put("width", "50");
+                     map.put("height", "50");
+                     map.put("photo", null);
+                  }
+               }
+               list.add(map);
+            }
+         }
+         return list;
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   //作品年代数量
+   private List<Map<String, Object>> yearNum(Map<String, String> parameters) throws ServiceException {
+      System.out.println("yearNum...");
+      try {
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         String artistId = parameters.get("artistId");
+         if (!isInteger(returnString(parameters.get("artistId")))) { throw new ServiceException("艺术家id错误！"); }
+         ArtArtist artArtist = artArtistDao.get(Integer.valueOf(artistId));
+         if(artArtist == null){
+            throw new ServiceException("艺术家id错误！"); 
+         }
+         List<ArtWorks> artWorks = artWorksDao.findByField(ArtWorks.PROP_ARTIST_ID, Integer.valueOf(artistId));
+         Map<String, Integer> yearMap = new HashMap<String, Integer>();
+         for(ArtWorks works : artWorks){
+            if(yearMap.get(returnString(works.getCreateYear())) == null){
+               if("".equals(returnString(works.getCreateYear()))){
+                  yearMap.put("未知年代", 1);
+               }else{
+                  yearMap.put(returnString(works.getCreateYear()), 1);
+               }
+            }else{
+               yearMap.put(returnString(works.getCreateYear()), yearMap.get(returnString(works.getCreateYear()))+1);
+            }
+         }
+         List<Map<String, Object>> yearList = new ArrayList<Map<String, Object>>();
+         for(Map.Entry<String, Integer> entry : yearMap.entrySet()){
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("year", entry.getKey());
+            map.put("number", entry.getValue());
+            yearList.add(map);
+         }
+         Map<String, Object> newMap = new HashMap<String, Object>();
+         newMap.put("ALLYear", yearList);
+         list.add(newMap);
+         return list;
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   private List<Map<String, Object>> liftTime(Map<String, String> parameters) throws ServiceException {
+      System.out.println("liftTime...");
+      try {
+         String artistId = parameters.get("artistId");
+         if (!isInteger(returnString(parameters.get("artistId")))) { throw new ServiceException("艺术家id错误！"); }
+         String sql = "SELECT works.id AS worksId,CONCAT('auction/',artist.folder_name,'/',works.thumbnail) AS photo FROM art_works_period period "
+               + " LEFT JOIN art_works works ON works.id=period.works_id "
+               + " LEFT JOIN art_artist artist ON artist.id=works.artist_id "
+               + " WHERE period.period_type='02' AND artist.id=" + artistId 
+               + " LIMIT 4 ";
+         return jdbcDao.queryBySql(sql);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   private List<Map<String, Object>> history(Map<String, String> parameters) throws ServiceException {
+      System.out.println("history...");
+      try {
+         String artistId = parameters.get("artistId");
+         if (!isInteger(returnString(parameters.get("artistId")))) { throw new ServiceException("艺术家id错误！"); }
+         String sql = "SELECT works.id AS worksId,CONCAT('auction/',artist.folder_name,'/',works.thumbnail) AS photo FROM art_works_period period "
+               + " LEFT JOIN art_works works ON works.id=period.works_id "
+               + " LEFT JOIN art_artist artist ON artist.id=works.artist_id "
+               + " WHERE period.period_type='01' AND artist.id=" + artistId 
+               + " LIMIT 4 ";
+         return jdbcDao.queryBySql(sql);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   private List<Map<String, Object>> chinaArt(Map<String, String> parameters) throws ServiceException {
+      System.out.println("chinaArt...");
+      try {
+         String artistId = parameters.get("artistId");
+         if (!isInteger(returnString(parameters.get("artistId")))) { throw new ServiceException("艺术家id错误！"); }
+         String sql = "SELECT works.id AS worksId,CONCAT('auction/',artist.folder_name,'/',works.thumbnail) AS photo FROM art_works_period period "
+               + " LEFT JOIN art_works works ON works.id=period.works_id "
+               + " LEFT JOIN art_artist artist ON artist.id=works.artist_id "
+               + " WHERE period.period_type='03' AND artist.id=" + artistId 
+               + " LIMIT 4 ";
+         return jdbcDao.queryBySql(sql);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   private List<Map<String, Object>> westernArt(Map<String, String> parameters) throws ServiceException {
+      System.out.println("westernArt...");
+      try {
+         String artistId = parameters.get("artistId");
+         if (!isInteger(returnString(parameters.get("artistId")))) { throw new ServiceException("艺术家id错误！"); }
+         String sql = "SELECT works.id AS worksId,CONCAT('auction/',artist.folder_name,'/',works.thumbnail) AS photo FROM art_works_period period "
+               + " LEFT JOIN art_works works ON works.id=period.works_id "
+               + " LEFT JOIN art_artist artist ON artist.id=works.artist_id "
+               + " WHERE period.period_type='04' AND artist.id=" + artistId 
+               + " LIMIT 4 ";
+         return jdbcDao.queryBySql(sql);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+   
+   private List<Map<String, Object>> material(Map<String, String> parameters) throws ServiceException {
+      System.out.println("material...");
+      try {
+         String artistId = parameters.get("artistId");
+         if (!isInteger(returnString(parameters.get("artistId")))) { throw new ServiceException("艺术家id错误！"); }
+         String sql = "SELECT COUNT(*) AS photo FROM art_works works "
+               + " LEFT JOIN art_works works ON works.id=period.works_id "
+               + " LEFT JOIN art_artist artist ON artist.id=works.artist_id "
+               + " WHERE period.period_type='04' AND artist.id=" + artistId 
+               + " LIMIT 4 ";
+         return jdbcDao.queryBySql(sql);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         List<Map<String, Object>> list = addError(e.getMessage());
+         return list;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+
+   private void artistSeries(List<Map<String, Object>> list, Map<String, String> parameters) {
+      String artistId = parameters.get("artistId");
+      if (!isInteger(returnString(parameters.get("artistId")))) { throw new ServiceException("艺术家id错误！"); }
+      int count = 0;
+      String size = parameters.get("size");
+      if ("pair".equalsIgnoreCase(size)) {
+         count = 2;
+      }
+      else if ("all".equalsIgnoreCase(size)) {
+         String sql = "select * "
+               + " from art_artist_works_series s1,art_artist_works_series_research r1,art_works w,art_artist t, "
+               + " (select s.id,count(r.id) as cnt from art_artist_works_series s,art_artist_works_series_research r "
+               + " where s.artist_id=" + artistId + " and s.id=r.series_id  "
+               + " group by  s.id "
+               + " having count(r.id)>0  "
+               + " ) a "
+               + " where t.id=" + artistId + " and t.id=s1.artist_id and s1.id=r1.series_id and r1.works_id=w.id and s1.id=a.id "
+               + " group by s1.id ";
+         List<Map<String, Object>> seriesList = jdbcDao.queryBySql(sql);
+         if(seriesList != null){
+            count = seriesList.size();
+         }
+      }
+      String sql = "select s1.id AS seriesId,s1.series_name AS descript,w.id AS worksId,CONCAT('auction/',t.folder_name,'/',w.thumbnail) AS photo,"
+            + " w.works_c_name AS name,a.cnt AS number"
+            + " from art_artist_works_series s1,art_artist_works_series_research r1,art_works w,art_artist t, "
+            + " (select s.id,count(r.id) as cnt from art_artist_works_series s,art_artist_works_series_research r "
+            + " where s.artist_id=" + artistId + " and s.id=r.series_id  "
+            + " group by  s.id "
+            + " having count(r.id)>0  "
+            + " ) a "
+            + " where t.id=" + artistId + " and t.id=s1.artist_id and s1.id=r1.series_id and r1.works_id=w.id and s1.id=a.id "
+            + " order by s1.series_important,s1.id,r1.works_id";
+      List<Map<String, Object>> seriesList = new ArrayList<Map<String, Object>>();
+      seriesList = jdbcDao.queryBySql(sql);
+      
+      if(seriesList == null || seriesList.size() == 0){
+         return;
+      }
+      putSeries(seriesList, count, list);
+   }
+   
+   private void putSeries(List<Map<String, Object>> seriesList, int count, List<Map<String, Object>> list){
+      //所有系列id
+      Map<String, Object> seriesIdMap = new HashMap<String, Object>();
+      String[] seriesIds = new String[seriesList.size()];
+      int i = 0;
+      for(Map<String, Object> seriesMap : seriesList){
+         String seriesId = returnString(seriesMap.get("seriesId"));
+         if("".equals(seriesId.trim())){
+            continue;
+         }
+         if(seriesIdMap.get(seriesId) == null){
+            seriesIdMap.put(seriesId, "");
+            seriesIds[i] = seriesId;
+            i++;
+         }
+      }
+      
+      if(seriesIds[0] == null){
+         return;
+      }
+      //取count次放图片
+      for(int j = 0; j<count; j++){
+         Map<String, Object> map = new HashMap<String, Object>();
+         Map[] objs = new Map[4];
+         int n = 0;
+         if(seriesIds.length<(j+1)){
+            break;
+         }
+         if(seriesIds[j] == null){
+            break;
+         }
+         //4张图片
+         for(Map<String, Object> seriesMap : seriesList){
+            String seriesId = returnString(seriesMap.get("seriesId"));
+            if(n == 5){
+               break;
+            }
+            if(seriesId.equals(seriesIds[j])){
+               objs[n] = seriesMap;
+               n++;
+            }
+         }
+         //4张图片放到list
+         List<Map<String, Object>> newlist = new ArrayList<Map<String, Object>>();
+         for(int m = 0; m<objs.length; m++){
+            Map<String, Object> newMap = objs[m];
+            if(newMap != null){
+               newlist.add(newMap);
+            }else{
+               break;
+            }
+         }
+         Map<String, Object> newMap = objs[0];
+         map.put("descript", newMap.get("descript"));
+         map.put("series", newlist);
+         map.put("number", newMap.get("number"));
+         list.add(map);
+      }
+   }
+   
+   private void artistYear(List<Map<String, Object>> list, Map<String, String> parameters) {
+      String artistId = parameters.get("artistId");
+      if (!isInteger(returnString(parameters.get("artistId")))) { throw new ServiceException("艺术家id错误！"); }
+      int count = 0;
+      String size = parameters.get("size");
+      if ("pair".equalsIgnoreCase(size)) {
+         count = 2;
+      }
+      else if ("all".equalsIgnoreCase(size)) {
+         String sql = "select * "
+               + " from art_works_year s1,art_works_year_research r1,art_works w,art_artist t, "
+               + " (select s.id,count(r.id) as cnt from art_works_year s,art_works_year_research r "
+               + " where s.artist_id=" + artistId + " and s.id=r.year_id  "
+               + " group by  s.id "
+               + " having count(r.id)>0  "
+               + " ) a "
+               + " where t.id=" + artistId + " and t.id=s1.artist_id and s1.id=r1.year_id and r1.works_id=w.id and s1.id=a.id "
+               + " group by s1.id ";
+         List<Map<String, Object>> seriesList = jdbcDao.queryBySql(sql);
+         if(seriesList != null){
+            count = seriesList.size();
+         }
+      }
+      String sql = "select s1.id AS yearId,s1.start_year AS startYear,s1.end_year AS endYear,w.id AS worksId,CONCAT('auction/',t.folder_name,'/',w.thumbnail) AS photo,"
+            + " w.works_c_name AS name,a.cnt AS number"
+            + " from art_works_year s1,art_works_year_research r1,art_works w,art_artist t, "
+            + " (select s.id,count(r.id) as cnt from art_works_year s,art_works_year_research r "
+            + " where s.artist_id=" + artistId + " and s.id=r.year_id  "
+            + " group by  s.id "
+            + " having count(r.id)>0  "
+            + " ) a "
+            + " where t.id=" + artistId + " and t.id=s1.artist_id and s1.id=r1.year_id and r1.works_id=w.id and s1.id=a.id "
+            + " order by s1.year_important,s1.id,r1.seq_no,r1.works_id";
+      List<Map<String, Object>> seriesList = new ArrayList<Map<String, Object>>();
+      seriesList = jdbcDao.queryBySql(sql);
+      
+      if(seriesList == null || seriesList.size() == 0){
+         return;
+      }
+      putYear(seriesList, count, list);
+   }
+   
+   private void putYear(List<Map<String, Object>> seriesList, int count, List<Map<String, Object>> list){
+      //所有系列id
+      Map<String, Object> seriesIdMap = new HashMap<String, Object>();
+      String[] seriesIds = new String[seriesList.size()];
+      int i = 0;
+      for(Map<String, Object> seriesMap : seriesList){
+         String seriesId = returnString(seriesMap.get("yearId"));
+         if("".equals(seriesId.trim())){
+            continue;
+         }
+         if(seriesIdMap.get(seriesId) == null){
+            seriesIdMap.put(seriesId, "");
+            seriesIds[i] = seriesId;
+            i++;
+         }
+      }
+      
+      if(seriesIds[0] == null){
+         return;
+      }
+      //取2次放图片
+      for(int j = 0; j<count; j++){
+         Map<String, Object> map = new HashMap<String, Object>();
+         Map[] objs = new Map[4];
+         int n = 0;
+         if(seriesIds.length<(j+1)){
+            break;
+         }
+         if(seriesIds[j] == null){
+            break;
+         }
+         //4张图片
+         for(Map<String, Object> seriesMap : seriesList){
+            String seriesId = returnString(seriesMap.get("yearId"));
+            if(n == 5){
+               break;
+            }
+            if(seriesId.equals(seriesIds[j])){
+               objs[n] = seriesMap;
+               n++;
+            }
+         }
+         //4张图片放到list
+         List<Map<String, Object>> newlist = new ArrayList<Map<String, Object>>();
+         for(int m = 0; m<objs.length; m++){
+            Map<String, Object> newMap = objs[m];
+            if(newMap != null){
+               newlist.add(newMap);
+            }else{
+               break;
+            }
+         }
+         Map<String, Object> newMap = objs[0];
+         map.put("descript", returnString(newMap.get("startYear"))+"~"+returnString(newMap.get("endYear")));
+         map.put("year", newlist);
+         map.put("number", newMap.get("number"));
+         list.add(map);
+      }
+   }
+
+   private boolean isInteger(String account) {
+      try {
+         Integer.valueOf(account);
+         return true;
+      }
+      catch (Exception e) {
+         return false;
+      }
+   }
+
+   private String returnString(Object obj) {
+      if (obj == null) { return ""; }
+      return obj.toString();
+   }
+
+   private List<Map<String, Object>> addError(String message) {
+      Map<String, Object> map = new HashMap<String, Object>();
+      List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+      map.put("error", message);
+      list.add(map);
+      return list;
+   }
+   
+   @Resource
+   private ArtArtistDao             artArtistDao;
+
+   @Resource
+   private ArtWorksDao             artWorksDao;
+
+   @Resource
+   private SysCodeService            sysCodeService;
+}

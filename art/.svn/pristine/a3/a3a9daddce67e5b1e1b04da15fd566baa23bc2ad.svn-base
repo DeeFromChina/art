@@ -1,0 +1,126 @@
+package com.golead.art.auction.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.auction.dao.ArtAuctionPlaceDao;
+import com.golead.art.auction.model.ArtAuctionPlace;
+import com.golead.art.auction.service.ArtAuctionPlaceService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtAuctionPlaceServiceImpl extends BaseServiceImpl implements ArtAuctionPlaceService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtAuctionPlace getArtAuctionPlace(Serializable id) throws ServiceException {
+		try {
+			return artAuctionPlaceDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtAuctionPlace(ArtAuctionPlace artAuctionPlace) throws ServiceException {
+		try {
+			artAuctionPlaceDao.save(artAuctionPlace);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtAuctionPlace(Map<String, String> artAuctionPlaceMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artAuctionPlaceMap.get(ArtAuctionPlace.PROP_ID));
+			ArtAuctionPlace tmp = artAuctionPlaceDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artAuctionPlaceMap, true);			
+			artAuctionPlaceDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionPlace(Serializable id) throws ServiceException {
+		try {
+			artAuctionPlaceDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionPlaces(Serializable[] ids) throws ServiceException {
+		try {
+			artAuctionPlaceDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtAuctionPlace(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artAuctionPlaceList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtAuctionPlaceDao	artAuctionPlaceDao;
+
+	public void setArtAuctionPlaceDao(ArtAuctionPlaceDao artAuctionPlaceDao) {
+		this.artAuctionPlaceDao = artAuctionPlaceDao;
+	}
+}
+

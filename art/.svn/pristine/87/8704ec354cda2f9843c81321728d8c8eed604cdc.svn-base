@@ -1,0 +1,339 @@
+package com.golead.art.auction.service.impl;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+import com.golead.art.auction.dao.ArtAuctionVideoDao;
+import com.golead.art.auction.model.ArtAuctionVideo;
+import com.golead.art.auction.service.ArtAuctionVideoService;
+import com.golead.art.utils.FileUtils;
+
+import javax.annotation.Resource; 
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtAuctionVideoServiceImpl extends BaseServiceImpl implements ArtAuctionVideoService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtAuctionVideo getArtAuctionVideo(Serializable id) throws ServiceException {
+		try {
+			return artAuctionVideoDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtAuctionVideo(ArtAuctionVideo artAuctionVideo, List<File> videoFiles, String filesFileName, String path) throws ServiceException {
+		try {
+			StringBuffer videoLink = new StringBuffer();
+			String[] names = filesFileName.split(",");
+			if (videoFiles != null) {
+				for (int i = 0; i < videoFiles.size(); i++) {
+					File file = videoFiles.get(i);
+					String cName = String.valueOf(System.currentTimeMillis());
+					String[] endless = names[i].split("\\.");
+					FileUtils.fileUpload(path + File.separator + cName + "." + endless[endless.length -1], file);
+					videoLink.append(names[i] + "/" + cName + "." + endless[endless.length -1]);
+					if ((i + 1) != videoFiles.size()) videoLink.append(",");
+				}
+			}
+			artAuctionVideo.setVideoLink(videoLink.toString());
+			artAuctionVideoDao.save(artAuctionVideo);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtAuctionVideo(Map<String, String> artAuctionVideoMap, List<File> videoFiles, String fileName, String filesFileName, String path) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artAuctionVideoMap.get(ArtAuctionVideo.PROP_ID));
+			ArtAuctionVideo tmp = artAuctionVideoDao.get(pkId);
+			StringBuffer videoLink = new StringBuffer();
+			
+			String[] links;//数据库里面的videoLink值
+			String[] oldNames = fileName.split(",");//jsp获取没有删除的文件名
+			//Map<String, String> fileManagerMap = new HashMap<String, String>();
+			String allNewLink = "";//获取所有的数据库里面的videoLink值里面的的真实名字
+			String[] deleteLinks;//获取删除的videoLink值
+			if (tmp.getVideoLink() != null && !"".equals(tmp.getVideoLink())) {
+				links = tmp.getVideoLink().split(",");
+				for (String link : links) {
+					allNewLink += link.split("/")[1] + ",";
+				}
+				deleteLinks = allNewLink.replace(fileName, "").split(",");
+				/*for (String link : links) {//貌似没用到，暂时保留
+					for (String deleteLink : deleteLinks) {
+						if (deleteLink.equals(link.split("/")[1])) {
+							fileManagerMap.put(link.split("/")[1], "true");
+						}
+					}
+				}*/
+				File[] fileList = new File(path).listFiles();
+				if(fileList!=null){
+					for(File file : fileList){
+						for (String deleteLink : deleteLinks) {
+							if (deleteLink.equals(file.getName())) {
+								file.delete();
+							}
+						}
+					}
+				}
+				for (String link : links) {
+					for (String oldName : oldNames) {
+						if (oldName.equals(link.split("/")[1])) {
+							videoLink.append(link + ",");
+						}
+					}
+				}
+			}
+			
+			/*if (tmp.getVideoLink().length() > 0) {
+				for (String link : links) {
+					for (String oldName : oldNames) {
+						if (oldName.equals(link.split("/")[1])) {
+							videoLink.append(link + ",");
+						}
+					}
+				}
+			}*/
+			
+			if (videoFiles != null) {
+				String[] names = filesFileName.split(",");
+				for (int i = 0; i < videoFiles.size(); i++) {
+					File file = videoFiles.get(i);
+					String cName = String.valueOf(System.currentTimeMillis());
+					String[] endless = names[i].split("\\.");
+					FileUtils.fileUpload(path + File.separator + cName + "." + endless[endless.length -1], file);
+					if (!"".equals(fileName.toString())) {
+						if(!fileName.toString().endsWith(",")){
+		                     videoLink.append(",");
+		                  }
+					}
+					videoLink.append(names[i] + "/" + cName + "." + endless[endless.length -1]);
+					if ((i + 1) != videoFiles.size()) videoLink.append(",");
+				}
+			}
+			
+			tmp.setVideoLink(videoLink.toString());
+			ConvertUtil.mapToObject(tmp, artAuctionVideoMap, true);		
+			artAuctionVideoDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionVideo(Serializable id) throws ServiceException {
+		try {
+			artAuctionVideoDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionVideos(Serializable[] ids, String path) throws ServiceException {
+		try {
+			List<String> fileNames = new ArrayList<String>();
+			for (Serializable id : ids) {
+				ArtAuctionVideo artAuctionVideo = getArtAuctionVideo(id);
+				String[] videoLinks = artAuctionVideo.getVideoLink().split(",");
+				if (artAuctionVideo.getVideoLink().length() > 0) {
+					for (String videoLink : videoLinks) {
+						fileNames.add(videoLink.split("/")[1]);
+					}
+				}
+			}
+			File[] fileLies = new File(path).listFiles();
+			if (fileLies != null) {
+				for (File file : fileLies) {
+					for (String fileName : fileNames) {
+						if (fileName.equals(file.getName())) {
+							file.delete();
+						}
+					}
+				}
+				fileLies = new File(path).listFiles();
+				if (fileLies.length == 0) {
+					File file = new File(path);
+					file.delete();
+				}
+			}
+			artAuctionVideoDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	public void deleteArtAuctionVideos(Serializable[] ids) throws ServiceException {
+		try {
+			artAuctionVideoDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	public String importVideo(String path, int auctionId) throws ServiceException {
+		String message = "";
+		try {
+			FileInputStream fileInputStream = new FileInputStream(path);
+			HSSFWorkbook wb = new HSSFWorkbook(fileInputStream);
+			HSSFSheet sht = wb.getSheetAt(0);
+			if (sht != null) {
+				for (int rowNum = 2; rowNum < sht.getLastRowNum(); rowNum++) {
+					HSSFRow hssfRow = sht.getRow(rowNum);
+					if(hssfRow == null) continue;
+					if (hssfRow.getCell(0) == null) {
+						message = "成功操作到第" + String.valueOf(rowNum-1) + "行";
+						break;
+					}
+					if(("").equals(getValue(hssfRow.getCell(0)))) {
+						message = "成功操作到第" + String.valueOf(rowNum-1) + "行";
+						break;
+					}
+					ArtAuctionVideo artAuctionVideo = new ArtAuctionVideo();
+					String str = "";
+					Date time = null;
+					artAuctionVideo.setAuctionId(auctionId);
+					str = getValue(hssfRow.getCell(1));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到视频主题";
+						break;
+					}
+					artAuctionVideo.setVideoTheme(str);
+					time = hssfRow.getCell(2).getDateCellValue();
+					if ("".equals(time)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到时间";
+						break;
+					}
+					artAuctionVideo.setVideoTime(time);
+					str = getValue(hssfRow.getCell(3));
+					if ("".equals(str)) {
+						message = "第" + String.valueOf(rowNum) + "行找不到出处";
+						break;
+					}
+					artAuctionVideo.setVideoSource(str);
+					
+					artAuctionVideoDao.save(artAuctionVideo);
+					
+				}
+			}
+			fileInputStream.close();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		File file = new File(path);
+		if(file.exists() && file.isFile()){
+			file.delete();
+		}
+		return message;
+	}
+	
+	private String getValue(HSSFCell hssfCell) {
+		if (hssfCell.getCellType() == hssfCell.CELL_TYPE_BOOLEAN) {
+			// 返回布尔类型的值
+			return String.valueOf(hssfCell.getBooleanCellValue());
+		} else if (hssfCell.getCellType() == hssfCell.CELL_TYPE_NUMERIC) {
+			// 返回数值类型的值
+			DecimalFormat df = new DecimalFormat("0");
+			return df.format(hssfCell.getNumericCellValue());
+		} else if (hssfCell.getCellType() == hssfCell.CELL_TYPE_FORMULA) {
+			// 返回数值类型的值
+			return String.valueOf(hssfCell.getNumericCellValue());
+		} else {
+			// 返回字符串类型的值
+			return String.valueOf(hssfCell.getStringCellValue());
+		}
+	}
+
+	public PageQuery queryArtAuctionVideo(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artAuctionVideoList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+		String paras = "";
+		Map<String, String> map = page.getParameters();
+		String auctionId = map.get("auctionId");
+		paras = " aav.auction_id = '" + auctionId.trim() + "' ";
+		if (paras.length() > 0) {
+			page.getParameters().put("paras", paras);
+		}
+	}
+	
+    @Resource
+	private ArtAuctionVideoDao	artAuctionVideoDao;
+
+	public void setArtAuctionVideoDao(ArtAuctionVideoDao artAuctionVideoDao) {
+		this.artAuctionVideoDao = artAuctionVideoDao;
+	}
+}
+

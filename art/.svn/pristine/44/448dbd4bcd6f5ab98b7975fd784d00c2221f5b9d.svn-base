@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="literature" extends="default" namespace="/literature">
+
+		<action name="ArtLiteratureMedium" class="com.golead.art.literature.ArtLiteratureMediumAction">
+			<result name="LIST">/jsp/literature/medium/artLiterature_medium_list.jsp</result>
+			<result name="ADD">/jsp/literature/medium/artLiterature_medium_add.jsp</result>
+			<result name="EDIT">/jsp/literature/medium/artLiterature_medium_edit.jsp</result>
+			<result name="VIEW">/jsp/literature/medium/artLiterature_medium_view.jsp</result>
+		</action>
+		<action name="ArtLiteratureWords" class="com.golead.art.literature.ArtLiteratureWordsAction">
+			<result name="LIST">/jsp/literature/artLiteratureWords/artLiteratureWords_list.jsp</result>
+			<result name="ADD">/jsp/literature/artLiteratureWords/artLiteratureWords_add.jsp</result>
+			<result name="EDIT">/jsp/literature/artLiteratureWords/artLiteratureWords_edit.jsp</result>
+			<result name="VIEW">/jsp/literature/artLiteratureWords/artLiteratureWords_view.jsp</result>
+			<result name="ARTIST">/jsp/literature/artLiteratureWords/artLiteratureWords_artist.jsp</result>
+		</action>
+		<action name="ArtLiteratureNetwork" class="com.golead.art.literature.ArtLiteratureNetworkAction">
+			<result name="LIST">/jsp/literature/artLiteratureNetwork/artLiteratureNetwork_list.jsp</result>
+			<result name="ADD">/jsp/literature/artLiteratureNetwork/artLiteratureNetwork_add.jsp</result>
+			<result name="EDIT">/jsp/literature/artLiteratureNetwork/artLiteratureNetwork_edit.jsp</result>
+			<result name="VIEW">/jsp/literature/artLiteratureNetwork/artLiteratureNetwork_view.jsp</result>
+			<result name="ARTIST">/jsp/literature/artLiteratureNetwork/artLiteratureNetwork_artist.jsp</result>
+		</action>
+		
+		<action name="ArtLiteratureOther" class="com.golead.art.literature.ArtLiteratureOtherAction">
+			<result name="LIST">/jsp/literature/other/artLiteratureOther_list.jsp</result>
+			<result name="ADD">/jsp/literature/other/artLiteratureOther_add.jsp</result>
+			<result name="EDIT">/jsp/literature/other/artLiteratureOther_edit.jsp</result>
+			<result name="ARTIST">/jsp/literature/other/artLiteratureOther_artist.jsp</result>
+		</action>
+		
+		<action name="searchEngine" class="com.golead.art.literature.SearchEngineAction">
+			<result name="INDEX">/jsp/literature/searchEngine/index.jsp</result>
+			<result name="RESULT">/jsp/literature/searchEngine/results.jsp</result>
+			<result name="VIEW">/jsp/literature/searchEngine/view.jsp</result>
+		</action>
+	</package>
+</struts>

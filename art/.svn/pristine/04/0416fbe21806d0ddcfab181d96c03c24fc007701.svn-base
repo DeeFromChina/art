@@ -1,0 +1,401 @@
+package com.golead.art.app.service.impl;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import net.sf.json.JSONArray;
+
+import org.springframework.stereotype.Service;
+
+import com.golead.art.app.service.ArtistFristService;
+import com.golead.art.app.service.QueryService;
+import com.golead.common.model.SysUser;
+import com.golead.common.service.system.SysRoleService;
+import com.golead.common.service.system.SysUserService;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.service.impl.BaseServiceImpl;
+
+@Service
+public class QueryServiceImpl extends BaseServiceImpl implements QueryService {
+
+   private static final long serialVersionUID = 1L;
+   
+   private Map<String, Object> map = new HashMap<String, Object>();
+
+   public String query(Map<String, String> parameters) throws ServiceException {
+      String version = parameters.get("version");
+      map.put("version", version);
+      if (version.equalsIgnoreCase("1.0")) return frist(parameters);// 查询稽查任务信息
+      else if (version.equalsIgnoreCase("listCode")) return sysCode(parameters);// 查询代码信息
+      else if (version.equalsIgnoreCase("listNotice")) return listTaskNotice(parameters);// 查询整改单信息
+      else if (version.equalsIgnoreCase("listSheetItem")) return listTaskSheetItem(parameters);// 查询检查单内容信息
+      else if (version.equalsIgnoreCase("noticeItem")) return taskNoticeItem(parameters);// 查询整改单内容信息
+      else if (version.equalsIgnoreCase("sheetItem")) return taskSheetItem(parameters);// 查询检查单内容信息
+      else if (version.equalsIgnoreCase("listNoticeItem")) return listTaskNoticeItem(parameters);// 查询整改单内容信息
+
+      else if (version.equalsIgnoreCase("userInfo")) return listUserInfo(parameters);// 查询个人信息
+      else if (version.equalsIgnoreCase("orgDeptList")) return listDeptAndOrg(parameters);// 查询查询单位及部门
+      else if (version.equalsIgnoreCase("userList")) return listUser(parameters);// 查询部门下人员
+      else if (version.equalsIgnoreCase("listOrg")) return listOrg(parameters);// 查询单位
+      else if (version.equalsIgnoreCase("listCharger")) return listCharger(parameters);// 查询单位
+      else if (version.equalsIgnoreCase("inspInfo")) return inspInfo(parameters);// 查询稽查人信息
+      else if (version.equalsIgnoreCase("listcatalog")) return listcatalog(parameters);// 查询稽查类别
+      else if (version.equalsIgnoreCase("listitem")) return listitem(parameters);// 查询稽查内容
+      // 
+      else if (version.equalsIgnoreCase("psBarChart")) return problemSeverityBarChart(parameters);// 问题严重性分析柱图
+      else if (version.equalsIgnoreCase("psPieChart")) return problemSeverityPieChart(parameters);// 问题严重性分析饼图
+
+      return null;
+   }
+
+   private String frist(Map<String, String> parameters) {
+      System.out.println("download art_project 1.0 data...");
+      try {
+         List<Map<String, Object>> list = artistFristService.selectArt(parameters);
+         list.add(map);
+         return toJson(list);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+
+   // 查询稽查任务信息 date_format(t.allot_date,'%Y-%c-%d') 
+   private String listTask(Map<String, String> parameters) {
+      System.out.println("download project data...");
+      String sql = "select t.id,t.cancel_reason,it.ITEM_NAME as task_type,iq.ITEM_NAME as insp_frequency,iw.ITEM_NAME as insp_way,t.org_id,t.remark,date_format(t.start_date,'%Y-%c-%d') as start_date,"
+            + " date_format(t.end_date,'%Y-%c-%d') as end_date,t.start_day,t.start_month,ts.ITEM_NAME as status,t.task_no,c.catalog_name "
+            + " from insp_task t "
+            + " left join insp_catalog c on c.id=t.catalog_id "
+            + " left join ("
+            + "    select a.ITEM_VALUE,a.ITEM_NAME from sys_code a"
+            + "    left join sys_codeset  b on b.id=a.cs_id"
+            + "    where b.EN_NAME='INSP_TYPE'"
+            + " ) it on it.ITEM_VALUE = t.task_type"
+            + " left join ("
+            + "    select a.ITEM_VALUE,a.ITEM_NAME from sys_code a"
+            + "    left join sys_codeset  b on b.id=a.cs_id"
+            + "    where b.EN_NAME='INSPECT_FREQ'"
+            + " ) iq on iq.ITEM_VALUE = t.insp_frequency"
+            + " left join ("
+            + "    select a.ITEM_VALUE,a.ITEM_NAME from sys_code a"
+            + "    left join sys_codeset  b on b.id=a.cs_id"
+            + "    where b.EN_NAME='INSP_WAY'"
+            + " ) iw on iw.ITEM_VALUE = t.insp_way"
+            + " left join ("
+            + "   select a.ITEM_VALUE,a.ITEM_NAME from sys_code a"
+            + "   left join sys_codeset  b on b.id=a.cs_id"
+            + "   where b.EN_NAME='TASK_STATUS'"
+            + " ) ts on ts.ITEM_VALUE = t.status";
+      String whereSql = createPrjSqlFilter(parameters);
+      if (!whereSql.equals("")) sql += " where " + whereSql;
+      sql += " order by t.start_date desc ";
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   private String createPrjSqlFilter(Map<String, String> map) {
+      String paras = "";
+      String userId = map.get("userId");
+      if (userId != null && userId.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += "t.task_charger_id = " + userId.trim();
+      }
+
+      return paras;
+   }
+
+   private String createTaskSqlFilter(Map<String, String> map) {
+      String paras = "";
+      String userId = map.get("userId");//稽查人
+      if (userId != null && userId.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += "i.insp_id =" + userId.trim();
+      }
+      String prjId = map.get("taskId");//任务ID
+      if (prjId != null && prjId.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += "s.task_id =" + prjId.trim();
+      }
+      String status = map.get("status");//状态
+      if (status != null && status.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += "s.status in (" + status.trim() + ")";
+      }
+
+      String auditChargerId = map.get("auditChargerId");//稽查对象负责人
+      if (auditChargerId != null && auditChargerId.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += "s.audit_charger_id =" + auditChargerId.trim();
+      }
+
+      String auditOrgId = map.get("auditOrgId");//稽查对象单位
+      if (auditOrgId != null && auditOrgId.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += "s.audit_org_id =" + auditOrgId.trim();
+      }
+
+      String orgId = map.get("orgId");//单位
+      if (orgId != null && orgId.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += "(t.org_Id =" + orgId.trim() + " or s.audit_org_id =" + orgId.trim() + ")";
+      }
+
+      String deductScore = map.get("deductScore");// 1:通过/0:不通过
+      if (deductScore != null && deductScore.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         if (deductScore.equals("0")) paras += "s.deduct_score > 0";//不通过
+         else paras += "(s.deduct_score = 0 or s.deduct_score is null)";//通过
+      }
+
+      String keyWord = map.get("keyWord");// 关键词
+      if (keyWord != null && keyWord.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += " (u.user_name like '%" + keyWord.trim() + "%' or  u2.user_name like '%" + keyWord.trim() + "%' or c.catalog_name  like '%" + keyWord.trim()
+               + "%' or si.item_name  like '%" + keyWord.trim() + "%' or o.org_name  like '%" + keyWord.trim() + "%') ";
+      }
+
+      String startDate = map.get("startDate");// 关键词
+      String endDate = map.get("endDate");// 关键词
+      if (startDate != null && startDate.trim().length() > 0 && endDate != null && endDate.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += " si.audit_date between '" + startDate.trim() + "' and  '" + endDate.trim() + "'";
+      }
+
+      return paras;
+   }
+
+   //下载代码集
+   private String sysCode(Map<String, String> parameters) {
+      System.out.println("download code data...");
+      String sql = "select sc.ID as pid,sct.en_name,sc.ITEM_NAME ,sc.ITEM_VALUE  from  sys_code sc left join sys_codeset  sct on  sc.CS_ID=sct.ID "
+            + " where sct.EN_NAME in ('RISK_TYPE')";
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   //下载整改单
+   private String listTaskNotice(Map<String, String> parameters) {
+      System.out.println("download TaskNotice data...");
+      String sql = "select n.id,date_format(n.advice_rectify_date,'%Y-%c-%d') as advice_rectify_date,u3.user_name as rectify_person,n.audit_org_id,o.org_name,date_format(n.audit_date,'%Y-%c-%d') as audit_date,n.callback_reason,n.cancel_reason,u.user_name as insp_id,"
+            + " u2.user_name as audit_charger,co.ITEM_NAME as status,n.overtime_reason,date_format(n.rectify_date,'%Y-%c-%d') as rectify_date,u4.user_name as review_person,date_format(n.review_date,'%Y-%c-%d') as review_date,n.review_desc ,n.notice_no,ts.id as sheet_id,n.confirm_result "
+            + " from insp_task_notice n "
+            + " left join sys_org o on o.id=n.audit_org_id"
+            + " left join sys_user u on u.id=n.insp_id"
+            + " left join sys_user u2 on u2.id=n.audit_charger_id"
+            + " left join sys_user u3 on u3.id=n.rectify_person"
+            + " left join sys_user u4 on u4.id=n.review_person"
+            + " left join sys_code co on co.ITEM_VALUE=n.STATUS"
+            + " left join sys_codeset sc on sc.ID=co.CS_ID "
+            + " left join insp_task_sheet ts on ts.id=n.sheet_id"
+            + " left join insp_task t on t.id=ts.task_id" + " where sc.EN_NAME='RECTIFY_STATUS' ";
+      String whereSql = createNoticeSqlFilter(parameters);
+      if (!whereSql.equals("")) sql += " and " + whereSql;
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql + " order by n.create_date desc");
+      return toJson(list);
+   }
+
+   private String createNoticeSqlFilter(Map<String, String> map) {
+      String paras = "";
+      String userId = map.get("userId");//整改人 稽查人 复核人
+      String status = map.get("status");
+      if (status != null && status.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += "n.status in (" + status.trim() + ")";
+      }
+
+      if (userId != null && userId.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += "( (n.rectify_person=" + userId.trim() + " and n.status='3') or (n.insp_id=" + userId.trim() + " and n.status='1') or (n.review_person="
+               + userId.trim() + " and n.status='5'))";
+      }
+
+      String userId2 = map.get("userId2");//整改人 稽查人 复核人
+      if (userId2 != null && userId2.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += "( n.rectify_person=" + userId2.trim() + "  or n.insp_id=" + userId2.trim() + "  or n.review_person=" + userId2.trim() + ")";
+      }
+
+      String chargerId = map.get("chargerId");
+      if (chargerId != null && chargerId.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += " t.task_charger_id=" + chargerId.trim();
+      }
+
+      String sheetId = map.get("sheetId");
+      if (sheetId != null && sheetId.trim().length() > 0) {
+         if (paras.length() > 0) paras += " and ";
+         paras += " n.sheet_id=" + sheetId.trim();
+      }
+
+      return paras;
+   }
+
+   //下载检查单内容数据
+   private String listTaskSheetItem(Map<String, String> parameters) {
+      System.out.println("download TaskSheetItem data...");
+      String sql = "select i.id,i.ITEM_NAME,u.user_name as AUDIT_PERSON,i.ITEM_STANDARD,co.ITEM_NAME as RISK_TYPE,i.SEQ_NO,i.SHEET_ID,i.DEDUCT_SCORE,i.AUDIT_DESC,date_format(i.AUDIT_DATE,'%Y-%c-%d') as AUDIT_DATE,i.AUDIT_IMG,i.CREATE_ORNOT from insp_task_sheet_item  i "
+            + " left join sys_code co on co.ITEM_VALUE=i.RISK_TYPE"
+            + " left join sys_codeset sc on sc.ID=co.CS_ID "
+            + " left join sys_user u on u.id=i.AUDIT_PERSON"
+            + " where sc.EN_NAME='RISK_TYPE' and  i.SHEET_ID ="
+            + parameters.get("sheetId")
+            + " order by i.SEQ_NO";
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   //下载检查单内容数据
+   private String taskSheetItem(Map<String, String> parameters) {
+      System.out.println("download TaskSheetItem data...");
+      String sql = "select i.id,i.ITEM_NAME,u.user_name,i.AUDIT_PERSON,i.ITEM_STANDARD,co.ITEM_NAME as RISK_TYPE,i.SEQ_NO,i.SHEET_ID,i.DEDUCT_SCORE,i.AUDIT_DESC,date_format(i.AUDIT_DATE,'%Y-%c-%d') as AUDIT_DATE,i.AUDIT_IMG from insp_task_sheet_item  i "
+            + " left join sys_code co on co.ITEM_VALUE=i.RISK_TYPE"
+            + " left join sys_codeset sc on sc.ID=co.CS_ID "
+            + " left join sys_user u on u.id=i.AUDIT_PERSON" + " where sc.EN_NAME='RISK_TYPE' and  i.id =" + parameters.get("id") + " order by i.SEQ_NO";
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   //下载整改单内容数据
+   private String listTaskNoticeItem(Map<String, String> parameters) {
+      System.out.println("download TaskNoticeItem data...");
+      String sql = "select i.id,i.notice_id,date_format(i.rectify_date,'%Y-%c-%d') as rectify_date,i.rectify_desc,i.rectify_img ,s.ITEM_NAME,s.ITEM_STANDARD,co.ITEM_NAME as RISK_TYPE,s.SEQ_NO,"
+            + " s.DEDUCT_SCORE,s.AUDIT_DESC,date_format(s.AUDIT_DATE,'%Y-%c-%d') as AUDIT_DATE,s.AUDIT_IMG,u.user_name as AUDIT_PERSON,i.item_id  "
+            + " from insp_task_notice_item i  "
+            + " left join insp_task_sheet_item s on s.id=i.item_id "
+            + " left join sys_user u on u.id=s.AUDIT_PERSON"
+            + " left join sys_code co on co.ITEM_VALUE=s.RISK_TYPE"
+            + " left join sys_codeset sc on sc.ID=co.CS_ID "
+            + " where sc.EN_NAME='RISK_TYPE' and i.notice_id =" + parameters.get("noticeId");
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   //下载整改单内容数据
+   private String taskNoticeItem(Map<String, String> parameters) {
+      System.out.println("download TaskNoticeItem data...");
+      String sql = "select i.id,i.notice_id,date_format(i.rectify_date,'%Y-%c-%d') as rectify_date,i.rectify_desc,i.rectify_img ,s.ITEM_NAME,s.ITEM_STANDARD,co.ITEM_NAME as RISK_TYPE,s.SEQ_NO,"
+            + " s.DEDUCT_SCORE,s.AUDIT_DESC,date_format(s.AUDIT_DATE,'%Y-%c-%d') as AUDIT_DATE,s.AUDIT_IMG,u.user_name as AUDIT_PERSON  "
+            + " from insp_task_notice_item i  "
+            + " left join insp_task_sheet_item s on s.id=i.item_id "
+            + " left join sys_user u on u.id=s.AUDIT_PERSON"
+            + " left join sys_code co on co.ITEM_VALUE=s.RISK_TYPE"
+            + " left join sys_codeset sc on sc.ID=co.CS_ID "
+            + " where sc.EN_NAME='RISK_TYPE' and i.id =" + parameters.get("id");
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   //下载用户个人数据
+   private String listUserInfo(Map<String, String> parameters) {
+      System.out.println("download listUserInfo data...");
+      String sql = "select u.USER_ACCOUNT,u.USER_NAME,u.EMAIL,d.DEPT_NAME,o.ORG_NAME  from sys_user u,sys_dept d ,sys_org o "
+            + "where u.DEPT_ID=d.ID and u.ORG_ID=o.ID and u.id =" + parameters.get("userId");
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   //查询当前用户所在单位下的所有子单位和部门
+   private String listDeptAndOrg(Map<String, String> parameters) {
+      System.out.println("download listDeptAndOrg data...");
+      String sql = "(select o.id,o.org_abbr as abbr,o.org_name as name,'1' as type from sys_org o where o.UP_ORG_ID=" + parameters.get("orgId")
+            + " order by o.order_no) union (select d.id,d.dept_abbr as abbr,d.dept_name,'2' as type from sys_dept d where d.org_id=" + parameters.get("orgId")
+            + " order by d.order_no) ";
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   //查询当前用户所在单位下的所有子单位
+   private String listOrg(Map<String, String> parameters) {
+      System.out.println("download listDeptAndOrg data...");
+      String sql = "select o.id,o.org_abbr as abbr,o.org_name as name from sys_org o where o.UP_ORG_ID=" + parameters.get("orgId") + " order by o.order_no ";
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   //查询稽查类别
+   private String listcatalog(Map<String, String> parameters) {
+      System.out.println("download listcatalog data...");
+      String catalogId = "0";
+      if (parameters.get("catalogId") != null && !"".equals(parameters.get("catalogId"))) catalogId = parameters.get("catalogId").toString();
+      String sql = "SELECT ic.id,ic.catalog_name FROM insp_catalog ic WHERE ic.up_catalog_id = '" + catalogId + "'ORDER BY ic.catalog_code;";
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   //查询稽查内容
+   private String listitem(Map<String, String> parameters) {
+      System.out.println("download listitem data...");
+      String sql = "SELECT ii.ID, ii.ITEM_CODE, ii.ITEM_NAME,ii.ITEM_SCORE FROM insp_item ii WHERE  ii.CATALOG_ID = '" + parameters.get("catalogId") + "'";
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   //查询负责人
+   private String listCharger(Map<String, String> parameters) {
+      System.out.println("download listCharger data...");
+      String sql = "select u.id,u.user_name from sys_station_user o " + " left join sys_user u on u.id=o.user_id" + " where o.ORG_ID="
+            + parameters.get("orgId");
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   //查询当前部门下所有人员
+   private String listUser(Map<String, String> parameters) {
+      System.out.println("download listUser data...");
+      String sql = "select u.id,u.user_name from sys_user u where u.dept_id=" + parameters.get("deptId") + " order by u.user_account ";
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   private String toJson(List<Map<String, Object>> list) {
+      JSONArray jsonObject = JSONArray.fromObject(list);
+      return jsonObject.toString();
+   }
+
+   //查询稽查人数据数据
+   private String inspInfo(Map<String, String> parameters) {
+      System.out.println("download inspInfo data...");
+      String sql = "select insp_id from insp_task_sheet_inspecter  where sheet_id =" + parameters.get("sheetId");
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      StringBuffer sb = new StringBuffer();
+      for (int i = 0; i < list.size(); i++) {
+         Map<String, Object> map = list.get(i);
+         SysUser user = sysUserService.getUser(Integer.valueOf(map.get("insp_id") + ""));
+         sb.append(user.getUserName());
+         if ((i + 1) != list.size()) sb.append(",");
+      }
+      return "\"" + sb.toString() + "\"";
+   }
+
+   public String problemSeverityBarChart(Map<String, String> parameters) throws ServiceException {
+      System.out.println("download problemSeverityBarChart data...");
+      String sql = "select u.id,u.user_name from sys_user u where u.dept_id=" + parameters.get("deptId") + " order by u.user_account ";
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   public String problemSeverityPieChart(Map<String, String> parameters) throws ServiceException {
+      System.out.println("download problemSeverityPieChart data...");
+      String sql = "select u.id,u.user_name from sys_user u where u.dept_id=" + parameters.get("deptId") + " order by u.user_account ";
+      List<Map<String, Object>> list = jdbcDao.queryBySql(sql);
+      return toJson(list);
+   }
+
+   @Resource
+   private SysRoleService sysRoleService;
+
+   @Resource
+   private SysUserService sysUserService;
+   
+   @Resource
+   private ArtistFristService artistFristService;
+
+}

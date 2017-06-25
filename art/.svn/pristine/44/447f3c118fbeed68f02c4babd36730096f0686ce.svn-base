@@ -1,0 +1,126 @@
+package com.golead.art.auction.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.auction.dao.ArtAuctionTempWordsDao;
+import com.golead.art.auction.model.ArtAuctionTempWords;
+import com.golead.art.auction.service.ArtAuctionTempWordsService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtAuctionTempWordsServiceImpl extends BaseServiceImpl implements ArtAuctionTempWordsService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtAuctionTempWords getArtAuctionTempWords(Serializable id) throws ServiceException {
+		try {
+			return artAuctionTempWordsDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtAuctionTempWords(ArtAuctionTempWords artAuctionTempWords) throws ServiceException {
+		try {
+			artAuctionTempWordsDao.save(artAuctionTempWords);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtAuctionTempWords(Map<String, String> artAuctionTempWordsMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artAuctionTempWordsMap.get(ArtAuctionTempWords.PROP_ID));
+			ArtAuctionTempWords tmp = artAuctionTempWordsDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artAuctionTempWordsMap, true);			
+			artAuctionTempWordsDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionTempWords(Serializable id) throws ServiceException {
+		try {
+			artAuctionTempWordsDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtAuctionTempWordss(Serializable[] ids) throws ServiceException {
+		try {
+			artAuctionTempWordsDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtAuctionTempWords(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artAuctionTempWordsList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtAuctionTempWordsDao	artAuctionTempWordsDao;
+
+	public void setArtAuctionTempWordsDao(ArtAuctionTempWordsDao artAuctionTempWordsDao) {
+		this.artAuctionTempWordsDao = artAuctionTempWordsDao;
+	}
+}
+

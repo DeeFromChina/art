@@ -1,0 +1,227 @@
+package com.golead.art.artist.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_artist table.
+ */
+@Entity  
+@Table(name="art_artist")  
+public class ArtArtist implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+
+   @Column(name = "e_resume")
+   private java.lang.String eResume;   // 简历(英文)
+
+   @Column(name = "nationality")
+   private java.lang.String nationality;   //  
+
+   @Column(name = "birthdate")
+   private java.util.Date birthdate;   // 出生日期
+
+   @Column(name = "province")
+   private java.lang.String province;   // 省份
+
+   @Column(name = "district")
+   private java.lang.String district;   // 区县
+
+   @Column(name = "photo")
+   private java.lang.String photo;   // 相片
+
+   @Column(name = "e_name")
+   private java.lang.String eName;   // 英文名
+
+   @Column(name = "c_resume")
+   private java.lang.String cResume;   // 简历(中文)
+
+   @Column(name = "c_name")
+   private java.lang.String cName;   // 中文名
+
+   @Column(name = "city")
+   private java.lang.String city;   // 城市
+
+   // Constructors
+   public ArtArtist() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.String getEresume() { 
+      return this.eResume; 
+   }
+   public void setEresume(java.lang.String eResume) { 
+      this.eResume = eResume; 
+   }
+
+
+   public java.lang.String getNationality() { 
+      return this.nationality; 
+   }
+   public void setNationality(java.lang.String nationality) { 
+      this.nationality = nationality; 
+   }
+
+
+   public java.util.Date getBirthdate() { 
+      return this.birthdate; 
+   }
+   public void setBirthdate(java.util.Date birthdate) { 
+      this.birthdate = birthdate; 
+   }
+
+
+   public java.lang.String getProvince() { 
+      return this.province; 
+   }
+   public void setProvince(java.lang.String province) { 
+      this.province = province; 
+   }
+
+
+   public java.lang.String getDistrict() { 
+      return this.district; 
+   }
+   public void setDistrict(java.lang.String district) { 
+      this.district = district; 
+   }
+
+
+   public java.lang.String getPhoto() { 
+      return this.photo; 
+   }
+   public void setPhoto(java.lang.String photo) { 
+      this.photo = photo; 
+   }
+
+
+   public java.lang.String getEname() { 
+      return this.eName; 
+   }
+   public void setEname(java.lang.String eName) { 
+      this.eName = eName; 
+   }
+
+
+   public java.lang.String getCresume() { 
+      return this.cResume; 
+   }
+   public void setCresume(java.lang.String cResume) { 
+      this.cResume = cResume; 
+   }
+
+
+   public java.lang.String getCname() { 
+      return this.cName; 
+   }
+   public void setCname(java.lang.String cName) { 
+      this.cName = cName; 
+   }
+
+
+   public java.lang.String getCity() { 
+      return this.city; 
+   }
+   public void setCity(java.lang.String city) { 
+      this.city = city; 
+   }
+
+
+   public static String REF_CLASS = "ArtArtist";
+   public static String PROP_ID = "id";
+   public static String PROP_E_RESUME = "eResume";
+   public static String PROP_NATIONALITY = "nationality";
+   public static String PROP_BIRTHDATE = "birthdate";
+   public static String PROP_PROVINCE = "province";
+   public static String PROP_DISTRICT = "district";
+   public static String PROP_PHOTO = "photo";
+   public static String PROP_E_NAME = "eName";
+   public static String PROP_C_RESUME = "cResume";
+   public static String PROP_C_NAME = "cName";
+   public static String PROP_CITY = "city";
+
+   public static String REF_TABLE = "art_artist";
+   public static String COL_ID = "id";
+   public static String COL_E_RESUME = "e_resume";
+   public static String COL_NATIONALITY = "nationality";
+   public static String COL_BIRTHDATE = "birthdate";
+   public static String COL_PROVINCE = "province";
+   public static String COL_DISTRICT = "district";
+   public static String COL_PHOTO = "photo";
+   public static String COL_E_NAME = "e_name";
+   public static String COL_C_RESUME = "c_resume";
+   public static String COL_C_NAME = "c_name";
+   public static String COL_CITY = "city";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.artist.model.ArtArtist)) return false;
+      else {
+         com.golead.art.artist.model.ArtArtist o = (com.golead.art.artist.model.ArtArtist) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtArtist:");
+		buffer.append(" id:").append(id);
+		buffer.append(" eResume:").append(dealNull(eResume));
+		buffer.append(" nationality:").append(dealNull(nationality));
+		buffer.append(" birthdate:").append(dealNull(birthdate));
+		buffer.append(" province:").append(dealNull(province));
+		buffer.append(" district:").append(dealNull(district));
+		buffer.append(" photo:").append(dealNull(photo));
+		buffer.append(" eName:").append(dealNull(eName));
+		buffer.append(" cResume:").append(dealNull(cResume));
+		buffer.append(" cName:").append(dealNull(cName));
+		buffer.append(" city:").append(dealNull(city));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"eResume\":\"").append(dealNull(eResume)).append("\"");
+		buffer.append(",\"nationality\":\"").append(dealNull(nationality)).append("\"");
+		buffer.append(",\"birthdate\":\"").append(dealNull(birthdate)).append("\"");
+		buffer.append(",\"province\":\"").append(dealNull(province)).append("\"");
+		buffer.append(",\"district\":\"").append(dealNull(district)).append("\"");
+		buffer.append(",\"photo\":\"").append(dealNull(photo)).append("\"");
+		buffer.append(",\"eName\":\"").append(dealNull(eName)).append("\"");
+		buffer.append(",\"cResume\":\"").append(dealNull(cResume)).append("\"");
+		buffer.append(",\"cName\":\"").append(dealNull(cName)).append("\"");
+		buffer.append(",\"city\":\"").append(dealNull(city)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

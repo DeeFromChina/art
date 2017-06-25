@@ -1,0 +1,151 @@
+package com.golead.art.artist.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+import com.golead.art.artist.dao.ArtArtistDonationDao;
+import com.golead.art.artist.model.ArtArtistDonation;
+import com.golead.art.artist.service.ArtArtistDonationService;
+
+import javax.annotation.Resource; 
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtArtistDonationServiceImpl extends BaseServiceImpl implements ArtArtistDonationService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtArtistDonation getArtArtistDonation(Serializable id) throws ServiceException {
+		try {
+			return artArtistDonationDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtArtistDonation(ArtArtistDonation artArtistDonation) throws ServiceException {
+		try {
+			artArtistDonationDao.save(artArtistDonation);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtArtistDonation(Map<String, String> artArtistDonationMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artArtistDonationMap.get(ArtArtistDonation.PROP_ID));
+			ArtArtistDonation tmp = artArtistDonationDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artArtistDonationMap, true);			
+			artArtistDonationDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistDonation(Serializable id) throws ServiceException {
+		try {
+			artArtistDonationDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistDonations(Serializable[] ids) throws ServiceException {
+		try {
+			artArtistDonationDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	public void deleteArtArtistWithDonations(Serializable[] ids) throws ServiceException {
+		try {
+			for (Serializable id : ids) {
+				artArtistDonationDao.deleteByField("artistId", id);
+			}
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtArtistDonation(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artArtistDonationList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+		String artistId = page.getParameters().get("artistId");
+		String paras = "";
+		paras = " aad.artist_id = " + artistId + " ";
+		if (paras.length() > 0) {
+			page.getParameters().put("paras", paras);
+		}
+	}
+	
+    @Resource
+	private ArtArtistDonationDao	artArtistDonationDao;
+
+	public void setArtArtistDonationDao(ArtArtistDonationDao artArtistDonationDao) {
+		this.artArtistDonationDao = artArtistDonationDao;
+	}
+}
+

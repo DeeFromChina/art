@@ -1,0 +1,36 @@
+#Update values
+#Thu Jul 07 10:18:12 CST 2016
+db.Column.category=category,CHAR,category,string,1, ,N,N,Y,\u7C7B\u522B\uFF0C\u753B\u518C(1\:\u4E2A\u4EBA\uFF0C0\:\u975E\u4E2A))\uFF0C\u6742\u5FD7(1\:\u7F8E\u672F\uFF0C0\:\u975E\u7F8E)\uFF0C3\:\u62A5\u7EB8(1\:\u7F8E\u672F),
+GenDao=true
+db.Column.period=period,INTEGER,period,integer,10,0,N,N,Y,\u671F\u6570,
+db.Column.joint_publish=joint_publish,VARCHAR,jointPublish,string,100, ,N,N,Y,\u8054\u5408\u51FA\u7248,
+db.Column.total_period=total_period,INTEGER,totalPeriod,integer,10,0,N,N,Y,\u603B\u671F\u6570,
+GenWeb=false
+db.Column.id=id,INTEGER,id,integer,10,0,Y,N,N, ,
+db.Column.album_time=album_time,TIMESTAMP,albumTime,date,19, ,N,N,Y,\u65F6\u95F4,
+db.Column.include_name=include_name,VARCHAR,includeName,string,100, ,N,N,Y,\u540D\u79F0,
+FilePath.Annotation=1
+FilePath.JspPath=
+FilePath.Dao=com.golead.art.literature.dao
+java.ClassName=ArtLiteratureInclude
+db.Column.press=press,VARCHAR,press,string,100, ,N,N,Y,\u51FA\u7248\u793E,
+FilePath.SpringCfgFile=
+db.SequenceName=
+db.Column.include_type=include_type,CHAR,includeType,string,1, ,N,N,Y,\u6536\u5F55\u7C7B\u578B\uFF0C1\:\u753B\u518C\uFF0C2\:\u6742\u5FD7\uFF0C3\:\u62A5\u7EB8,
+db.Column.editor=editor,VARCHAR,editor,string,30, ,N,N,Y,\u4E3B\u7F16,
+projectAnnotation=1
+FilePath.Service=com.golead.art.literature.service
+db.Table=art_literature_include
+GenService=false
+FilePath.JavaDaoPath=/src/dao
+db.Schema=
+db.PKGenerator=native
+FilePath.Vo=com.golead.art.literature.model
+db.Column.page_count=page_count,INTEGER,pageCount,integer,10,0,N,N,Y,\u603B\u9875\u6570/\u7248\u6570,
+FilePath.SpringDaoCfgFile=
+FilePath.ActionPath=
+FilePath.ActionPackage=
+FilePath.StrutsCfgFile=
+FilePath.JavaServicePath=/src/service
+db.Column.photo=photo,VARCHAR,photo,string,50, ,N,N,Y,\u76F8\u7247\uFF0C\u591A\u4E2A\u7528;\u9694\u5F00,
+db.Column.relevant_pages=relevant_pages,VARCHAR,relevantPages,string,30, ,N,N,Y,\u76F8\u5173\u9875/\u7248\u9762,

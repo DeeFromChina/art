@@ -1,0 +1,126 @@
+package com.golead.art.literature.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.literature.dao.ArtLiteratureMediumDao;
+import com.golead.art.literature.model.ArtLiteratureMedium;
+import com.golead.art.literature.service.ArtLiteratureMediumService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtLiteratureMediumServiceImpl extends BaseServiceImpl implements ArtLiteratureMediumService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtLiteratureMedium getArtLiteratureMedium(Serializable id) throws ServiceException {
+		try {
+			return artLiteratureMediumDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtLiteratureMedium(ArtLiteratureMedium artLiteratureMedium) throws ServiceException {
+		try {
+			artLiteratureMediumDao.save(artLiteratureMedium);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtLiteratureMedium(Map<String, String> artLiteratureMediumMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artLiteratureMediumMap.get(ArtLiteratureMedium.PROP_ID));
+			ArtLiteratureMedium tmp = artLiteratureMediumDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artLiteratureMediumMap, true);			
+			artLiteratureMediumDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtLiteratureMedium(Serializable id) throws ServiceException {
+		try {
+			artLiteratureMediumDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtLiteratureMediums(Serializable[] ids) throws ServiceException {
+		try {
+			artLiteratureMediumDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtLiteratureMedium(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artLiteratureMediumList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtLiteratureMediumDao	artLiteratureMediumDao;
+
+	public void setArtLiteratureMediumDao(ArtLiteratureMediumDao artLiteratureMediumDao) {
+		this.artLiteratureMediumDao = artLiteratureMediumDao;
+	}
+}
+

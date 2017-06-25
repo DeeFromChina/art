@@ -1,0 +1,36 @@
+#Update values
+#Thu Jul 07 10:18:51 CST 2016
+GenDao=true
+db.Column.publication_info2=publication_info2,VARCHAR,publicationInfo2,string,200, ,N,N,Y,\u51FA\u7248\u4FE1\u606F2,
+db.Column.publication_info1=publication_info1,VARCHAR,publicationInfo1,string,200, ,N,N,Y,\u51FA\u7248\u4FE1\u606F1,
+db.Column.write_time=write_time,TIMESTAMP,writeTime,date,19, ,N,N,Y,\u64B0\u6587\u65F6\u95F4,
+GenWeb=false
+db.Column.id=id,INTEGER,id,integer,10,0,Y,N,N, ,
+FilePath.Annotation=1
+FilePath.JspPath=
+FilePath.Dao=com.golead.art.literature.dao
+java.ClassName=ArtLiteratureWords
+db.Column.words_type=words_type,CHAR,wordsType,string,1, ,N,N,Y,\u7C7B\u578B\uFF0C1\uFF1A\u7EB8\u672C\uFF0C2\uFF1A\u7F51\u7EDC\uFF0C3\uFF1A\u8BBA\u6587\u5E93\uFF0C4\uFF1A\u827A\u864E\u72EC\u5BB6,
+FilePath.SpringCfgFile=
+db.SequenceName=
+projectAnnotation=1
+FilePath.Service=com.golead.art.literature.service
+db.Column.publication_name=publication_name,VARCHAR,publicationName,string,200, ,N,N,Y,\u51FA\u7248\u7269\u540D\u79F0,
+db.Table=art_literature_words
+GenService=false
+FilePath.JavaDaoPath=/src/dao
+db.Column.person_involved=person_involved,VARCHAR,personInvolved,string,60, ,N,N,Y,\u53C2\u4E0E\u4EBA\u7269,
+db.Column.words_source=words_source,CHAR,wordsSource,string,1, ,N,N,Y,\u6587\u5B57\u6765\u6E90\uFF0C1\uFF1A\u8BC4\u8BBA\uFF0C2\uFF1A\u8BBF\u8C08\uFF0C3\uFF1A\u8D44\u8BAF,
+db.Schema=
+db.PKGenerator=native
+FilePath.Vo=com.golead.art.literature.model
+db.Column.page_count=page_count,INTEGER,pageCount,integer,10,0,N,N,Y,\u603B\u9875\u6570,
+db.Column.words_auther=words_auther,VARCHAR,wordsAuther,string,30, ,N,N,Y,\u4F5C\u8005,
+FilePath.SpringDaoCfgFile=
+FilePath.ActionPath=
+FilePath.ActionPackage=
+FilePath.StrutsCfgFile=
+FilePath.JavaServicePath=/src/service
+db.Column.attachment=attachment,VARCHAR,attachment,string,500, ,N,N,Y,\u9644\u4EF6,
+db.Column.words_title=words_title,VARCHAR,wordsTitle,string,100, ,N,N,Y,\u6807\u9898,
+db.Column.relevant_pages=relevant_pages,VARCHAR,relevantPages,string,30, ,N,N,Y,\u76F8\u5173\u9875,

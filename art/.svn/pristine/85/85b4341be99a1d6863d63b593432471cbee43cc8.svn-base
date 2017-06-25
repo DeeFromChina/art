@@ -1,0 +1,126 @@
+package com.golead.art.artist.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.artist.dao.ArtArtistCollectorDao;
+import com.golead.art.artist.model.ArtArtistCollector;
+import com.golead.art.artist.service.ArtArtistCollectorService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtArtistCollectorServiceImpl extends BaseServiceImpl implements ArtArtistCollectorService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtArtistCollector getArtArtistCollector(Serializable id) throws ServiceException {
+		try {
+			return artArtistCollectorDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtArtistCollector(ArtArtistCollector artArtistCollector) throws ServiceException {
+		try {
+			artArtistCollectorDao.save(artArtistCollector);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtArtistCollector(Map<String, String> artArtistCollectorMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artArtistCollectorMap.get(ArtArtistCollector.PROP_ID));
+			ArtArtistCollector tmp = artArtistCollectorDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artArtistCollectorMap, true);			
+			artArtistCollectorDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistCollector(Serializable id) throws ServiceException {
+		try {
+			artArtistCollectorDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistCollectors(Serializable[] ids) throws ServiceException {
+		try {
+			artArtistCollectorDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtArtistCollector(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artArtistCollectorList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtArtistCollectorDao	artArtistCollectorDao;
+
+	public void setArtArtistCollectorDao(ArtArtistCollectorDao artArtistCollectorDao) {
+		this.artArtistCollectorDao = artArtistCollectorDao;
+	}
+}
+

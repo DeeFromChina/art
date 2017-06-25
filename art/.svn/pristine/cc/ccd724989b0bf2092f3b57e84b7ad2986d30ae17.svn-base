@@ -1,0 +1,126 @@
+package com.golead.art.artist.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.artist.dao.ArtArtistAlbumDao;
+import com.golead.art.artist.model.ArtArtistAlbum;
+import com.golead.art.artist.service.ArtArtistAlbumService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtArtistAlbumServiceImpl extends BaseServiceImpl implements ArtArtistAlbumService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtArtistAlbum getArtArtistAlbum(Serializable id) throws ServiceException {
+		try {
+			return artArtistAlbumDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtArtistAlbum(ArtArtistAlbum artArtistAlbum) throws ServiceException {
+		try {
+			artArtistAlbumDao.save(artArtistAlbum);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtArtistAlbum(Map<String, String> artArtistAlbumMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artArtistAlbumMap.get(ArtArtistAlbum.PROP_ID));
+			ArtArtistAlbum tmp = artArtistAlbumDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artArtistAlbumMap, true);			
+			artArtistAlbumDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistAlbum(Serializable id) throws ServiceException {
+		try {
+			artArtistAlbumDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistAlbums(Serializable[] ids) throws ServiceException {
+		try {
+			artArtistAlbumDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtArtistAlbum(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artArtistAlbumList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtArtistAlbumDao	artArtistAlbumDao;
+
+	public void setArtArtistAlbumDao(ArtArtistAlbumDao artArtistAlbumDao) {
+		this.artArtistAlbumDao = artArtistAlbumDao;
+	}
+}
+

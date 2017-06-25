@@ -1,0 +1,434 @@
+body {
+	background-color: #ffffff; cursor: default; scroll: none; border: 0; margin: 0;color: #333;
+	font: 12px "微软雅黑","宋体", Verdana, Geneva, sans-serif;
+}
+
+input { border:1px solid #b3b3b3; font-size: 12px; font-family:"微软雅黑", "宋体", Verdana, Geneva, sans-serif; }
+input[type=text] { height:22px; }
+input[type=checkbox] { height:16px; }
+input[type=file] {
+  height:22px; 
+}
+
+select { height:26px; border:1px solid #b3b3b3; font-size: 12px; font-family:"微软雅黑", "宋体", Verdana, Geneva, sans-serif; }
+textarea { border:1px solid #b3b3b3; font-size: 12px; font-family:"微软雅黑", "宋体", Verdana, Geneva, sans-serif; }
+
+
+form { margin: 0; }
+.special-padding { padding: 2px 2px; }
+.textC { text-align: center !important; }
+.textR { text-align: right !important; }
+.textL { text-align: left !important; }
+.textRT { text-align: right !important; text-valign: top !important; }
+.textLW { text-align: left !important; }
+
+.controlTable { width: 100%; border: 0px solid #bcd2e8; border-bottom: none; table-layout: fixed; height: 42px; margin-bottom: -2px; }
+.controlTable td { height: 24px; background-color:#ffffff; }
+
+/* --------------queryTable S------------------ */
+.queryTable { width: 100%; border: 0px solid #d9d9d9; background: #ffffff; font-size: 12px; font-family:"微软雅黑", "宋体", Verdana, Geneva, sans-serif; }
+.queryTable tr { height: 42px; line-height: 42px; }
+.queryTable td { padding: 0px 5px 0px 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.queryTable table td { border:none; }
+/* --------------queryTable E------------------ */
+/* --------------formTable S------------------ */
+.formTable {
+	width: 100%; border: 1px solid #c7d1fa;  table-layout: fixed; background: #ffffff;
+	font-size: 12px; font-family:"微软雅黑", "宋体", Verdana, Geneva, sans-serif;
+}
+.formTable tr { height: 32px; line-height: 32px; text-align: left; }
+.formTable td { border: 1px solid #c7d1fa;border-bottom: none; border-right: none; padding: 1px 6px 1px 1px; text-align: right; line-height:32px; word-break:break-all; }
+.formTable th { border-right: 1px solid #c7d1fa; border-top: 1px solid #fff; height: 28px; line-height: 28px; padding-left: 5px;}
+.formTable input,.formTable select,.formTable textarea { width: 100%; }
+.formTable input { height:22px; }
+.formTable select { height:26px; }
+.formTable textarea { overflow: auto; height:80px; }
+.formTable .checkbox, .formTable .radio { width: auto; border: none; }
+.formTable .sel { padding: 0 2px 0 2px; }
+.formTable .btnTr td { height: 34px; background: #d6e8fe url(../images/formTable-btn-bg.gif) repeat-x bottom; }
+
+.hover { background: #fff0c8 url(../images/listTable-hover-bg.gif) repeat-x bottom  !important; }
+.formFiledset { padding:1px 0 0 0; border:1px solid #becfe1; margin:5px 0; }
+.formLegend { padding:0 5px; margin-left:8px; }
+.fieldsetBorder { border:1px solid #edf5fe; padding:2px 3px; border-top:none; }
+.tbnBtnStyle { border:0px solid #edf5fe; padding:0px 0px 0px 0px; }
+.tbnBtnStyle td { border:0px solid #edf5fe; padding:0px 5px 0px 0px; }
+.tbnBtnStyle .btn { border:0px solid #edf5fe; padding:0px 1px 0px 0px; }
+/* --------------formTable E------------------ */
+
+.sbuBtnStyle, .sbuBtnStyle:hover { display: inline-block; height: 28px; line-height: 28px; }
+.sbuBtnStyle { 
+	font-size: 12px;font-family:"微软雅黑", "宋体", Verdana, Geneva, sans-serif;padding-right: 15px;padding-left: 15px;
+	text-decoration: none; cursor: pointer; color: #ffffff; background-color:#4169a0;
+    border: 1px solid #4169a0; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius:5px;           
+}
+.sbuBtnStyle:hover { background-color:#a04169; border: 1px solid #a04169; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius:5px; }
+.sbuBtnStyle strong span { width: 5px; height: 16px; font-size:5px; }
+
+
+.btnStyle {
+	font-size: 12px; font-family:"微软雅黑", "宋体", Verdana, Geneva, sans-serif;
+	color: white; text-decoration: none; cursor: pointer; display: inline-block; background-color: #4169a0;
+    border: 1px solid #4169a0; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius:5px;           
+	height: 26px; line-height: 26px; text-align: center; padding-right: 20px;
+}
+.btnStyle strong { font-weight: bold; display: inline-block; padding-left: 20px; letter-spacing: 2px; }
+.btnStyle:hover { background-color: #a04149; border: 1px solid #a04149; }
+
+.btnFormStyle {
+	font-size: 12px; font-family:"微软雅黑", "宋体", Verdana, Geneva, sans-serif; padding-right:8px;
+	color: white; text-decoration: none;cursor: pointer;display: inline-block;height: 24px; line-height: 24px;text-align: center;
+    background-color: #4169a0; border: 1px solid #4169a0; -moz-border-radius: 5px; -webkit-border-radius: 5px; border-radius:5px;           
+}
+.btnFormStyle strong { font-weight: normal; display: inline-block; padding-left:8px;}
+.btnFormStyle:hover { background-color: #a04149; border: 1px solid #a04149; }
+
+
+
+/* --------------pageTurn S------------------ */
+.pageTurn { 
+	width: 100%; background: #f9f9f9; height: 36px;table-layout: fixed;
+	border-top: 0px solid #bcd2e8; border-bottom: 1px solid #bcd2e8; border-left: 1px solid #bcd2e8; border-right: 1px solid #bcd2e8; 
+}
+.pageTurn td { padding: 0 8px 2px 8px; vertical-align: middle; font-size: 12px; }
+.pageTurn .pageTurnWrap { float: right; }
+.pageTurn input{ font-size:12px; height:16px; text-align:center; }
+
+.leftPageMore, .rightPageMore, .rightPage, .leftPage, .greyleftPageMore, .greyrightPageMore, .greyrightPage, .greyleftPage {
+	padding:2px 4px; height: 16px; width: 12px; float: left; font-size: 12px; margin: 0 5px; display:inline-block; text-decoration:none;
+}
+.leftPageMore { background: url(arrow-blue-left-more16.png) no-repeat; }
+.rightPageMore {background: url(arrow-blue-right-more16.png) no-repeat; }
+.rightPage {background: url(arrow-blue-right16.png) no-repeat; }
+.leftPage {background: url(arrow-blue-left16.png) no-repeat; }
+.leftPageMore:hover {background: url(arrow-red-left-more16.png) no-repeat; }
+.rightPageMore:hover {background: url(arrow-red-right-more16.png) no-repeat; }
+.rightPage:hover {background: url(arrow-red-right16.png) no-repeat; }
+.leftPage:hover {background: url(arrow-red-left16.png) no-repeat; }
+.greyleftPageMore {background: url(arrow-gray-left-more16.png) no-repeat; cursor:point!important; }
+.greyrightPageMore {background: url(arrow-gray-right-more16.png) no-repeat;cursor:point!important;}
+.greyrightPage {background: url(arrow-gray-right16.png) no-repeat;cursor:point!important;}
+.greyleftPage {background: url(arrow-gray-left16.png) no-repeat;cursor:point!important;}
+/* --------------pageTurn E------------------ */
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.btnInputStyle {
+	cursor: hand;
+	background: url(../images/2-1.gif) no-repeat left top;
+	background-color:darkgray;
+	height: 22px;
+	width: 20px!important;
+}
+
+.btnReportStyle {
+	font-size: 12px;
+	color: #000;
+	text-decoration: none;
+	cursor: pointer;
+	display: inline-block;
+	background: url(../images/btnBg.gif) no-repeat right top;
+	height: 23px;
+	line-height: 23px;
+	text-align: center;
+	padding-right: 5px;
+}
+.btnReportStyle strong {
+	font-weight: normal;
+	background: url(../images/btnBg.gif) no-repeat left top;
+	display: inline-block;
+	padding-left: 5px;
+	letter-spacing: 1px;
+}
+.btnReportStyle:hover {
+	background-position: right -23px;
+}
+.btnReportStyle:hover strong {
+	background-position: left -23px;
+}
+.btnReportSelectStyle {
+	font-size: 12px;
+	color: #000;
+	text-decoration: none;
+	cursor: pointer;
+	display: inline-block;
+	background: url(../images/btnBg.gif) no-repeat right top;
+	height: 23px;
+	line-height: 23px;
+	text-align: center;
+	padding-right: 5px;
+}
+.btnReportSelectStyle strong {
+	font-weight: bold;
+	color:#ff3366;
+	background: url(../images/btnBg.gif) no-repeat left top;
+	display: inline-block;
+	padding-left: 5px;
+	letter-spacing: 1px;
+}
+
+
+
+/*end添加icon的样式*/
+.gap8 { /*上下间隔行距通用div*/
+	height: 6px;
+	line-height: 0;
+	font-size: 0;
+	background: url(../images/gap12.gif) repeat-x center -1px;
+}
+/* --------------listTable S------------------ */
+.listTable {
+	width: 100%;
+	border: 1px solid #d9d9d9;
+	border-bottom: none;
+	table-layout: fixed;
+	background: #fff;
+}
+.listTable tr {
+	height: 23px;
+	line-height: 23px;
+}
+.listTable .trBg { /* 偶数行颜色 */
+	background: #f7f7f7;
+}
+.selectItem {
+/*	background: #fff0c8 url(listTable-hover-bg.gif) repeat-x bottom  !important;*/
+}
+.listTable tr:hover {
+	background: #ffdf9b url(../images/listTable-hover-bg.gif) repeat-x;
+	background-position: center top;
+*  background-position: center bottom;
+}
+.listTable th {
+	background: #fafcfe url(../images/table-th-bg.gif) repeat-x bottom;
+	border-right: 1px solid #e2e2e2;
+	border-left: 1px solid #fff;
+	border-bottom: 1px solid #d9d9d9;
+	border-top: 1px solid #fff;
+	height: 23px;
+	line-height: 23px;
+}
+.listTable td {
+	padding: 0px 5px 0px 5px;
+	border-top: 1px solid #fff;
+	border-bottom: 1px solid #ededed;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.listTable .HLight { /*table中超链接高亮颜色*/
+	color: #0965bb;
+	text-decoration: none
+}
+.listTable .HLight:hover {
+	text-decoration: underline
+}
+.pageDataView {
+	width: 100%;
+	border-top: 1px solid #bcd2e8;
+	border-bottom: 1px solid #bcd2e8;
+	border-left: 1px solid #bcd2e8;
+	border-right: 1px solid #bcd2e8;
+}
+/* --------------listTable E------------------ */
+
+/* --------------searchTable S------------------ */
+
+.searchTable {
+	width: 100%;
+	border: 1px solid #d9d9d9;
+	border-bottom: none;
+	background: #d6e8fe;
+}
+.searchTable tr {
+	height: 23px;
+	line-height: 23px;
+}
+.searchTable th {
+	background: #fafcfe url(../images/table-th-bg.gif) repeat-x bottom;
+	border-right: 1px solid #e2e2e2;
+	border-left: 1px solid #fff;
+	
+	border-top: 1px solid #fff;
+	height: 23px;
+	line-height: 23px;
+}
+.searchTable td {
+	padding: 0px 5px 0px 5px;
+	border-top: 1px solid #becfe1;
+	border-bottom: 1px solid #edf5fe;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+.searchTable input, .searchTable select, .searchTable textarea {
+	width:100%;
+	border:1px solid #b1b1b1;
+	border-right:1px solid #dfdfdf;
+	border-bottom:1px solid #dfdfdf;
+}
+
+.searchTable table td{
+	border:none
+	}
+/* --------------searchTable E------------------ */
+
+.formDiv { position: absolute; left:0px; top:0px; text-align:center; overflow-x:hidden; overflow-y:auto; background-color:#ffffff; }
+.btnDiv {
+	position: absolute;
+	background-color:#ffffff;
+	height: 32px;
+    text-align: right;
+	padding-top: 5px;
+	padding-right: 15px;
+    margin: 0 auto;
+}
+
+  fieldset {
+     padding: 3px;
+     border-color:#aaaadd;
+     border-style:solid;
+     border-width:1px;
+  }
+  fieldset legend{
+     margin-left: 10px;
+     font-weight:bold;
+  }
+
+
+
+
+
+.tableTitle{
+   width:100%;
+   font-size:24px;
+   font-weight:bold;
+   height:42px;
+   padding-top:5px;
+   text-align:center;
+}
+
+.extTable {
+	border-left: 2px solid #666688;
+	border-top: 2px solid #666688;
+	border-bottom: 1px solid #666688;
+	border-right: 1px solid #666688;
+	font-size: 12px;
+	margin: 0 auto; 
+}
+.extTable th {
+	background: #eeeeee;
+	border-left: none;
+	border-top: none;
+	border-bottom: 1px solid #666688;
+	border-right: 1px solid #666688;
+	padding: 1px 1px 1px 2px;
+	text-align: right;
+	line-height:1.2em;
+	word-break:break-all;
+	font-weight:bold;
+}
+
+.extTable tr {
+	height: 24px;
+	line-height: 24px;
+	text-align: left;
+}
+.extTable td {
+	background: #ffffff;
+	border-left: none;
+	border-top: none;
+	border-bottom: 1px solid #666688;
+	border-right: 1px solid #666688;
+	padding: 1px 1px 1px 2px;
+	text-align: right;
+	line-height:1.2em;
+	word-break:break-all;
+}
+.extTable td .tbnBtnStyle {
+    width:100%;
+	background: #ffffbb;
+}
+
+.extTable td .tbnBtnStyle td {
+	background: #ffffbb;
+	border: 0px solid #666688;
+}
+
+.extTable td .tbnBtnStyle .sel {
+   width:60px;
+}
+
+.extTable .editable {
+   text-align: left !important;
+   background-color:#ffffdd;
+   padding-right:3px;
+}
+
+.extTable input, .extTable select, .extTable textarea {
+	width: 100%;
+	border: 0px solid #b1b1b1;
+	border-right: 0px solid #dfdfdf;
+	border-bottom: 0px solid #dfdfdf;
+   background-color:#ffffdd;
+   font-size: 12px;
+}
+.extTable textarea {
+	overflow: auto;
+	height:80px;
+	width:100%;
+}
+.extTable .checkbox, .extTable .radio {
+	width: auto;
+	border: none;
+}
+.extTable .sel {
+	padding: 0 2px 0 2px;
+}
+
+.extTable .btnTr td {
+	height: 34px;
+	background: #d6e8fe url(../images/extTable-btn-bg.gif) repeat-x bottom;
+}
+
+.emptyTable { border:0px solid white; width: 100%; }
+.emptyTable tr td { border:0px solid white; padding-right:0px; }
+
+.gridTable {
+	border-left: 1px solid #b1b2ff;border-top: 1px solid #b1b2ff;border-right: 0px solid #b1b2ff;border-bottom: 0px solid #b1b2ff; 
+	width: 100%; table-layout: fixed;  font-size: 12px; font-family:"微软雅黑", "宋体", Verdana, Geneva, sans-serif;
+}
+.gridTable tr { }
+.gridTable td { 
+	border-left: 0px solid #b1b2ff;border-top: 0px solid #b1b2ff;border-right: 1px solid #b1b2ff;border-bottom: 1px solid #b1b2ff; 
+	padding: 1px 6px 1px 1px; text-align: right; height: 28px; line-height: 28px; word-break:break-all; 
+}
+.gridTable .lastTr { border-bottom: 0px solid #b1b2ff; }
+
+.gridTable th { 
+	border-left: 0px solid #b1b2ff;border-top: 0px solid #b1b2ff;border-right: 1px solid #b1b2ff;border-bottom: 1px solid #b1b2ff; 
+    background-color:#f6f6f6; height: 28px; line-height: 28px; padding-left: 5px;
+}
+.gridTable input[type=file] {width: 100%; height:22px; }
+.gridTable input[type=text] {width: 100%; height:22px; }
+.gridTable input[type=checkbox] { height:16px; }
+.gridTable textarea {width: 100%; overflow: auto; height:40px; }
+
+.report-header .title {text-align:center;width:99%;font-size:24px;height:40px;}
+.report-header .sub-title {text-align:right;width:100%;padding-right:10px;padding-bottom:2px;}
+.report-footer {position: absolute;width:100%;margin-top: 5px}
+
+.btnInCell {padding-left: 20px; line-height: 20px;}

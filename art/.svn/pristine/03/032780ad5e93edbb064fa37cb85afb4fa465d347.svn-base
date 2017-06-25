@@ -1,0 +1,155 @@
+package com.golead.art.artist.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.artist.dao.ArtArtistExperienceDao;
+import com.golead.art.artist.model.ArtArtistExperience;
+import com.golead.art.artist.service.ArtArtistExperienceService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtArtistExperienceServiceImpl extends BaseServiceImpl implements ArtArtistExperienceService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtArtistExperience getArtArtistExperience(Serializable id) throws ServiceException {
+		try {
+			return artArtistExperienceDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtArtistExperience(ArtArtistExperience artArtistExperience) throws ServiceException {
+		try {
+			artArtistExperienceDao.save(artArtistExperience);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtArtistExperience(Map<String, String> artArtistExperienceMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artArtistExperienceMap.get(ArtArtistExperience.PROP_ID));
+			ArtArtistExperience tmp = artArtistExperienceDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artArtistExperienceMap, true);			
+			artArtistExperienceDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistExperience(Serializable id) throws ServiceException {
+		try {
+			artArtistExperienceDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistExperiences(Serializable[] ids) throws ServiceException {
+		try {
+			artArtistExperienceDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistWithExperiences(Serializable[] ids) throws ServiceException {
+		try {
+			for(Serializable id : ids) {
+				artArtistExperienceDao.deleteByField("artId", id);
+			}
+		} catch (DAOException e) {
+			e.printStackTrace();
+			throw new ServiceException("数据库操作错误。");
+		} catch (ServiceException se) {
+			se.printStackTrace();
+			throw se;
+		} catch (Exception e) {
+			e.printStackTrace();
+			throw new ServiceException("系统错误。");
+		}
+	}
+	
+	public PageQuery queryArtArtistExperience(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artArtistExperienceList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+		String paras = "";
+		Map<String, String> parameters = page.getParameters();
+		String art_id = parameters.get("artistId");
+		paras = " aae.art_id = " + art_id + " ";
+		String year = parameters.get("year");
+		if (year != null && year.trim().length() > 0) {
+			if (paras.length() > 0)
+				paras += " and ";
+			paras += " aae.year like '%" + year.trim() + "%'";
+		}
+		if (paras.length() > 0)
+			page.getParameters().put("paras", paras);
+	}
+	
+    @Resource
+	private ArtArtistExperienceDao	artArtistExperienceDao;
+
+	public void setArtArtistExperienceDao(ArtArtistExperienceDao artArtistExperienceDao) {
+		this.artArtistExperienceDao = artArtistExperienceDao;
+	}
+}
+

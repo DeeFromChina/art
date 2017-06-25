@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+	<sql id="artLiteratureList" orderBy="al.id Desc">
+		SELECT
+		al.id AS id,
+		category AS category,
+		literature_type AS literatureType,
+		literature_name AS literatureName,
+		period AS period,
+		total_period AS totalPeriod,
+		press AS press,
+		publication_time AS publicationTime,
+		page_count AS pageCount,
+		editor AS editor,
+		subeditor AS subeditor,
+		executive_editor AS executiveEditor,
+		adviser AS adviser,
+		literature_column AS literatureColumn,
+		content_name AS contentName,
+		content_type AS contentType,
+		author AS author,
+		page_segment AS pageSegment,
+		relevant_pages AS relevantPages,
+		attachment AS attachment
+		FROM ART_LITERATURE al
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artLiteratureCollectList" orderBy="collect_time Desc">
+		SELECT
+		id AS id,
+		collect_name AS collect_name,
+		collect_time AS collect_time,
+		city AS city,
+		province AS province,
+		country AS country,
+		attachment AS attachment
+		FROM ART_LITERATURE_COLLECT
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artLiteratureMediumList" orderBy="medium.shot_time DESC">
+		SELECT
+		medium.id AS id,
+		medium.person_involved AS personInvolved,
+		medium.literature_title AS literatureTitle,
+		medium.when_long AS whenLong,
+		medium.shot_people AS shotPeople,
+		medium.shot_time AS shotTime,
+		medium.literature_works AS literatureWorks,
+		medium.content_desc AS contentDesc,
+		medium.related_exhib AS relatedExhib,
+		medium.related_event AS relatedEvent,
+		medium.site_link AS siteLink,
+		medium.artist_id AS artistId,
+		medium.attachment_source AS attachmentSource,
+		artist.c_name AS CName  
+		FROM ART_LITERATURE_MEDIUM medium 
+		LEFT JOIN art_artist artist ON artist.id = medium.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artLiteratureWordsList" orderBy="words.write_time DESC">
+		SELECT
+		words.id AS id,
+		words.words_type AS wordsType,
+		words.literature_column AS literatureColumn,
+		words.literature_title AS literatureTitle,
+		words.literature_auther AS literatureAuther,
+		words.write_time AS writeTime,
+		words.publication_name AS publicationName,
+		words.press AS press,
+		words.publication_period AS publicationPeriod,
+		words.relevant_pages AS relevantPages,
+		words.artist_id AS artistId,
+		words.person_involved AS personInvolved,
+		words.attachment AS attachment,
+		words.attachment_source AS attachmentSource,
+		words.literature_works AS literatureWorks,
+		words.related_exhib AS relatedExhib,
+		words.related_event AS relatedEvent,
+		words.quote_literature AS quoteLiterature,
+		artist.c_name AS CName 
+		FROM art_literature_words words 
+		LEFT JOIN art_artist artist ON artist.id = words.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artLiteratureNetworkList" orderBy="network.publication_time DESC">
+		SELECT
+		network.id AS id,
+		network.artist_id AS artistId,
+		network.literature_type AS literatureType,
+		network.literature_title AS literatureTitle,
+		network.literature_auther AS literatureAuther,
+		network.literature_source AS literatureSource,
+		network.publication_time AS publicationTime,
+		network.person_involved AS personInvolved,
+		network.literature_works AS literatureWorks,
+		network.related_exhib AS relatedExhib,
+		network.related_event AS relatedEvent,
+		network.quote_literature AS quoteLiterature,
+		network.literature_link AS literatureLink,
+		artist.c_name AS CName 
+		FROM art_literature_network network 
+		LEFT JOIN art_artist artist ON artist.id = network.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+</sqls>

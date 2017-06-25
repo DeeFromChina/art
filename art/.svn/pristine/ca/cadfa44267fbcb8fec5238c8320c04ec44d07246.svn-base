@@ -1,0 +1,363 @@
+package com.golead.art.auction;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
+import org.apache.poi.hssf.usermodel.HSSFDataFormat;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.POIFSFileSystem;
+import org.apache.poi.ss.usermodel.CellStyle;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.StrutsStatics;
+
+import com.golead.art.auction.model.ArtAuction;
+import com.golead.art.auction.model.ArtAuctionHouses;
+import com.golead.art.auction.service.ArtAuctionHousesService;
+import com.golead.art.auction.service.ArtAuctionService;
+import com.golead.art.utils.PrintExcel;
+import com.golead.art.utils.PrintPoint;
+import com.golead.art.works.model.ArtWorks;
+import com.golead.art.works.service.ArtWorksService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtAuctionAction extends BaseAction {
+
+   private Log                           log         = LogFactory.getLog(ArtAuctionAction.class);
+
+   private final static SimpleDateFormat dateFormate = new SimpleDateFormat("yyyy-MM-dd");
+
+   @Resource
+   private ArtAuctionService             artAuctionService;
+
+   @Resource
+   private ArtAuctionHousesService       artAuctionHousesService;
+
+   @Resource
+   private ArtWorksService               artWorksService;
+
+   @Override
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = getForm().getAction();
+      if (action == null) action = LIST;
+      if (log.isDebugEnabled()) log.debug("action" + action);
+      try {
+         if (LIST.equalsIgnoreCase(action)) forward = LIST;
+         else if (PAGE.equalsIgnoreCase(action)) forward = pageAuction();
+         else if (ADD.equalsIgnoreCase(action)) forward = addAuction();
+         else if (SAVE.equalsIgnoreCase(action)) forward = saveAuction();
+         else if (EDIT.equalsIgnoreCase(action)) forward = editAuction();
+         else if (UPDATE.equalsIgnoreCase(action)) forward = updateAuction();
+         else if (DELETE.equalsIgnoreCase(action)) forward = deleteAuction();
+         else if (VIEW.equalsIgnoreCase(action)) forward = viewAuction();
+         else if ("HOUSESLIST".equalsIgnoreCase(action) || "HOUSES".equalsIgnoreCase(action)) forward = treeList(action);
+         else if ("WORKSLIST".equalsIgnoreCase(action) || "WORKS".equalsIgnoreCase(action)) forward = treeList(action);
+         //else if ("IMPORT".equalsIgnoreCase(action)) forward = importAuction();
+         else if ("DOWNLOAD".equalsIgnoreCase(action)) forward = downloadTemplate();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   public String pageAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'pageAuction' method");
+      try {
+         initForm();
+         PageQuery pq = getForm().getQuery();
+         pq = artAuctionService.queryArtAuction(pq);
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         for (Map<String, Object> item : pq.getRecordSet()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            map.put("id", item.get("id"));
+            String link = "^javascript:view(" + item.get("id") + ");^_self";
+            Object worksId = item.get("worksId");
+            Object auctionHousesId = item.get("auctionHousesId");
+            ArtWorks artWorks = artWorksService.getArtWorks(Integer.valueOf(worksId.toString()));
+            ArtAuctionHouses artAuctionHouses = artAuctionHousesService.getArtAuctionHouses(Integer.valueOf(auctionHousesId.toString()));
+            map.put(
+                  "data",
+                  new Object[] { "", item.get("saleName") + link, artWorks == null ? "<font color='red'>该作品被删除或不存在！！</font>" : artWorks.getWorksCName(),
+                        artAuctionHouses == null ? "<font color='red'>该拍卖行被删除或不存在！！</font>" : artAuctionHouses.getAuctionHouse(), item.get("auction"),
+                        formateDate(item.get("auctionTime")), item.get("worksSource"),
+                        findCodeName(getForm(), "AUCTION_SEASON", String.valueOf(item.get("autionSeason"))), item.get("auctionIdentity") });
+            list.add(map);
+         }
+         String res = genGridJson(pq, list);
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+
+   public String addAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'addAuction' method");
+      try {
+         initForm();
+         return ADD;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+   }
+
+   public String saveAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'saveAuction' method");
+      try {
+         ArtAuction artAuction = new ArtAuction();
+         ConvertUtil.mapToObject(artAuction, getForm().getRecord(), false);
+         artAuction.setAuctionTime(dateFormate.parse(getForm().getRecord().get("auctionTime")));
+         artAuction.setWorksId(Integer.valueOf(getForm().getRecord().get("worksId")));
+         artAuction.setAuctionHousesId(Integer.valueOf(getForm().getRecord().get("housesId")));
+         artAuctionService.createArtAuction(artAuction);
+         getForm().getRecord().put("id", artAuction.getId().toString());
+         return editAuction();
+      }
+      catch (Exception e) {
+         addMessage(getForm(), e.getMessage());
+         initForm();
+         return ADD;
+      }
+   }
+
+   public String editAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'editAuction' method");
+      try {
+         initForm();
+         int id = Integer.valueOf(getForm().getRecord().get("id"));
+         ArtAuction artAuction = artAuctionService.getArtAuction(id);
+         ConvertUtil.objectToMap(getForm().getRecord(), artAuction);
+         int worksId = artAuction.getWorksId();
+         int auctionHousesId = artAuction.getAuctionHousesId();
+         ArtWorks artWorks = artWorksService.getArtWorks(worksId);
+         ArtAuctionHouses artAuctionHouses = artAuctionHousesService.getArtAuctionHouses(auctionHousesId);
+         if (artWorks != null) {
+            getForm().getRecord().put("worksId", artWorks.getId().toString());
+            getForm().getRecord().put("worksName", artWorks.getWorksCName());
+         }
+
+         if (artAuctionHouses != null) {
+            getForm().getRecord().put("housesId", artAuctionHouses.getId().toString());
+            getForm().getRecord().put("housesName", artAuctionHouses.getAuctionHouse());
+         }
+         return EDIT;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+   }
+
+   public String updateAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'updateAuction' method");
+      try {
+         getForm().getRecord().put("worksId", getForm().getRecord().get("worksId"));
+         getForm().getRecord().put("auctionHousesId", getForm().getRecord().get("housesId"));
+         artAuctionService.updateArtAuction(getForm().getRecord());
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return EDIT;
+      }
+   }
+
+   public String deleteAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'deleteAuction' method");
+      try {
+         String[] id = ids.split(",");
+         Integer[] del_ids = new Integer[id.length];
+         for (int i = 0; i < del_ids.length; i++) {
+            del_ids[i] = Integer.valueOf(id[i]);
+         }
+         artAuctionService.deleteArtAuctions(del_ids);
+         return pageAuction();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+
+   }
+
+   public String viewAuction() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'viewAuction' method");
+      try {
+         initForm();
+         ArtAuction artAuction = artAuctionService.getArtAuction(Integer.valueOf(ids));
+         ConvertUtil.objectToMap(getForm().getRecord(), artAuction);
+
+         int worksId = artAuction.getWorksId();
+         int auctionHousesId = artAuction.getAuctionHousesId();
+         ArtWorks artWorks = artWorksService.getArtWorks(worksId);
+         ArtAuctionHouses artAuctionHouses = artAuctionHousesService.getArtAuctionHouses(auctionHousesId);
+         if (artWorks != null) {
+            getForm().getRecord().put("worksId", artWorks.getId().toString());
+            getForm().getRecord().put("worksName", artWorks.getWorksCName());
+         }
+
+         if (artAuctionHouses != null) {
+            getForm().getRecord().put("housesId", artAuctionHouses.getId().toString());
+            getForm().getRecord().put("housesName", artAuctionHouses.getAuctionHouse());
+         }
+         return VIEW;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+   }
+
+   public String treeList(String action) throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'housesList' method");
+      String forward = "";
+      try {
+         if ("HOUSESLIST".equalsIgnoreCase(action)) forward = "HOUSESLIST";
+         else if ("WORKSLIST".equalsIgnoreCase(action)) forward = "WORKSLIST";
+         if ("HOUSES".equalsIgnoreCase(action) || "WORKS".equalsIgnoreCase(action)) {
+            HttpServletResponse response = (HttpServletResponse) ctx.get(StrutsStatics.HTTP_RESPONSE);
+            response.setContentType("text/xml;charset=UTF-8");
+            response.setHeader("Cache_Control", "no-cache");
+            try {
+               if ("HOUSES".equalsIgnoreCase(action)) {
+                  List<ArtAuctionHouses> artAuctionHouses = artAuctionHousesService.getAllHouses();
+                  List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+                  for (ArtAuctionHouses artAuctionHouse : artAuctionHouses) {
+                     Map<String, Object> map = new HashMap<String, Object>();
+                     ConvertUtil.objectToMap(map, artAuctionHouse);
+                     map.put("treeId", artAuctionHouse.getId());
+                     map.put("treeName", artAuctionHouse.getAuctionHouse());
+                     list.add(map);
+                  }
+                  response.getWriter().write(getTopNodes(list));
+               }
+               else if ("WORKS".equalsIgnoreCase(action)) {
+                  List<ArtWorks> artWorks = artWorksService.findAll();
+                  List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+                  for (ArtWorks artWork : artWorks) {
+                     Map<String, Object> map = new HashMap<String, Object>();
+                     ConvertUtil.objectToMap(map, artWork);
+                     map.put("treeId", artWork.getId());
+                     map.put("treeName", artWork.getWorksCName());
+                     list.add(map);
+                  }
+                  response.getWriter().write(getTopNodes(list));
+               }
+               response.getWriter().close();
+            }
+            catch (Exception e) {
+               e.printStackTrace();
+            }
+            forward = null;
+         }
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return forward;
+   }
+
+   public String getTopNodes(List<Map<String, Object>> list) throws Exception {
+      StringBuffer sb = new StringBuffer("");
+      sb.append("<?xml version='1.0' encoding='UTF-8' ?>");
+      sb.append("<tree id=\"0\">");
+      if (list != null) {
+         for (int i = 0; i < list.size(); i++) {
+            sb.append("<item id=\"" + list.get(i).get("treeId") + "\" text=\"" + list.get(i).get("treeName")
+                  + "\" im0=\"../icon/house_big.gif\" im1=\"../icon/house_big.gif\" im2=\"../icon/house_big.gif\">");// child=\"1\"
+            sb.append("<userdata name=\"treeId\">" + list.get(i).get("treeId") + "</userdata>");
+            sb.append("<userdata name=\"treeName\">" + list.get(i).get("treeName") + "</userdata>");
+            sb.append("</item>");
+         }
+      }
+      sb.append("</tree>");
+      return sb.toString();
+   }
+
+   public String downloadTemplate() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'downloadTemplate' method");
+      try {
+         HttpServletResponse response = (HttpServletResponse) ctx.get(StrutsStatics.HTTP_RESPONSE);
+         response.setContentType("APPLICATION/DOWNLOAD");
+         response.setContentType("application/octed-stream,charset=gb2312");
+         response.setHeader("Content-Disposition", "attachment;filename=" + new String("作品拍卖导入模板.xls".getBytes("gb2312"), "ISO-8859-1"));
+         String templatePath = ServletActionContext.getServletContext().getRealPath("/template/works/art_works_auction.xls");
+         File templateFile = new File(templatePath);
+         PrintExcel printExcel = new PrintExcel();
+         InputStream inputStream = new FileInputStream(templateFile);
+         HSSFWorkbook hssfWorkbook = null;
+         POIFSFileSystem poifsFileSystem = new POIFSFileSystem(inputStream);
+         hssfWorkbook = new HSSFWorkbook(poifsFileSystem);
+
+         HSSFDataFormat format = hssfWorkbook.createDataFormat();
+
+         HSSFCellStyle csString = hssfWorkbook.createCellStyle();
+         csString.setBorderLeft(CellStyle.BORDER_THIN);
+         csString.setBorderRight(CellStyle.BORDER_THIN);
+         csString.setBorderTop(CellStyle.BORDER_THIN);
+         csString.setBorderBottom(CellStyle.BORDER_THIN);
+         csString.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+         csString.setDataFormat(format.getFormat("@"));
+
+         HSSFCellStyle csDecimal = hssfWorkbook.createCellStyle();
+         csDecimal.setBorderLeft(CellStyle.BORDER_THIN);
+         csDecimal.setBorderRight(CellStyle.BORDER_THIN);
+         csDecimal.setBorderTop(CellStyle.BORDER_THIN);
+         csDecimal.setBorderBottom(CellStyle.BORDER_THIN);
+         csDecimal.setDataFormat(HSSFDataFormat.getBuiltinFormat("0.00"));
+
+         HSSFCellStyle csDecimal1 = hssfWorkbook.createCellStyle();
+         csDecimal1.setBorderLeft(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderRight(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderTop(CellStyle.BORDER_THIN);
+         csDecimal1.setBorderBottom(CellStyle.BORDER_THIN);
+         HSSFDataFormat csformat = hssfWorkbook.createDataFormat();
+         csDecimal1.setDataFormat(csformat.getFormat("0.000"));
+
+         List<PrintPoint> printPoints = new ArrayList<PrintPoint>();
+
+         printExcel.setPrintPointList(printPoints);// 填写数据
+         printExcel.doFillSheet(hssfWorkbook, 0);// 写入workbook的第一页
+         printExcel.doPrint(response, templateFile, hssfWorkbook);// workbook输出到response中。
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+      return null;
+   }
+
+   public void initForm() throws Exception {
+      setCode(getForm(), "AUCTION_SEASON");
+   }
+
+   private String formateDate(Object obj) {
+      if (obj == null) return "";
+      return dateFormate.format(obj);
+   }
+
+}

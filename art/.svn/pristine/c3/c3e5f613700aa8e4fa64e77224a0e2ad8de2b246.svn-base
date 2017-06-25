@@ -1,0 +1,291 @@
+package com.golead.art.works;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
+
+import com.golead.art.utils.FileUtils;
+import com.golead.art.works.model.ArtPublicationCatalog;
+import com.golead.art.works.model.ArtPublicationContent;
+import com.golead.art.works.service.ArtPublicationCatalogService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtPublicationCatalogAction extends BaseAction{
+   
+   private final Log                     logger      = LogFactory.getLog(ArtPublicationCatalogAction.class);
+   
+   public static String FILE_PATH = ServletActionContext.getServletContext().getRealPath("");
+   private List<Map<String, String>> pic = new ArrayList<Map<String, String>>();
+   private List<File> files;
+   private String filesFileName;
+   private String filesContentType;
+   
+   @Resource
+   ArtPublicationCatalogService artPublicationCatalogService;
+   
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = form.getAction();
+
+      if (action == null) action = LIST;
+      if (logger.isDebugEnabled()) logger.debug("action:" + action);
+      try {
+         initForm();
+         if (LIST.equalsIgnoreCase(action)) forward = LIST;
+         else if (PAGE.equalsIgnoreCase(action)) forward = getPageDate();
+         else if (ADD.equalsIgnoreCase(action)) forward = addCatalog();
+         else if (SAVE.equalsIgnoreCase(action)) forward = saveCatalog();
+         else if (EDIT.equalsIgnoreCase(action)) forward = editCatalog();
+         else if (UPDATE.equalsIgnoreCase(action)) forward = updateCatalog();
+         else if (DELETE.equalsIgnoreCase(action)) forward = delete();
+      }
+      catch (Exception e) {// 其他系统出错
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   public void initForm() throws Exception {
+      setCode(form, "ART_TYPE,DATE_YEAR,MEDIUM_TYPE,SIGNATURE,PERIOD_TYPE,PUBLI_TYPE");
+   }
+   
+   private String getPageDate() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'getPageDate' method");
+      try {
+         initForm();
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         PageQuery pageQuery = form.getQuery();
+         pageQuery.getParameters().put("id", form.getRecord().get("id"));
+         pageQuery = artPublicationCatalogService.queryArtPublicationCatalog(pageQuery);
+         if(pageQuery.getRecordSet() != null){
+            for(Map<String, Object> item : pageQuery.getRecordSet()){
+               Map<String, Object> map = new HashMap<String, Object>();
+               map.put("id", item.get("id"));
+               StringBuffer attachment = new StringBuffer();
+               String[] strs = item.get("attachment").toString().split(",");
+               for(String str : strs){
+                  attachment.append(str.split("/")[0]+",");
+               }
+               map.put("data", new Object[]{
+                     "",
+                     item.get("catalogContent"),
+                     item.get("pageNumber"),
+                     attachment.toString()
+               });
+               list.add(map);
+            }
+         }
+         String res = genGridJson(pageQuery, list);
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+   
+   private String addCatalog() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'addCatalog' method");
+      String forward = null;
+      try {
+         initForm();
+         return ADD;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   private String saveCatalog() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'saveCatalog' method");
+      try {
+         initForm();
+         ArtPublicationCatalog artPublicationCatalog = new ArtPublicationCatalog();
+         ConvertUtil.convertToModel(artPublicationCatalog, form.getRecord());
+         
+         String path = FILE_PATH + File.separator +"upload" + File.separator + "works" + File.separator +"publicationCatalog" + File.separator + form.getRecord().get("pubId");
+         File file = new File(path);
+         if(!file.exists()){
+            file.mkdirs();
+         }
+         StringBuffer fileName = new StringBuffer();
+         String[] names = filesFileName.split(",");
+         if (files != null) {
+            for (int i = 0; i < files.size(); i++) {
+               File newFile = files.get(i);
+               String cName = String.valueOf(System.currentTimeMillis());
+               String[] endless = names[i].split("\\.");
+               FileUtils.fileUpload(path + File.separator + cName + "." + endless[endless.length -1], newFile);
+               fileName.append(names[i] + "/" + cName + "." + endless[endless.length -1]);
+               if ((i + 1) != files.size()) fileName.append(",");
+            }
+         }
+         artPublicationCatalog.setAttachment(fileName.toString());
+         artPublicationCatalogService.createArtPublicationCatalog(artPublicationCatalog);
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ADD;
+      }
+   }
+   
+   private String editCatalog() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'editCatalog' method");
+      String forward = null;
+      try {
+         initForm();
+         String id = form.getRecord().get("id");
+         ArtPublicationCatalog artPublicationCatalog = artPublicationCatalogService.getArtPublicationCatalog(Integer.valueOf(id));
+         ConvertUtil.objectToMap(form.getRecord(), artPublicationCatalog);
+         String picture = artPublicationCatalog.getAttachment();
+         if(picture != null && !"".equals(picture)){
+            String[] pictures = picture.split(",");
+            for(String str : pictures){
+               Map<String, String> map = new HashMap<String, String>();
+               map.put("name", str.split("/")[0]);
+               map.put("realName", str.split("/")[1]);
+               pic.add(map);
+            }
+         }
+         return EDIT;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   private String updateCatalog() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'updateCatalog' method");
+      try {
+         initForm();
+         ArtPublicationCatalog artPublicationCatalog = artPublicationCatalogService.getArtPublicationCatalog(Integer.valueOf(form.getRecord().get("id")));
+         StringBuffer fileName = new StringBuffer();
+         String[] attachments = artPublicationCatalog.getAttachment().split(",");
+         String[] names = filesFileName.split(",");//新增加的附件
+         String[] saveNames = form.getRecord().get("fileName").split(",");//剩下的附件
+         Map<String, String> fileManagerMap = new HashMap<String, String>();
+         for(String attachment : attachments){
+            for(String saveName : saveNames){
+               if(saveName.equals(attachment.split("/")[1])){
+                  fileManagerMap.put(attachment.split("/")[1], "true");
+               }
+            }
+         }
+         String path = FILE_PATH + File.separator +"upload" + File.separator + "works" + File.separator +"publicationCatalog" + File.separator + form.getRecord().get("pubId");
+         File[] fileList = new File(path).listFiles();
+         if(fileList!=null){
+            for(File file : fileList){
+               if(fileManagerMap.get(file.getName()) == null){
+                  file.delete();
+               }
+            }
+         }
+         for(String attachment : attachments){
+            if(fileManagerMap.get(attachment.split("/")[1]) != null){
+               fileName.append(attachment + ",");
+            }
+         }
+         
+         if (files != null) {
+            String[] addnames = names;
+            for (int i = 0; i < files.size(); i++) {
+               File file = files.get(i);
+               String cName = String.valueOf(System.currentTimeMillis());
+               String[] endless = addnames[i].split("\\.");
+               File fFile = new File(path);
+               if(!fFile.exists()){
+                  fFile.mkdirs();
+               }
+               FileUtils.fileUpload(path + File.separator + cName + "." + endless[endless.length -1], file);
+               if(!"".equals(fileName.toString())){
+                  if(!fileName.toString().endsWith(",")){
+                     fileName.append(",");
+                  }
+               }
+               fileName.append(addnames[i] + "/" + cName + "." + endless[endless.length -1]);
+            }
+         }
+         form.getRecord().put("attachment", fileName.toString());
+         artPublicationCatalogService.updateArtPublicationCatalog(form.getRecord());
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return EDIT;
+      }
+   }
+   
+   private String delete() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'delete' method");
+      try {
+         String[] idlist = ids.split(",");
+         Integer[] dels = new Integer[idlist.length];
+         for(int i = 0; i<idlist.length; i++){
+            dels[i] = Integer.valueOf(idlist[i]);
+         }
+//         artPublicationContentService.deleteArtPublicationContents(dels);
+         setResponse("{exit:0}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+      return null;
+   }
+
+   public List<File> getFiles() {
+      return files;
+   }
+
+   public void setFiles(List<File> files) {
+      this.files = files;
+   }
+
+   public String getFilesFileName() {
+      return filesFileName;
+   }
+
+   public void setFilesFileName(String filesFileName) {
+      this.filesFileName = filesFileName;
+   }
+
+   public String getFilesContentType() {
+      return filesContentType;
+   }
+
+   public void setFilesContentType(String filesContentType) {
+      this.filesContentType = filesContentType;
+   }
+
+   public List<Map<String, String>> getPic() {
+      return pic;
+   }
+
+   public void setPic(List<Map<String, String>> pic) {
+      this.pic = pic;
+   }
+   
+}

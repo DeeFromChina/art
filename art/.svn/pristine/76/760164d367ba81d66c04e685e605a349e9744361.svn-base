@@ -1,0 +1,126 @@
+package com.golead.art.artist.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.artist.dao.ArtArtistCoopDao;
+import com.golead.art.artist.model.ArtArtistCoop;
+import com.golead.art.artist.service.ArtArtistCoopService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtArtistCoopServiceImpl extends BaseServiceImpl implements ArtArtistCoopService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtArtistCoop getArtArtistCoop(Serializable id) throws ServiceException {
+		try {
+			return artArtistCoopDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtArtistCoop(ArtArtistCoop artArtistCoop) throws ServiceException {
+		try {
+			artArtistCoopDao.save(artArtistCoop);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtArtistCoop(Map<String, String> artArtistCoopMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artArtistCoopMap.get(ArtArtistCoop.PROP_ID));
+			ArtArtistCoop tmp = artArtistCoopDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artArtistCoopMap, true);			
+			artArtistCoopDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistCoop(Serializable id) throws ServiceException {
+		try {
+			artArtistCoopDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtArtistCoops(Serializable[] ids) throws ServiceException {
+		try {
+			artArtistCoopDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtArtistCoop(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artArtistCoopList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtArtistCoopDao	artArtistCoopDao;
+
+	public void setArtArtistCoopDao(ArtArtistCoopDao artArtistCoopDao) {
+		this.artArtistCoopDao = artArtistCoopDao;
+	}
+}
+

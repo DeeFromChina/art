@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<sqls>
+  	<!--出版物列表 -->
+	<sql id="artPublicationList" orderBy="p.publication_year desc,p.publication_month desc,p.publication_name asc,p.publication_type asc">
+		SELECT 
+		p.id AS id,
+		p.publication_name AS publicationName,
+		p.publication_type AS publicationType,
+		p.cover AS cover,
+		p.back_cover AS backCover,
+		p.editor AS editor,
+		p.press AS press,
+		p.publication_year AS publicationYear,
+		p.publication_month AS publicationMonth,
+		p.circulation,
+		p.impression,
+		p.isbn AS isbn,
+		p.price AS price,
+		p.page_count AS pageCount,
+		p.price_unit AS priceUnit,
+		a.c_name AS cName
+		FROM ART_PUBLICATION p  
+		LEFT JOIN art_artist a ON a.id = p.artist_id 
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artPublicationWorksList" orderBy="w.works_no ">	
+	  select p.id,w.id as wid,w.works_c_name as worksName,w.create_year as createYear,
+	  w.size_cm_width as sizeCmWidth,  
+	  w.size_cm_height as sizeCmHeight,  
+	  w.size_cm_length as sizeCmLength  
+	  from art_publication_works p
+	  left join art_works w on p.works_id=w.id
+	  {#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+	<sql id="artPublicationLiteratureList" orderBy="ap.publication_month DESC,ap.publication_year DESC,w.write_time DESC,ap.publication_type,CONVERT(ap.publication_type USING gbk)">
+		select
+			p.id,
+			p.page_number as pageNumber,
+			literature_id as literatureId,
+			w.id as wid,
+			w.literature_title as publicationName,
+			w.write_time as writeTime,
+			w.literature_auther as literatureAuther
+		from
+			art_publication_literature p
+	  	left join art_literature_words w on p.literature_id=w.id
+		LEFT JOIN art_publication ap ON ap.id = p.pub_id
+	  	{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+
+	<sql id="artPublicationAgencyList">
+		SELECT
+			apa.id AS id,
+			aa.id AS agencyId,
+			aa.agency_c_name AS agencyCname,
+			aa.agency_e_name AS agencyEname,
+			ac.country_name AS countryName,
+			aa.agency_type AS agencyType
+		FROM
+			art_publication_agency apa
+		LEFT JOIN
+			art_agency aa ON aa.id = apa.agency_id
+		LEFT JOIN
+			art_country ac ON ac.id = aa.country_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+
+	<sql id="artAgencyList2">
+		SELECT
+			aa.id AS id,
+			aa.agency_c_name AS agencyCname,
+			aa.agency_e_name AS agencyEname,
+			aa.agency_type AS agencyType,
+			ac.country_name AS countryName
+		FROM
+			art_agency aa
+		LEFT JOIN art_country ac ON ac.id = aa.country_id
+		WHERE aa.id NOT IN (
+			SELECT
+				apa.agency_id
+			FROM
+				art_publication_agency apa
+			{#paras}
+			<parameters id="paras" prefix="where" suffix="" />
+		)
+	</sql>
+
+	<sql id="artPublicationArtistList">
+		SELECT
+			apa.id AS id
+			,aa.c_name AS cName
+			,aa.e_name AS eName
+			,aa.folder_name AS folderName
+			,aa.photo AS photo
+		FROM
+			art_publication_artist apa
+		LEFT JOIN
+			art_artist aa ON aa.id = apa.artist_id
+		{#paras}
+		<parameters id="paras" prefix="where" suffix="" />
+	</sql>
+
+	<sql id="artPublicationArtistList2">
+		SELECT
+			aa.id AS id
+			,aa.c_name AS cName
+			,aa.e_name AS eName
+			,aa.folder_name AS folderName
+			,aa.photo AS photo
+		FROM
+			art_artist aa
+		LEFT JOIN
+			art_publication_artist apa ON aa.id = apa.artist_id
+		WHERE aa.id NOT IN (
+			SELECT
+				apa.artist_id
+			FROM
+				art_publication_artist apa
+			{#paras}
+			<parameters id="paras" prefix="where" suffix="" />
+		)
+	</sql>
+</sqls>

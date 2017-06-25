@@ -1,0 +1,163 @@
+package com.golead.art.activity.service.impl;
+
+import java.io.Serializable;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.springframework.stereotype.Service;
+
+import com.golead.art.activity.dao.ArtActivityAbmbDao;
+import com.golead.art.activity.model.ArtActivityAbmb;
+import com.golead.art.activity.service.ArtActivityAbmbService;
+import com.golead.art.works.dao.ArtWorksAbmbDao;
+import com.golead.art.works.model.ArtWorksAbmb;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.DAOException;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+@Service
+public class ArtActivityAbmbServiceImpl extends BaseServiceImpl implements ArtActivityAbmbService {
+   private static final long serialVersionUID = 1L;
+
+   public ArtActivityAbmb getArtActivityAbmb(Serializable id) throws ServiceException {
+      try {
+         return artActivityAbmbDao.get(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void createArtActivityAbmb(ArtActivityAbmb artActivityAbmb) throws ServiceException {
+      try {
+         artActivityAbmbDao.save(artActivityAbmb);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void updateArtActivityAbmb(Map<String, String> artActivityAbmbMap) throws ServiceException {
+      try {
+         Integer pkId = new Integer(artActivityAbmbMap.get(ArtActivityAbmb.PROP_ID));
+         ArtActivityAbmb tmp = artActivityAbmbDao.get(pkId);
+         ConvertUtil.mapToObject(tmp, artActivityAbmbMap, true);
+         artActivityAbmbDao.update(tmp);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtActivityAbmb(Serializable id) throws ServiceException {
+      try {
+         artActivityAbmbDao.delete(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtActivityAbmbs(Serializable[] ids) throws ServiceException {
+      try {
+         for (int i = 0; i < ids.length; i++) {
+            artWorksAbmbDao.deleteByField(ArtWorksAbmb.PROP_ABMB_ID, ids[i]);
+         }
+         artActivityAbmbDao.deleteAll(ids);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public PageQuery queryArtActivityAbmb(PageQuery pageQuery) throws ServiceException {
+      try {
+         createSqlFilter(pageQuery);
+         return jdbcDao.queryBySqlId("artActivityAbmbList", pageQuery);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private void createSqlFilter(PageQuery page) {
+      String tmp = "";
+      Map<String, String> map = page.getParameters();
+      String str = map.get("abmbName");
+      if (str != null && !"".equals(str.trim())) {
+         tmp = "a.abmb_name like '%" + str.trim() + "%'";
+      }
+      str = map.get("sponsor");
+      if (str != null && !"".equals(str.trim())) {
+         tmp = "a.sponsor like '%" + str.trim() + "%'";
+      }
+      str = map.get("abmbYear");
+      if (str != null && !"".equals(str.trim())) {
+         tmp = "a.abmb_year like '%" + str.trim() + "%'";
+      }
+      if (tmp.length() > 0) map.put("paras", tmp);
+   }
+
+   @Resource
+   private ArtActivityAbmbDao artActivityAbmbDao;
+
+   @Resource
+   private ArtWorksAbmbDao    artWorksAbmbDao;
+}

@@ -1,0 +1,145 @@
+<%@ page language="java" contentType="text/html; charset=utf-8"
+	pageEncoding="utf-8"%>
+<%@ taglib uri="/struts-tags" prefix="s"%>
+<%@ taglib uri="/WEB-INF/tag/gl-tag.tld" prefix="gl"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<%@include file="/common/header.jsp"%>
+
+<script language="javascript">
+	var hyperlink = contextpath + 'literature/ArtLiteratureOther.do';
+	var fulllink = contextpath + 'literature/ArtLiteratureOther.do';
+
+	function checkFormInput() {
+		if (!checkString(getElement('record.artistId'), "艺术家", 100, true))
+			return;
+		if (!checkString(getElement('form.record.literatureTitle'), "文献标题",
+				200, true))
+			return;
+		return true;
+	}
+
+	function goCancel() {
+		parent.closedialog('false');
+	}
+
+	function goSubmit() {
+		if (checkFormInput()) {
+			var url = fulllink + '?action=UPDATE';
+			document.forms[0].action = url;
+			document.forms[0].submit();
+		}
+	}
+
+	function init() {
+		showMessage('<s:property value="errorMessage" escape="false"/>');
+	}
+	function addFileRow() {
+		var t = document.getElementById('tblUpload');
+		var rows = t.rows.length;
+		if (rows >= 3) {
+			alert("超过最大上传文件数！");
+			return;
+		} else {
+			var x = t.insertRow(rows);
+			var one = x.insertCell(0);
+			one.className = "textL";
+			var two = x.insertCell(1);
+			one.innerHTML = '<input type="file" id="file" class="checkFile" name="files" />';
+			two.innerHTML = '<input type="button" style="width:50px;" name="del" value="删除" onclick="delRow(this)"/>';
+		}
+	}
+	
+	function delRow(obj) { 
+		var childNode=obj.parentNode.parentNode;
+		var parentNode=obj.parentNode.parentNode.parentNode;
+		parentNode.removeChild(childNode);
+	}
+</script>
+
+<style type="text/css">
+html, body {
+	width: 100%;
+	height: 100%;
+	margin: 0px;
+	padding: 0px;
+	overflow: hidden;
+}
+</style>
+</head>
+<body onload="init()">
+	<s:form action="ArtLiteratureOther" id="ArtLiteratureOtherForm"
+		method="post" namespace="/literature" enctype="multipart/form-data">
+		<div id="formDiv" class="formDiv" style="padding: 0px;">
+			<table cellpadding="0" cellspacing="0" width="99%" class="formTable">
+				<tr>
+					<td class="textR" width="15%"><font color="red">*</font>艺术家：</td>
+					<td width="35%" class="textL"><s:hidden name="record.artistId"
+							id="artistId" /> <s:textfield name="form.record.artistName"
+							readonly="true" /> <gl:button name="btnArtArtist"
+							styleClass="btnFormStyle" onClick="goArtArtist()">选择</gl:button>
+					</td>
+					<td class="textR" width="15%"><font color="red">*</font>文献标题：</td>
+					<td width="35%" class="textL"><s:textfield
+							name="form.record.literatureTitle" /></td>
+				</tr>
+				<tr>
+					<td class="textR">作者：</td>
+					<td class="textL"><s:textfield name="form.record.auther" /></td>
+					<td class="textR">刊登时间：</td>
+					<td class="textL"><s:textfield name="form.record.currerTime" /></td>
+				</tr>
+				<tr>
+					<td class="textR">出版物名称：</td>
+					<td class="textL"><s:textfield name="form.record.pubName" /></td>
+					<td class="textR">出版物期数：</td>
+					<td class="textL"><s:textfield
+							name="form.record.publicationPeriod" /></td>
+				</tr>
+				<tr>
+					<td class="textR">出版社：</td>
+					<td class="textL"><s:textfield name="form.record.press" /></td>
+					<td class="textR">相关页：</td>
+					<td class="textL"><s:textfield
+							name="form.record.relevantPages" /></td>
+				</tr>
+				<tr>
+					<td class="textR">附件来源：</td>
+					<td class="textL" colspan="3"><s:textfield
+							name="form.record.attachmentSource" /></td>
+				</tr>
+				<tr>
+					<td class="textR">附件：</td>
+					<td colspan="3" class="textL">
+					   <input type="file" name="files" id="file" class="checkFile" />
+					</td>
+				</tr>
+				<tr>
+					<td colspan="4" class="textC">文献研究</td>
+				</tr>
+				<tr>
+					<td class="textR" width="15%">主观重要度评级：</td>
+					<td><s:select list="codeSets.COMMENT_LEVEL" listKey="value"
+							listValue="codeName" name="record.subjectiveEval" /></td>
+					<td class="textR" width="15%">客观重要度评级：</td>
+					<td><s:select list="codeSets.COMMENT_LEVEL" listKey="value"
+							listValue="codeName" name="record.objectiveEval" /></td>
+				</tr>
+				<tr>
+					<td class="textR" width="15%">核心论断：</td>
+					<td colspan="3" class="textL"><s:textarea height="80px"
+							name="record.coreThesis" /></td>
+				</tr>
+			</table>
+		</div>
+	</s:form>
+	<div id="btnDiv" class="btnDiv">
+		<gl:button name="btnAdd" onClick="goSubmit()">保存</gl:button>
+		&nbsp;
+		<gl:button name="btnAdd" onClick="goCancel()">关闭</gl:button>
+	</div>
+	<%@include file="/common/resize.jsp"%>
+	<%@include file="/common/dialog.jsp"%>
+</body>
+</html>

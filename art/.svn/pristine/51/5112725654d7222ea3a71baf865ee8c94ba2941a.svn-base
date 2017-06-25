@@ -1,0 +1,1044 @@
+package com.golead.art.works.service.impl;
+
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
+
+import com.golead.common.model.SysCode;
+import com.golead.common.service.system.SysCodeService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.form.QueryForm;
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.artist.service.ArtArtistService;
+import com.golead.art.utils.FileUtils;
+import com.golead.art.works.dao.ArtWorksDao;
+import com.golead.art.works.model.ArtMedium;
+import com.golead.art.works.model.ArtWorks;
+import com.golead.art.works.model.ArtWorksPeriod;
+import com.golead.art.works.model.ArtWorksStyle;
+import com.golead.art.works.model.ArtWorksTheme;
+import com.golead.art.works.service.ArtMediumService;
+import com.golead.art.works.service.ArtWorksCaseService;
+import com.golead.art.works.service.ArtWorksEvaluateService;
+import com.golead.art.works.service.ArtWorksPeriodService;
+import com.golead.art.works.service.ArtWorksService;
+import com.golead.art.works.service.ArtWorksSomeService;
+import com.golead.art.works.service.ArtWorksStyleService;
+import com.golead.art.works.service.ArtWorksThemeService;
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.IntArrayData;
+
+import javax.annotation.Resource;
+import javax.imageio.ImageIO;
+
+import net.coobird.thumbnailator.Thumbnails;
+
+import org.apache.poi.hssf.usermodel.HSSFCell;
+import org.apache.poi.hssf.usermodel.HSSFRow;
+import org.apache.poi.hssf.usermodel.HSSFSheet;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.struts2.ServletActionContext;
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtWorksServiceImpl extends BaseServiceImpl implements ArtWorksService {
+   private static final long serialVersionUID = 1L;
+
+   public ArtWorks getArtWorks(Serializable id) throws ServiceException {
+      try {
+         return artWorksDao.get(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void createArtWorks(ArtWorks artWorks) throws ServiceException {
+      try {
+         artWorksDao.save(artWorks);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void updateArtWorks(Map<String, String> artWorksMap, List<File> files, String fileFileName, String FILE_PATH) throws ServiceException {
+      try {
+         Integer pkId = new Integer(artWorksMap.get(ArtWorks.PROP_ID));
+         ArtWorks tmp = artWorksDao.get(pkId);
+         String partSize_name = artWorksMap.get("partSize_name");
+         String partSize = "";
+         if (partSize_name != null) {
+            partSize_name = partSize_name.replace(" ", "");
+            String partSize_l = artWorksMap.get("partSize_l");
+            partSize_l = partSize_l.replace(" ", "");
+            String partSize_w = artWorksMap.get("partSize_w");
+            partSize_w = partSize_w.replace(" ", "");
+            String partSize_unit = artWorksMap.get("partSize_unit");
+            partSize_unit = partSize_unit.replace(" ", "");
+            if (partSize_l != null) {
+               String[] partSize_ls = partSize_l.split(",");
+               String[] partSize_ws = partSize_w.split(",");
+               String[] partSize_names = partSize_name.split(",");
+               String[] partSize_units = partSize_unit.split(",");
+               for (int i = 0; i < partSize_ls.length; i++) {
+                  partSize = partSize + partSize_names[i] + ":" + partSize_ls[i] + "*" + partSize_ws[i] + " " + partSize_units[i] + ";";
+               }
+            }
+         }
+         artWorksMap.put("partSize", partSize);
+         ConvertUtil.convertToModel(tmp, artWorksMap);
+         artWorksDao.update(tmp);
+
+         String path = FILE_PATH + File.separator + "upload" + File.separator + "works" + File.separator + "worksImage" + File.separator + pkId.toString();
+         File file = new File(path);
+         File[] files2 = null;
+         if (file.exists()) {
+            files2 = file.listFiles();//原本的文件
+         }
+         String fileName = artWorksMap.get("fileName");//页面保留文件id
+         String[] fileNames = fileName.split(",");
+         Map<String, String> map = new HashMap<String, String>();
+         for (int i = 0; i < fileNames.length; i++) {
+            if (fileNames[i] != null && !"".equals(fileNames[i])) {
+               map.put(fileNames[i], "");
+            }
+         }
+         String worksStoreName = tmp.getWorksStoreName();
+         String[] worksStoreNames = null;
+         String saveStoreName = "";
+         if (worksStoreName != null) {
+            worksStoreNames = worksStoreName.split("、");
+            for (int i = 0; i < worksStoreNames.length; i++) {
+               if (map.get(worksStoreNames[i].split(":")[0]) != null) {
+                  //保留save文件名
+                  map.put(worksStoreNames[i].split(":")[0], worksStoreNames[i].split(":")[1]);
+                  map.put(worksStoreNames[i].split(":")[1], worksStoreNames[i].split(":")[0]);
+                  if (!saveStoreName.equals("")) {
+                     saveStoreName = saveStoreName + ",";
+                  }
+                  saveStoreName = saveStoreName + worksStoreNames[i].split(":")[1];
+               }
+            }
+         }
+         String worksImage = tmp.getWorksImage();
+         String[] worksImages = null;
+         if (worksImage != null) {
+            worksImages = worksImage.split("、");
+            worksImage = "";
+            for (int i = 0; i < worksImages.length; i++) {
+               if (map.get(worksImages[i].split(":")[0]) != null) {
+                  if (!worksImage.equals("")) {
+                     worksImage = worksImage + ",";
+                  }
+                  //保留文件名
+                  worksImage = worksImage + worksImages[i].split(":")[1];
+               }
+            }
+         }
+         String thumbnail = tmp.getThumbnail();
+         String delpath = "";
+         if (thumbnail != null) {
+            delpath = FILE_PATH + File.separator + "upload" + File.separator + "auction" + File.separator + "thumbnail";
+            File delFile = new File(delpath + File.separator + thumbnail);
+            if (delFile.exists()) {
+               delFile.delete();//删除缩略图
+            }
+         }
+
+         if (files2 != null) {
+            for (int i = 0; i < files2.length; i++) {
+               if (map.get(files2[i].getName()) == null) {
+                  files2[i].delete();//删除页面要删除的文件
+               }
+            }
+            files2 = new File(path).listFiles();
+            if (files2.length > 0) {
+               thumbnail = saveStoreName.split(",")[0];
+
+               if (!new File(delpath).exists()) {
+                  new File(delpath).mkdirs();
+               }
+               String imagePath = path + File.separator + saveStoreName.split(",")[0];
+               String extension = thumbnail.split("\\.")[1];
+               BufferedImage bufferedImage = ImageIO.read(new File(imagePath));
+               int width = bufferedImage.getWidth();
+               int height = bufferedImage.getHeight();
+               //压缩计算  
+               float resizeTimes = 0.1f; /* 这个参数是要转化成的倍数,如果是1就是转化成1倍 */
+
+               /* 调整后的图片的宽度和高度 */
+               int toWidth = (int) (width * resizeTimes);
+               int toHeight = (int) (height * resizeTimes);
+               Thumbnails.of(imagePath).size(toWidth, toHeight).outputFormat(extension).outputQuality(0.3f)
+                     .toFile(delpath + File.separator + saveStoreName.split(",")[0]);//保存小图
+
+               String[] names = null;
+               if (fileFileName != null) {
+                  names = fileFileName.split(",");
+               }
+               path = FILE_PATH + File.separator + "upload" + File.separator + "works" + File.separator + "worksImage" + File.separator
+                     + tmp.getId().toString();
+               if (!new File(path).exists()) {
+                  new File(path).mkdirs();
+               }
+               StringBuffer newfileName = new StringBuffer();
+               StringBuffer saveName = new StringBuffer();
+               if (files != null) {
+                  int i = 0;
+                  String[] saveStoreNames = saveStoreName.split(",");
+                  for (; i < worksImage.split(",").length; i++) {
+                     if (!"".equals(newfileName.toString())) {
+                        newfileName.append("、");
+                     }
+                     if (!"".equals(saveName.toString())) {
+                        saveName.append("、");
+                     }
+                     newfileName.append(String.valueOf(i + 1) + ":" + worksImage.split(",")[i]);
+                     saveName.append(String.valueOf(i + 1) + ":" + saveStoreNames[i]);
+                  }
+                  int m = i;
+                  for (; i < (files.size() + m); i++) {
+                     File newfile = files.get(i - m);
+                     String cName = String.valueOf(System.currentTimeMillis());
+                     String[] endless = names[i - m].split("\\.");
+                     FileUtils.fileUpload(path + File.separator + cName + "." + endless[endless.length - 1], newfile);
+                     if (!"".equals(newfileName.toString())) {
+                        newfileName.append("、");
+                     }
+                     if (!"".equals(saveName.toString())) {
+                        saveName.append("、");
+                     }
+                     newfileName.append(String.valueOf(i + 1) + ":" + names[i - m]);
+                     saveName.append(String.valueOf(i + 1) + ":" + cName + "." + endless[endless.length - 1]);
+                  }
+               }
+
+               tmp.setThumbnail(thumbnail);
+               tmp.setWorksImage(newfileName.toString());
+               tmp.setWorksStoreName(saveName.toString());
+               updateArtWorks(tmp);
+            }
+            else {
+               if (fileFileName != null) {
+                  saveThumbnail(tmp, fileFileName, FILE_PATH, files);
+               }
+               else {
+                  tmp.setThumbnail("");
+                  tmp.setWorksImage("");
+                  tmp.setWorksStoreName("");
+                  updateArtWorks(tmp);
+               }
+            }
+         }
+         else {
+            if (fileFileName != null) {
+               saveThumbnail(tmp, fileFileName, FILE_PATH, files);
+            }
+         }
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void updateArtWorks(ArtWorks artWorks) throws ServiceException {
+      try {
+         artWorksDao.update(artWorks);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtWorks(Serializable id) throws ServiceException {
+      try {
+         artWorksDao.delete(id);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void deleteArtWorkss(Serializable[] ids) throws ServiceException {
+      try {
+         PageQuery pageQuery = new PageQuery();
+         List<Integer> periods = new ArrayList<Integer>();
+         List<Integer> cases = new ArrayList<Integer>();
+         List<Integer> evaluates = new ArrayList<Integer>();
+         List<Integer> somes = new ArrayList<Integer>();
+         for (Serializable id : ids) {
+            pageQuery.getParameters().put("id", id.toString());
+            pageQuery.getParameters().put("worksId", id.toString());
+            pageQuery = artWorksPeriodService.queryArtWorksPeriod(pageQuery);
+            if (pageQuery.getRecordSet() != null) {
+               for (Map<String, Object> item : pageQuery.getRecordSet()) {
+                  periods.add(Integer.valueOf(item.get("id").toString()));
+               }
+            }
+            pageQuery = artWorksCaseService.queryArtWorksCase(pageQuery);
+            if (pageQuery.getRecordSet() != null) {
+               for (Map<String, Object> item : pageQuery.getRecordSet()) {
+                  cases.add(Integer.valueOf(item.get("id").toString()));
+               }
+            }
+            pageQuery = artWorksEvaluateService.queryArtWorksEvaluate(pageQuery);
+            if (pageQuery.getRecordSet() != null) {
+               for (Map<String, Object> item : pageQuery.getRecordSet()) {
+                  evaluates.add(Integer.valueOf(item.get("id").toString()));
+               }
+            }
+            pageQuery = artWorksSomeService.queryArtWorksSome(pageQuery);
+            if (pageQuery.getRecordSet() != null) {
+               for (Map<String, Object> item : pageQuery.getRecordSet()) {
+                  somes.add(Integer.valueOf(item.get("id").toString()));
+               }
+            }
+            String path = ServletActionContext.getServletContext().getRealPath("");
+            String casePath = path + File.separator + "upload" + File.separator + "works" + File.separator + "case" + File.separator + id.toString();
+            String thumbnailPath = path + File.separator + "upload" + File.separator + "works" + File.separator + "thumbnail" + File.separator + id.toString();
+            String imagePath = path + File.separator + "upload" + File.separator + "works" + File.separator + "worksImage" + File.separator + id.toString();
+            deleteFile(casePath);
+            deleteFile(thumbnailPath);
+            deleteFile(imagePath);
+         }
+         Integer[] delperiods = del(periods);
+         Integer[] delcases = del(cases);
+         Integer[] delevaluates = del(evaluates);
+         Integer[] delsomes = del(somes);
+         artWorksPeriodService.deleteArtWorksPeriods(delperiods);
+         artWorksCaseService.deleteArtWorksCases(delcases);
+         artWorksEvaluateService.deleteArtWorksEvaluates(delevaluates);
+         artWorksSomeService.deleteArtWorksSomes(delsomes);
+         artWorksDao.deleteAll(ids);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private Integer[] del(List<Integer> ids) {
+      Integer[] dels = new Integer[ids.size()];
+      int i = 0;
+      for (Integer id : ids) {
+         dels[i] = id;
+         i++;
+      }
+      return dels;
+   }
+
+   private void deleteFile(String path) throws Exception {
+      try {
+         File file = new File(path);
+         if (file.exists()) {
+            File[] files = file.listFiles();
+            for (File childFile : files) {
+               if (childFile.isFile()) {
+                  childFile.delete();
+               }
+               else {
+                  deleteFile(childFile.getPath());
+               }
+            }
+            File[] files2 = new File(path).listFiles();
+            if (files2.length == 0) {
+               file.delete();
+            }
+         }
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+      }
+   }
+
+   public PageQuery queryArtWorks(PageQuery pageQuery) throws ServiceException {
+      try {
+         createSqlFilter(pageQuery);
+         return jdbcDao.queryBySqlId("artWorksList", pageQuery);
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private void createSqlFilter(PageQuery page) {
+      String paras = " 1=1 ";
+      Map<String, String> map = page.getParameters();
+
+      String artist = map.get("artist");
+      if (artist != null && artist.trim().length() > 0) {
+         paras += " AND artist.c_name like '%" + artist.trim() + "%'" + " OR artist.e_name like '%" + artist.trim() + "%'";
+      }
+
+      String code = map.get("code");
+      if (code != null && code.trim().length() > 0) {
+         paras += " AND works.works_no like '%" + code.trim() + "%'";
+      }
+
+      String name = map.get("name");
+      if (name != null && name.trim().length() > 0) {
+         paras += " AND (works.works_c_name like '%" + name.trim() + "%'" + " OR works.works_e_name like '%" + name.trim() + "%')";
+      }
+
+      String styleType = map.get("styleType");
+      if (styleType != null && styleType.trim().length() > 0) {
+         paras += " AND works.style_type like '%" + styleType.trim() + "%'";
+      }
+
+      String mediumMaterialId = map.get("mediumMaterialId");
+      if (mediumMaterialId != null && mediumMaterialId.trim().length() > 0) {
+         paras += " AND works.medium_material =" + mediumMaterialId.trim();
+      }
+
+      String mediumShapeId = map.get("mediumShapeId");
+      if (mediumShapeId != null && mediumShapeId.trim().length() > 0) {
+         paras += " AND works.medium_shape =" + mediumShapeId.trim();
+      }
+
+      String artistId = map.get("artistId");
+      if (artistId != null && artistId.trim().length() > 0) {
+         paras += " AND artist.id =" + artistId.trim();
+      }
+
+      if (paras.length() > 0) page.getParameters().put("paras", paras);
+   }
+
+   public String importArtWorks(String path) throws ServiceException {
+      String message = "";
+      try {
+         List<ArtArtist> artArtists = artArtistService.findAllArtArtist();
+         Map<String, String> artistMap = new HashMap<String, String>();
+         for (ArtArtist artArtist : artArtists) {
+            artistMap.put(artArtist.getCname(), artArtist.getId().toString());
+            artistMap.put(artArtist.getEname(), artArtist.getId().toString());
+         }
+         List<ArtMedium> material = artMediumService.findByCategory("1");
+         Map<String, String> materialMap = new HashMap<String, String>();
+         for (ArtMedium artMedium : material) {
+            materialMap.put(artMedium.getMediumName(), artMedium.getId().toString());
+         }
+         List<ArtMedium> shape = artMediumService.findByCategory("2");
+         Map<String, String> shapeMap = new HashMap<String, String>();
+         for (ArtMedium artMedium : shape) {
+            shapeMap.put(artMedium.getMediumName(), artMedium.getId().toString());
+         }
+         List<ArtWorksStyle> styles = artWorksStyleService.findAll();
+         Map<String, String> styleMap = new HashMap<String, String>();
+         for (ArtWorksStyle style : styles) {
+            styleMap.put(style.getStyleName(), style.getId().toString());
+         }
+         List<ArtWorksTheme> themes = artWorksThemeService.findAll();
+         Map<String, String> themeMap = new HashMap<String, String>();
+         for (ArtWorksTheme theme : themes) {
+            themeMap.put(theme.getThemeName(), theme.getId().toString());
+         }
+         List<SysCode> sysCodes = sysCodeService.findCodeBySetId(19);
+         Map<String, String> map = new HashMap<String, String>();
+         for (SysCode sysCode : sysCodes) {
+            map.put(sysCode.getItemName(), sysCode.getItemValue());
+            map.put(sysCode.getItemValue(), sysCode.getItemName());
+         }
+         sysCodes = sysCodeService.findCodeBySetId(15);
+         Map<String, String> artType = new HashMap<String, String>();
+         for (SysCode sysCode : sysCodes) {
+            artType.put(sysCode.getItemName(), sysCode.getItemValue());
+         }
+         InputStream is = new FileInputStream(path);
+         HSSFWorkbook hssfWorkbook = new HSSFWorkbook(is);
+         // 循环工作表Sheet
+         HSSFSheet hssfSheet = hssfWorkbook.getSheetAt(0);
+         if (hssfSheet != null) {
+            for (int rowNum = 2; rowNum <= hssfSheet.getLastRowNum(); rowNum++) {
+               HSSFRow hssfRow = hssfSheet.getRow(rowNum);
+               if (hssfRow == null) continue;
+
+               ArtWorks artWorks = new ArtWorks();
+               if (hssfRow.getCell(0) == null) {
+                  message = "成功操作到第" + String.valueOf(rowNum - 1) + "行";
+                  break;
+               }
+               if ("".equals(getValue(hssfRow.getCell(0)))) {
+                  message = "成功操作到第" + String.valueOf(rowNum - 1) + "行";
+                  break;
+               }
+               //作品图片名
+               String picName = getValue(hssfRow.getCell(0));
+               if(picName == null || "".equals(picName)){
+                  message = "第" + String.valueOf(rowNum) + "行找不到作品图片名";
+                  break;
+               }
+               artWorks.setThumbnail(picName);
+               artWorks.setWorksStoreName("1:"+picName);
+               artWorks.setWorksImage("1:"+picName);
+               //艺术家中文名
+               String artist = getValue(hssfRow.getCell(1));
+               if (artistMap.get(artist) == null) {
+                  message = "第" + String.valueOf(rowNum) + "行找不到艺术家";
+                  break;
+               }
+               Integer artistId = Integer.valueOf(artistMap.get(artist));
+               artWorks.setArtistId(artistId);
+               //作品编号
+               String worksNo = getValue(hssfRow.getCell(2));
+               if ("".equals(worksNo)) {
+                  message = "第" + String.valueOf(rowNum) + "行作品编号不能为空";
+                  break;
+               }
+               artWorks.setWorksNo(worksNo);
+               //创作时间
+               String createTime = getValue(hssfRow.getCell(3));
+               if(createTime != null && !"".equals(createTime)){
+                  String createYear = createTime.split("年")[0];
+                  artWorks.setCreateYear(createYear);
+                  if(createTime.split("年").length == 2){
+                     String createMonth = createTime.split("年")[1].split("月")[0];
+                     artWorks.setCreateMonth(createMonth);
+                     if(createTime.split("年")[1].split("月").length == 2){
+                        String createDay = createTime.split("年")[1].split("月")[1].split("日")[0];
+                        artWorks.setCreateDay(createDay);
+                     }
+                  }
+               }
+               //               if("".equals(time)){
+               //                  message = "第" + String.valueOf(rowNum) + "行创作时间不能为空";
+               //                  break;
+               //               }
+               //创作时期
+               //               String createPeriod = getValue(hssfRow.getCell(3));
+               //               if("".equals(createPeriod)){
+               //                  message = "第" + String.valueOf(rowNum) + "行创作时期不能为空";
+               //                  break;
+               //               }
+               //               artWorks.setCreatePeriod(createPeriod);
+               //作品系列
+               String worksSeries = getValue(hssfRow.getCell(4));
+               //               if("".equals(worksNo)){
+               //                  message = "第" + String.valueOf(rowNum) + "行作品系列不能为空";
+               //                  break;
+               //               }
+               artWorks.setWorksSeries(worksSeries);
+               //作品中文名
+               String worksCName = getValue(hssfRow.getCell(5));
+               if ("".equals(worksCName)) {
+                  message = "第" + String.valueOf(rowNum) + "行作品中文名不能为空";
+                  break;
+               }
+               artWorks.setWorksCName(worksCName);
+               //作品英文名
+               String worksEName = getValue(hssfRow.getCell(6));
+               //               if("".equals(worksEName)){
+               //                  message = "第" + String.valueOf(rowNum) + "行作品英文名不能为空";
+               //                  break;
+               //               }
+               artWorks.setWorksEName(worksEName);
+               //国内媒介(材料)
+               String mediumMaterial = getValue(hssfRow.getCell(7));
+               if (!"".equals(mediumMaterial)) {
+                  if (materialMap.get(mediumMaterial) == null) {
+                     message = "第" + String.valueOf(rowNum) + "行找不到国内媒介(材料)";
+                     break;
+                  }
+                  else {
+                     artWorks.setMediumMaterial(Integer.valueOf(materialMap.get(mediumMaterial)));
+                  }
+               }
+               //国内媒介（形式）
+               String mediumShape = getValue(hssfRow.getCell(8));
+               if (!"".equals(mediumShape)) {
+                  if (shapeMap.get(mediumShape) == null) {
+                     message = "第" + String.valueOf(rowNum) + "行找不到国内媒介（形式）";
+                     break;
+                  }
+                  else {
+                     artWorks.setMediumShape(Integer.valueOf(shapeMap.get(mediumShape)));
+                  }
+               }
+               //尺寸(厘米)
+               String sizeCm = getValue(hssfRow.getCell(9));
+               //               if("".equals(sizeCm)){
+               //                  message = "第" + String.valueOf(rowNum) + "行尺寸(厘米)不能为空";
+               //                  break;
+               //               }
+               artWorks.setSizeCm(sizeCm);
+               //尺寸(英寸)
+               String sizeIn = getValue(hssfRow.getCell(10));
+               //               if("".equals(sizeIn)){
+               //                  message = "第" + String.valueOf(rowNum) + "行尺寸(英寸)不能为空";
+               //                  break;
+               //               }
+               artWorks.setSizeIn(sizeIn);
+               //尺寸(尺)
+               String sizeRule = getValue(hssfRow.getCell(11));
+               //               if("".equals(sizeRule)){
+               //                  message = "第" + String.valueOf(rowNum) + "行尺寸(尺)不能为空";
+               //                  break;
+               //               }
+               artWorks.setSizeRule(sizeRule);
+               //签名内容1
+               String signatureContent = getValue(hssfRow.getCell(12));
+               //               if("".equals(signatureContent)){
+               //                  message = "第" + String.valueOf(rowNum) + "行签名内容1不能为空";
+               //                  break;
+               //               }
+               artWorks.setSignatureContent(signatureContent);
+               //签名位置1
+               String signature = getValue(hssfRow.getCell(13));
+               if (!"".equals(signature)) {
+                  if (map.get(signature) == null) {
+                     message = "第" + String.valueOf(rowNum) + "行找不到签名位置1";
+                     break;
+                  }
+                  else {
+                     artWorks.setSignature(map.get(signature));
+                  }
+               }
+               if (signature.length() == 2) {
+                  artWorks.setSignature(signature);
+               }
+               //签名内容2
+               String signatureContent2 = getValue(hssfRow.getCell(14));
+               //               if("".equals(signatureContent2)){
+               //                  message = "第" + String.valueOf(rowNum) + "行签名内容2不能为空";
+               //                  break;
+               //               }
+               artWorks.setSignatureContent2(signatureContent2);
+               //签名位置2
+               String signature2 = getValue(hssfRow.getCell(15));
+               if (!"".equals(signature2)) {
+                  if (map.get(signature2) == null) {
+                     message = "第" + String.valueOf(rowNum) + "行找不到签名位置2";
+                     break;
+                  }
+                  else {
+                     artWorks.setSignature2(map.get(signature2));
+                  }
+               }
+               if (signature2.length() == 2) {
+                  artWorks.setSignature2(signature2);
+               }
+               //签名内容3
+               String signatureContent3 = getValue(hssfRow.getCell(16));
+               //               if("".equals(signatureContent3)){
+               //                  message = "第" + String.valueOf(rowNum) + "行签名内容3不能为空";
+               //                  break;
+               //               }
+               artWorks.setSignatureContent3(signatureContent3);
+               //签名位置3
+               String signature3 = getValue(hssfRow.getCell(17));
+               if (!"".equals(signature3)) {
+                  if (map.get(signature3) == null) {
+                     message = "第" + String.valueOf(rowNum) + "行找不到签名位置3";
+                     break;
+                  }
+                  else {
+                     artWorks.setSignature3(map.get(signature3));
+                  }
+               }
+               if (signature3.length() == 2) {
+                  artWorks.setSignature3(signature3);
+               }
+               //风格类型
+               String worksCategory = getValue(hssfRow.getCell(18));
+               if (!"".equals(worksCategory)) {
+                  if (styleMap.get(worksCategory) == null) {
+                     message = "第" + String.valueOf(rowNum) + "行找不到风格类型";
+                     break;
+                  }
+                  else {
+                     artWorks.setStyleType(styleMap.get(worksCategory));
+                  }
+               }
+               //               if("".equals(worksCategory)){
+               //                  message = "第" + String.valueOf(rowNum) + "行找不到风格类型";
+               //                  break;
+               //               }
+               //作品题材
+               String worksTheme = getValue(hssfRow.getCell(19));
+               if (!"".equals(worksTheme)) {
+                  if (themeMap.get(worksTheme) == null) {
+                     message = "第" + String.valueOf(rowNum) + "行找不到作品题材";
+                     break;
+                  }
+                  else {
+                     artWorks.setWorksTheme1(themeMap.get(worksTheme));
+                  }
+               }
+               //               if("".equals(worksTheme)){
+               //                  message = "第" + String.valueOf(rowNum) + "行作品题材不能为空";
+               //                  break;
+               //               }
+               //风格技法内容描述
+               String styleContent = getValue(hssfRow.getCell(20));
+               //               if("".equals(styleContent)){
+               //                  message = "第" + String.valueOf(rowNum) + "行风格技法内容描述不能为空";
+               //                  break;
+               //               }
+               artWorks.setStyleContent(styleContent);
+               //创作地点
+               String createPlace = getValue(hssfRow.getCell(21));
+               //               if("".equals(createPlace)){
+               //                  message = "第" + String.valueOf(rowNum) + "行创作地点不能为空";
+               //                  break;
+               //               }
+               artWorks.setCreatePlace(createPlace);
+               //               //创作事由
+               //               String createCause = getValue(hssfRow.getCell(22));
+               //               if("".equals(createCause)){
+               //                  message = "第" + String.valueOf(rowNum) + "行创作事由不能为空";
+               //                  break;
+               //               }
+               //               artWorks.setCreateCause(createCause);
+               //               //背景故事
+               //               String backStory = getValue(hssfRow.getCell(23));
+               //               if("".equals(backStory)){
+               //                  message = "第" + String.valueOf(rowNum) + "行背景故事不能为空";
+               //                  break;
+               //               }
+               //               artWorks.setBackStory(backStory);
+               //创作时间段，开始年份
+               String createFrom = getValue(hssfRow.getCell(22));
+               //               if("".equals(createFrom)){
+               //                  message = "第" + String.valueOf(rowNum) + "行创作时间段，开始年份不能为空";
+               //                  break;
+               //               }
+               artWorks.setCreateFrom(createFrom);
+               //创作时间段，结束年份
+               String createTo = getValue(hssfRow.getCell(23));
+               //               if("".equals(createTo)){
+               //                  message = "第" + String.valueOf(rowNum) + "行创作时间段，结束年份不能为空";
+               //                  break;
+               //               }
+               artWorks.setCreateTo(createTo);
+               //局部尺寸（多个以;隔开）
+               String partSize = getValue(hssfRow.getCell(24));
+               //               if("".equals(partSize)){
+               //                  message = "第" + String.valueOf(rowNum) + "行局部尺寸（多个以;隔开）不能为空";
+               //                  break;
+               //               }
+               artWorks.setPartSize(partSize);
+               //作品地位
+               String worksStatus = getValue(hssfRow.getCell(25));
+               //               if("".equals(worksStatus)){
+               //                  message = "第" + String.valueOf(rowNum) + "行作品地位不能为空";
+               //                  break;
+               //               }
+               artWorks.setWorksStatus(worksStatus);
+               createArtWorks(artWorks);
+            }
+         }
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         message = "数据错误";
+      }
+      File file = new File(path);
+      if (file.exists() && file.isFile()) {
+         file.delete();
+      }
+      return message;
+   }
+
+   private String getValue(HSSFCell hssfCell) {
+      if (hssfCell.getCellType() == hssfCell.CELL_TYPE_BOOLEAN) {
+         // 返回布尔类型的值   
+         return String.valueOf(hssfCell.getBooleanCellValue());
+      }
+      else if (hssfCell.getCellType() == hssfCell.CELL_TYPE_NUMERIC) {
+         // 返回数值类型的值  
+         DecimalFormat df = new DecimalFormat("0");
+         return df.format(hssfCell.getNumericCellValue());
+      }
+      else if (hssfCell.getCellType() == hssfCell.CELL_TYPE_FORMULA) {
+         // 返回数值类型的值  
+         return String.valueOf(hssfCell.getNumericCellValue());
+      }
+      else {
+         // 返回字符串类型的值      
+         return String.valueOf(hssfCell.getStringCellValue());
+      }
+   }
+
+   public List<ArtWorks> findAll() throws ServiceException {
+      try {
+         return artWorksDao.findAll();
+      }
+      catch (DAOException e) {
+         e.printStackTrace();
+         throw new ServiceException("数据库操作错误。");
+      }
+      catch (ServiceException se) {
+         se.printStackTrace();
+         throw se;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public Map<String, String> changeArtWorks(QueryForm form) throws ServiceException {
+      try {
+         if (!isInteger(form.getRecord().get("createYear"))) form.getRecord().remove("createYear");
+         if (!isInteger(form.getRecord().get("createMonth"))) form.getRecord().remove("createMonth");
+         if (!isInteger(form.getRecord().get("createDay"))) form.getRecord().remove("createDay");
+         if (form.getRecord().get("sizeCm").equals("长x宽，仅填写数字")) form.getRecord().remove("sizeCm");
+         if (form.getRecord().get("sizeIn").equals("长x宽，仅填写数字")) form.getRecord().remove("sizeIn");
+         if (form.getRecord().get("sizeRule").equals("长x宽，仅填写数字")) form.getRecord().remove("sizeRule");
+         if (form.getRecord().get("partSize_unit").equals("尺寸单位")) form.getRecord().remove("partSize_unit");
+         if (form.getRecord().get("keywordOther2").equals("……")) form.getRecord().remove("keywordOther2");
+         if (form.getRecord().get("keywordOther1").equals("……")) form.getRecord().remove("keywordOther1");
+         if (form.getRecord().get("worksStatus").equals("材质的补充说明，色彩特点，风格、技法、创作内容及背景，原因初衷，作品地位…")) form.getRecord().remove("worksStatus");
+         if (form.getRecord().get("keywordEvent").equals("事件")) form.getRecord().remove("keywordEvent");
+         if (form.getRecord().get("keywordAddr").equals("地点")) form.getRecord().remove("keywordAddr");
+         if (form.getRecord().get("keywordThing").equals("物件")) form.getRecord().remove("keywordThing");
+         if (form.getRecord().get("partSize_l").equals("长")) form.getRecord().remove("partSize_l");
+         if (form.getRecord().get("styleType").equals("多个、隔开")) form.getRecord().remove("styleType");
+         if (form.getRecord().get("partSize_w").equals("宽")) form.getRecord().remove("partSize_w");
+         if (form.getRecord().get("partSize_name").equals("位置名称1")) form.getRecord().remove("partSize_name");
+         if (form.getRecord().get("keywordCharacter").equals("人物")) form.getRecord().remove("keywordCharacter");
+         if (form.getRecord().get("mediumMaterialId") != null) form.getRecord().put("mediumMaterial", form.getRecord().get("mediumMaterialId"));
+         if (form.getRecord().get("mediumShapeId") != null) form.getRecord().put("mediumShape", form.getRecord().get("mediumShapeId"));
+         form.getRecord().put("worksEName", form.getRecord().get("englishName") == null ? "" : form.getRecord().get("englishName"));
+         form.getRecord().put("worksCName", form.getRecord().get("chineseName"));
+         form.getRecord().put("artistId", form.getRecord().get("artArtistId"));
+         String partSize = "";
+         if (form.getRecord().get("partSize_name") != null) {
+            String partSize_name = form.getRecord().get("partSize_name");
+            partSize_name = partSize_name.replace(" ", "");
+            String partSize_unit = form.getRecord().get("partSize_unit");
+            partSize_unit = partSize_unit.replace(" ", "");
+            String partSize_l = form.getRecord().get("partSize_l");
+            partSize_l = partSize_l.replace(" ", "");
+            String partSize_w = form.getRecord().get("partSize_w");
+            partSize_w = partSize_w.replace(" ", "");
+            String[] partSize_ls = partSize_l.split(",");
+            String[] partSize_ws = partSize_w.split(",");
+            String[] partSize_names = partSize_name.split(",");
+            String[] partSize_units = partSize_unit.split(",");
+            for (int i = 0; i < partSize_ls.length; i++) {
+               partSize = partSize + partSize_names[i] + ":" + partSize_ls[i] + "*" + partSize_ws[i] + " " + partSize_units[i] + ";";
+            }
+         }
+         form.getRecord().put("partSize", partSize);
+         return form.getRecord();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public void saveThumbnail(ArtWorks artWorks, String filesFileName, String FILE_PATH, List<File> files) throws ServiceException {
+      try {
+         String[] names = filesFileName.split(",");
+         String path = FILE_PATH + File.separator + "upload" + File.separator + "works" + File.separator + "worksImage" + File.separator
+               + artWorks.getId().toString();
+         if (!new File(path).exists()) {
+            new File(path).mkdirs();
+         }
+         StringBuffer fileName = new StringBuffer();
+         StringBuffer saveName = new StringBuffer();
+         Map<Integer, String> map = new HashMap<Integer, String>();
+         if (files != null) {
+            String thumbnail = "";
+            for (int i = 0; i < files.size(); i++) {
+               File file = files.get(i);
+               String cName = String.valueOf(System.currentTimeMillis());
+               String[] endless = names[i].split("\\.");
+               FileUtils.fileUpload(path + File.separator + cName + "." + endless[endless.length - 1], file);
+               fileName.append(String.valueOf(i + 1) + ":" + names[i]);
+               saveName.append(String.valueOf(i + 1) + ":" + cName + "." + endless[endless.length - 1]);
+               thumbnail = cName + "." + endless[endless.length - 1];
+               map.put(i, thumbnail);
+               if ((i + 1) != files.size()) fileName.append("、");
+               if ((i + 1) != files.size()) saveName.append("、");
+            }
+            String savePath = FILE_PATH + File.separator + "upload" + File.separator + "auction" + File.separator + "thumbnail";
+            if (!new File(savePath).exists()) {
+               new File(savePath).mkdirs();
+            }
+            String imagePath = path + File.separator + map.get(0);
+            String extension = map.get(0).split("\\.")[1];
+            BufferedImage bufferedImage = ImageIO.read(new File(imagePath));
+            int width = bufferedImage.getWidth();
+            int height = bufferedImage.getHeight();
+            //压缩计算  
+            float resizeTimes = 0.1f; /* 这个参数是要转化成的倍数,如果是1就是转化成1倍 */
+
+            /* 调整后的图片的宽度和高度 */
+            int toWidth = (int) (width * resizeTimes);
+            int toHeight = (int) (height * resizeTimes);
+            Thumbnails.of(imagePath).size(toWidth, toHeight).outputFormat(extension).outputQuality(0.3f).toFile(savePath + File.separator + map.get(0));//保存小图
+
+            artWorks.setThumbnail(map.get(0));
+            artWorks.setWorksImage(fileName.toString());
+            artWorks.setWorksStoreName(saveName.toString());
+            updateArtWorks(artWorks);
+         }
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   private boolean isInteger(String arg) {
+      try {
+         Integer.valueOf(arg);
+         return true;
+      }
+      catch (Exception e) {
+         return false;
+      }
+   }
+
+   public int findByCountry(String ids) throws ServiceException {
+      try {
+         String str = "SELECT COUNT(*) FROM ART_WORKS works WHERE works.create_country IN (" + ids + ")";
+         return jdbcDao.queryIntBySql(str);
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   public String getMaxWorksNo() throws ServiceException {
+      try {
+         String str = "SELECT max(works_no) as maxNo FROM ART_WORKS ";
+         List<Map<String, Object>> list = jdbcDao.queryBySql(str);
+         if (list != null && list.size() > 0) {
+            Map<String, Object> map = list.get(0);
+            String maxNo = map.get("maxNo") == null ? null : map.get("maxNo").toString();
+            if (maxNo != null && !"".equals(maxNo)) {
+               Integer noInt = Integer.valueOf(maxNo.substring(1)) + 1;
+               String rsNo = "";
+               Integer len = 8 - noInt.toString().length();
+               if (len > 0) {
+                  for (int i = 8 - len; i < 8; i++) {
+                     rsNo += "0";
+                  }
+               }
+               rsNo += noInt;
+               return "W" + rsNo;
+            }
+         }
+         return "W00000001";
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         throw new ServiceException("系统错误。");
+      }
+   }
+
+   @Resource
+   private ArtWorksPeriodService   artWorksPeriodService;
+
+   @Resource
+   private ArtWorksEvaluateService artWorksEvaluateService;
+
+   @Resource
+   private ArtWorksCaseService     artWorksCaseService;
+
+   @Resource
+   private ArtWorksSomeService     artWorksSomeService;
+
+   @Resource
+   private ArtArtistService        artArtistService;
+
+   @Resource
+   private ArtMediumService        artMediumService;
+   
+   @Resource
+   private ArtWorksStyleService        artWorksStyleService;
+   
+   @Resource
+   private ArtWorksThemeService        artWorksThemeService;
+
+   @Resource
+   private SysCodeService          sysCodeService;
+
+   @Resource
+   private ArtWorksDao             artWorksDao;
+
+   public void setArtWorksDao(ArtWorksDao artWorksDao) {
+      this.artWorksDao = artWorksDao;
+   }
+}

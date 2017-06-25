@@ -1,0 +1,30 @@
+package com.golead.art.works.service;
+
+import java.io.Serializable;
+import java.util.Map;
+
+import org.apache.struts2.ServletActionContext;
+
+import com.golead.core.exception.ServiceException;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.art.works.model.ArtWorks;
+
+public interface ArtWorksService {
+   
+	public ArtWorks getArtWorks(Serializable id) throws ServiceException;
+
+	public void createArtWorks(ArtWorks artWorks) throws ServiceException;
+
+	public void updateArtWorks(Map<String, String> artWorksMap) throws ServiceException;
+	
+	public void updateArtWorks(ArtWorks artWorks) throws ServiceException;
+
+	public void deleteArtWorks(Serializable id) throws ServiceException;
+
+	public PageQuery queryArtWorks(PageQuery pageQuery) throws ServiceException;
+
+	public void deleteArtWorkss(Serializable[] ids) throws ServiceException;  
+	
+	public String importArtWorks(String path) throws ServiceException;
+}
+

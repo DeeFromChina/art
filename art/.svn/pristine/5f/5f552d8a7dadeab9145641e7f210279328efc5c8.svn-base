@@ -1,0 +1,27 @@
+package com.golead.art.artist.service;
+
+import java.io.Serializable;
+import java.util.Map;
+
+import com.golead.core.exception.ServiceException;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.art.artist.model.ArtArtistCollector;
+
+public interface ArtArtistCollectorService {
+
+	public ArtArtistCollector getArtArtistCollector(Serializable id) throws ServiceException;
+
+	public void createArtArtistCollector(ArtArtistCollector artArtistCollector) throws ServiceException;
+
+	public void updateArtArtistCollector(Map<String, String> artArtistCollectorMap) throws ServiceException;
+
+	public void deleteArtArtistCollector(Serializable id) throws ServiceException;
+
+	public PageQuery queryArtArtistCollector(PageQuery pageQuery) throws ServiceException;
+
+	public void deleteArtArtistCollectors(Serializable[] ids) throws ServiceException;  
+	
+	public String importCollects(String path, int artistId) throws ServiceException;
+	
+}
+

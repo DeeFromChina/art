@@ -1,0 +1,19 @@
+package com.golead.art.auction;
+
+import com.golead.core.web.action.BaseAction;
+
+/**
+ * 汇率管理
+ * @author 尹湘
+ * @version 1.0
+ * @since  2016年9月3日 下午2:37:37
+ */
+public class ArtAuctionExchangeAction extends BaseAction {
+
+   @Override
+   public String doExecute() throws Exception {
+      // TODO Auto-generated method stub
+      return null;
+   }
+
+}

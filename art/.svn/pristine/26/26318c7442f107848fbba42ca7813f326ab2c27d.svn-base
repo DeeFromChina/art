@@ -1,0 +1,14 @@
+@CHARSET "UTF-8";
+.imgUploadBtn {position: relative;height:20px;}
+.imgUploadBtn img {position:absolute;left: 2px; top:3px;}
+.imgUploadBtn span {position:absolute;left: 22px; top:0px;line-height: 16px}
+.imgUploadBtn input[type=file] {
+	position: absolute;
+	left: 0;
+	width:20px;
+	height:20px;
+	cursor: pointer;
+	filter:alpha(opacity=0);
+	-moz-opacity:0;
+	opacity:0;
+}

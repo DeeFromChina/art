@@ -1,0 +1,377 @@
+package com.golead.art.works.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_works_auction table.
+ */
+@Entity  
+@Table(name="art_works_auction")  
+public class ArtWorksAuction implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+   @Column(name = "d_trade_price")
+   private java.lang.Double dTradePrice;   // 交易价(美元)
+
+   @Column(name = "c_tran_price")
+   private java.lang.Double cTranPrice;   // 成交价(人民币)
+
+   @Column(name = "e_trade_price")
+   private java.lang.Double eTradePrice;   // 交易价(欧元)
+
+   @Column(name = "c_trade_price")
+   private java.lang.Double cTradePrice;   // 交易价(人民币)
+
+   @Column(name = "c_highest_price")
+   private java.lang.Double cHighestPrice;   // 最高估价(人民币)
+
+   @Column(name = "d_highest_price")
+   private java.lang.Double dHighestPrice;   // 最高估价(美元)
+
+   @Column(name = "c_lowest_price")
+   private java.lang.Double cLowestPrice;   // 最低估价(人民币)
+
+   @Column(name = "p_lowest_price")
+   private java.lang.Double pLowestPrice;   // 最低估价(英镑)
+
+   @Column(name = "relevant_video")
+   private java.lang.String relevantVideo;   // 相关视频，多个以;号隔开
+
+   @Column(name = "e_lowest_price")
+   private java.lang.Double eLowestPrice;   // 最低估价(欧元)
+
+
+   @Column(name = "auction_id")
+   private java.lang.Integer auctionId;   // 拍卖ID
+
+   @Column(name = "d_tran_price")
+   private java.lang.Double dTranPrice;   // 成交价(美元)
+
+   @Column(name = "p_trade_price")
+   private java.lang.Double pTradePrice;   // 交易价(英镑)
+
+   @Column(name = "e_highest_price")
+   private java.lang.Double eHighestPrice;   // 最高估价(欧元)
+
+   @Column(name = "works_id")
+   private java.lang.Integer worksId;   // 作品id
+
+   @Column(name = "p_highest_price")
+   private java.lang.Double pHighestPrice;   // 最高估价(英镑)
+
+   @Column(name = "e_tran_price")
+   private java.lang.Double eTranPrice;   // 成交价(欧元)
+
+   @Column(name = "p_tran_price")
+   private java.lang.Double pTranPrice;   // 成交价(英镑)
+
+   @Column(name = "d_lowest_price")
+   private java.lang.Double dLowestPrice;   // 最低估价(美元)
+
+   @Column(name = "relevant_text")
+   private java.lang.String relevantText;   // 相关文字
+
+   // Constructors
+   public ArtWorksAuction() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.Double getDtradePrice() { 
+      return this.dTradePrice; 
+   }
+   public void setDtradePrice(java.lang.Double dTradePrice) { 
+      this.dTradePrice = dTradePrice; 
+   }
+
+
+   public java.lang.Double getCtranPrice() { 
+      return this.cTranPrice; 
+   }
+   public void setCtranPrice(java.lang.Double cTranPrice) { 
+      this.cTranPrice = cTranPrice; 
+   }
+
+
+   public java.lang.Double getEtradePrice() { 
+      return this.eTradePrice; 
+   }
+   public void setEtradePrice(java.lang.Double eTradePrice) { 
+      this.eTradePrice = eTradePrice; 
+   }
+
+
+   public java.lang.Double getCtradePrice() { 
+      return this.cTradePrice; 
+   }
+   public void setCtradePrice(java.lang.Double cTradePrice) { 
+      this.cTradePrice = cTradePrice; 
+   }
+
+
+   public java.lang.Double getChighestPrice() { 
+      return this.cHighestPrice; 
+   }
+   public void setChighestPrice(java.lang.Double cHighestPrice) { 
+      this.cHighestPrice = cHighestPrice; 
+   }
+
+
+   public java.lang.Double getDhighestPrice() { 
+      return this.dHighestPrice; 
+   }
+   public void setDhighestPrice(java.lang.Double dHighestPrice) { 
+      this.dHighestPrice = dHighestPrice; 
+   }
+
+
+   public java.lang.Double getClowestPrice() { 
+      return this.cLowestPrice; 
+   }
+   public void setClowestPrice(java.lang.Double cLowestPrice) { 
+      this.cLowestPrice = cLowestPrice; 
+   }
+
+
+   public java.lang.Double getPlowestPrice() { 
+      return this.pLowestPrice; 
+   }
+   public void setPlowestPrice(java.lang.Double pLowestPrice) { 
+      this.pLowestPrice = pLowestPrice; 
+   }
+
+
+   public java.lang.String getRelevantVideo() { 
+      return this.relevantVideo; 
+   }
+   public void setRelevantVideo(java.lang.String relevantVideo) { 
+      this.relevantVideo = relevantVideo; 
+   }
+
+
+   public java.lang.Double getElowestPrice() { 
+      return this.eLowestPrice; 
+   }
+   public void setElowestPrice(java.lang.Double eLowestPrice) { 
+      this.eLowestPrice = eLowestPrice; 
+   }
+
+
+   public java.lang.Integer getAuctionId() { 
+      return this.auctionId; 
+   }
+   public void setAuctionId(java.lang.Integer auctionId) { 
+      this.auctionId = auctionId; 
+   }
+
+
+   public java.lang.Double getDtranPrice() { 
+      return this.dTranPrice; 
+   }
+   public void setDtranPrice(java.lang.Double dTranPrice) { 
+      this.dTranPrice = dTranPrice; 
+   }
+
+
+   public java.lang.Double getPtradePrice() { 
+      return this.pTradePrice; 
+   }
+   public void setPtradePrice(java.lang.Double pTradePrice) { 
+      this.pTradePrice = pTradePrice; 
+   }
+
+
+   public java.lang.Double getEhighestPrice() { 
+      return this.eHighestPrice; 
+   }
+   public void setEhighestPrice(java.lang.Double eHighestPrice) { 
+      this.eHighestPrice = eHighestPrice; 
+   }
+
+
+   public java.lang.Integer getWorksId() { 
+      return this.worksId; 
+   }
+   public void setWorksId(java.lang.Integer worksId) { 
+      this.worksId = worksId; 
+   }
+
+
+   public java.lang.Double getPhighestPrice() { 
+      return this.pHighestPrice; 
+   }
+   public void setPhighestPrice(java.lang.Double pHighestPrice) { 
+      this.pHighestPrice = pHighestPrice; 
+   }
+
+
+   public java.lang.Double getEtranPrice() { 
+      return this.eTranPrice; 
+   }
+   public void setEtranPrice(java.lang.Double eTranPrice) { 
+      this.eTranPrice = eTranPrice; 
+   }
+
+
+   public java.lang.Double getPtranPrice() { 
+      return this.pTranPrice; 
+   }
+   public void setPtranPrice(java.lang.Double pTranPrice) { 
+      this.pTranPrice = pTranPrice; 
+   }
+
+
+   public java.lang.Double getDlowestPrice() { 
+      return this.dLowestPrice; 
+   }
+   public void setDlowestPrice(java.lang.Double dLowestPrice) { 
+      this.dLowestPrice = dLowestPrice; 
+   }
+
+
+   public java.lang.String getRelevantText() { 
+      return this.relevantText; 
+   }
+   public void setRelevantText(java.lang.String relevantText) { 
+      this.relevantText = relevantText; 
+   }
+
+
+   public static String REF_CLASS = "ArtWorksAuction";
+   public static String PROP_D_TRADE_PRICE = "dTradePrice";
+   public static String PROP_C_TRAN_PRICE = "cTranPrice";
+   public static String PROP_E_TRADE_PRICE = "eTradePrice";
+   public static String PROP_C_TRADE_PRICE = "cTradePrice";
+   public static String PROP_C_HIGHEST_PRICE = "cHighestPrice";
+   public static String PROP_D_HIGHEST_PRICE = "dHighestPrice";
+   public static String PROP_C_LOWEST_PRICE = "cLowestPrice";
+   public static String PROP_P_LOWEST_PRICE = "pLowestPrice";
+   public static String PROP_RELEVANT_VIDEO = "relevantVideo";
+   public static String PROP_E_LOWEST_PRICE = "eLowestPrice";
+   public static String PROP_ID = "id";
+   public static String PROP_AUCTION_ID = "auctionId";
+   public static String PROP_D_TRAN_PRICE = "dTranPrice";
+   public static String PROP_P_TRADE_PRICE = "pTradePrice";
+   public static String PROP_E_HIGHEST_PRICE = "eHighestPrice";
+   public static String PROP_WORKS_ID = "worksId";
+   public static String PROP_P_HIGHEST_PRICE = "pHighestPrice";
+   public static String PROP_E_TRAN_PRICE = "eTranPrice";
+   public static String PROP_P_TRAN_PRICE = "pTranPrice";
+   public static String PROP_D_LOWEST_PRICE = "dLowestPrice";
+   public static String PROP_RELEVANT_TEXT = "relevantText";
+
+   public static String REF_TABLE = "art_works_auction";
+   public static String COL_D_TRADE_PRICE = "d_trade_price";
+   public static String COL_C_TRAN_PRICE = "c_tran_price";
+   public static String COL_E_TRADE_PRICE = "e_trade_price";
+   public static String COL_C_TRADE_PRICE = "c_trade_price";
+   public static String COL_C_HIGHEST_PRICE = "c_highest_price";
+   public static String COL_D_HIGHEST_PRICE = "d_highest_price";
+   public static String COL_C_LOWEST_PRICE = "c_lowest_price";
+   public static String COL_P_LOWEST_PRICE = "p_lowest_price";
+   public static String COL_RELEVANT_VIDEO = "relevant_video";
+   public static String COL_E_LOWEST_PRICE = "e_lowest_price";
+   public static String COL_ID = "id";
+   public static String COL_AUCTION_ID = "auction_id";
+   public static String COL_D_TRAN_PRICE = "d_tran_price";
+   public static String COL_P_TRADE_PRICE = "p_trade_price";
+   public static String COL_E_HIGHEST_PRICE = "e_highest_price";
+   public static String COL_WORKS_ID = "works_id";
+   public static String COL_P_HIGHEST_PRICE = "p_highest_price";
+   public static String COL_E_TRAN_PRICE = "e_tran_price";
+   public static String COL_P_TRAN_PRICE = "p_tran_price";
+   public static String COL_D_LOWEST_PRICE = "d_lowest_price";
+   public static String COL_RELEVANT_TEXT = "relevant_text";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.works.model.ArtWorksAuction)) return false;
+      else {
+         com.golead.art.works.model.ArtWorksAuction o = (com.golead.art.works.model.ArtWorksAuction) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtWorksAuction:");
+		buffer.append(" id:").append(id);
+		buffer.append(" dTradePrice:").append(dealNull(dTradePrice));
+		buffer.append(" cTranPrice:").append(dealNull(cTranPrice));
+		buffer.append(" eTradePrice:").append(dealNull(eTradePrice));
+		buffer.append(" cTradePrice:").append(dealNull(cTradePrice));
+		buffer.append(" cHighestPrice:").append(dealNull(cHighestPrice));
+		buffer.append(" dHighestPrice:").append(dealNull(dHighestPrice));
+		buffer.append(" cLowestPrice:").append(dealNull(cLowestPrice));
+		buffer.append(" pLowestPrice:").append(dealNull(pLowestPrice));
+		buffer.append(" relevantVideo:").append(dealNull(relevantVideo));
+		buffer.append(" eLowestPrice:").append(dealNull(eLowestPrice));
+		buffer.append(" auctionId:").append(dealNull(auctionId));
+		buffer.append(" dTranPrice:").append(dealNull(dTranPrice));
+		buffer.append(" pTradePrice:").append(dealNull(pTradePrice));
+		buffer.append(" eHighestPrice:").append(dealNull(eHighestPrice));
+		buffer.append(" worksId:").append(dealNull(worksId));
+		buffer.append(" pHighestPrice:").append(dealNull(pHighestPrice));
+		buffer.append(" eTranPrice:").append(dealNull(eTranPrice));
+		buffer.append(" pTranPrice:").append(dealNull(pTranPrice));
+		buffer.append(" dLowestPrice:").append(dealNull(dLowestPrice));
+		buffer.append(" relevantText:").append(dealNull(relevantText));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"dTradePrice\":\"").append(dealNull(dTradePrice)).append("\"");
+		buffer.append(",\"cTranPrice\":\"").append(dealNull(cTranPrice)).append("\"");
+		buffer.append(",\"eTradePrice\":\"").append(dealNull(eTradePrice)).append("\"");
+		buffer.append(",\"cTradePrice\":\"").append(dealNull(cTradePrice)).append("\"");
+		buffer.append(",\"cHighestPrice\":\"").append(dealNull(cHighestPrice)).append("\"");
+		buffer.append(",\"dHighestPrice\":\"").append(dealNull(dHighestPrice)).append("\"");
+		buffer.append(",\"cLowestPrice\":\"").append(dealNull(cLowestPrice)).append("\"");
+		buffer.append(",\"pLowestPrice\":\"").append(dealNull(pLowestPrice)).append("\"");
+		buffer.append(",\"relevantVideo\":\"").append(dealNull(relevantVideo)).append("\"");
+		buffer.append(",\"eLowestPrice\":\"").append(dealNull(eLowestPrice)).append("\"");
+		buffer.append(",\"auctionId\":\"").append(dealNull(auctionId)).append("\"");
+		buffer.append(",\"dTranPrice\":\"").append(dealNull(dTranPrice)).append("\"");
+		buffer.append(",\"pTradePrice\":\"").append(dealNull(pTradePrice)).append("\"");
+		buffer.append(",\"eHighestPrice\":\"").append(dealNull(eHighestPrice)).append("\"");
+		buffer.append(",\"worksId\":\"").append(dealNull(worksId)).append("\"");
+		buffer.append(",\"pHighestPrice\":\"").append(dealNull(pHighestPrice)).append("\"");
+		buffer.append(",\"eTranPrice\":\"").append(dealNull(eTranPrice)).append("\"");
+		buffer.append(",\"pTranPrice\":\"").append(dealNull(pTranPrice)).append("\"");
+		buffer.append(",\"dLowestPrice\":\"").append(dealNull(dLowestPrice)).append("\"");
+		buffer.append(",\"relevantText\":\"").append(dealNull(relevantText)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

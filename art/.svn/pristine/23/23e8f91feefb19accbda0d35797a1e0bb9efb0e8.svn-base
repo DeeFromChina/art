@@ -1,0 +1,41 @@
+package com.golead.art.app.service.impl;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Map;
+
+import org.apache.struts2.ServletActionContext;
+import org.springframework.stereotype.Service;
+
+import com.golead.art.app.service.DataUploadService;
+import com.golead.art.utils.FileUtils;
+import com.golead.core.exception.ServiceException;
+
+@Service
+public class DataUploadServiceImpl implements DataUploadService {
+
+   private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+   
+   public void uploadFile(Map<String, String> record, File doc) throws ServiceException{
+      try {
+         String userId = record.get("userId");
+         String fileName = record.get("fileName");
+         String path = ServletActionContext.getServletContext().getRealPath("/") + File.separator + "jsp/upload/reguser";
+         File file = new File(path);
+         String fullPaht = path + File.separator + fileName;
+         if (!file.exists()) file.mkdirs();
+         File file2 = new File(fullPaht);
+         if (file2.exists()) {
+            file2.delete();
+         }
+         // 上传文件
+         FileUtils.fileUpload(fullPaht, doc);
+
+      }
+      catch (Exception e) {
+         throw new ServiceException(e.getMessage());
+      }
+   }
+
+   
+}

@@ -1,0 +1,159 @@
+package com.golead.art.works.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+import com.golead.art.works.dao.ArtPublicationDao;
+import com.golead.art.works.model.ArtPublication;
+import com.golead.art.works.service.ArtPublicationService;
+
+import javax.annotation.Resource; 
+
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtPublicationServiceImpl extends BaseServiceImpl implements ArtPublicationService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtPublication getArtPublication(Serializable id) throws ServiceException {
+		try {
+			return artPublicationDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtPublication(ArtPublication artPublication) throws ServiceException {
+		try {
+			artPublicationDao.save(artPublication);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtPublication(Map<String, String> artPublicationMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artPublicationMap.get(ArtPublication.PROP_ID));
+			ArtPublication tmp = artPublicationDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artPublicationMap, true);			
+			artPublicationDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtPublication(Serializable id) throws ServiceException {
+		try {
+			artPublicationDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtPublications(Serializable[] ids) throws ServiceException {
+		try {
+			artPublicationDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtPublication(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artPublicationList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	   String paras = " 1=1 ";
+      Map<String, String> map = page.getParameters();
+      
+      String artist = map.get("artist");
+      if (artist != null && artist.trim().length() > 0) {
+         paras += " AND artist.c_name like '%" + artist.trim() + "%'"
+               + " OR artist.e_name like '%" + artist.trim() + "%'";
+      }
+      
+      String code = map.get("code");
+      if (code != null && code.trim().length() > 0) {
+         paras += " AND publication.isbn like '%" + code.trim() + "%'";
+      }
+      
+      String albumName = map.get("albumName");
+      if (albumName != null && albumName.trim().length() > 0) {
+         paras += " AND publication.album_c_name like '%" + albumName.trim() + "%'" 
+               + " OR publication.album_e_name like '%" + albumName.trim() + "%'";
+      }
+      
+      String name = map.get("name");
+      if (name != null && name.trim().length() > 0) {
+         paras += " AND publication.title like '%" + name.trim() + "%'";
+      }
+      
+      String publicationType = map.get("publicationType");
+      if (publicationType != null && publicationType.trim().length() > 0) {
+         paras += " AND publication.publication_type =" + publicationType.trim();
+      }
+      
+      if (paras.length() > 0) page.getParameters().put("paras", paras);
+	}
+	
+    @Resource
+	private ArtPublicationDao	artPublicationDao;
+
+	public void setArtPublicationDao(ArtPublicationDao artPublicationDao) {
+		this.artPublicationDao = artPublicationDao;
+	}
+}
+

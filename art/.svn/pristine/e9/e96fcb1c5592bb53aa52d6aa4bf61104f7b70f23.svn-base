@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="artist" extends="default" namespace="/artist">
+		<action name="medium" class="com.golead.art.artist.ArtMediumAction">
+			<result name="LIST">/jsp/artist/medium/art_medium_list.jsp</result>
+			<result name="ADD">/jsp/artist/medium/art_medium_add.jsp</result>
+			<result name="EDIT">/jsp/artist/medium/art_medium_edit.jsp</result>
+			<result name="VIEW">/jsp/artist/medium/art_medium_view.jsp</result>
+			<result name="ARTIST">/jsp/artist/medium/art_artist.jsp</result>
+		</action>
+	</package>
+</struts>

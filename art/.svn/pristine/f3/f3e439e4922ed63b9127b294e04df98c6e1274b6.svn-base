@@ -1,0 +1,107 @@
+package com.golead.art.works.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_works_collect table.
+ */
+@Entity  
+@Table(name="art_works_collect")  
+public class ArtWorksCollect implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+
+   @Column(name = "collect_id")
+   private java.lang.Integer collectId;   // 收藏id
+
+   @Column(name = "words_id")
+   private java.lang.Integer wordsId;   // 作品id
+
+   // Constructors
+   public ArtWorksCollect() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.Integer getCollectId() { 
+      return this.collectId; 
+   }
+   public void setCollectId(java.lang.Integer collectId) { 
+      this.collectId = collectId; 
+   }
+
+
+   public java.lang.Integer getWordsId() { 
+      return this.wordsId; 
+   }
+   public void setWordsId(java.lang.Integer wordsId) { 
+      this.wordsId = wordsId; 
+   }
+
+
+   public static String REF_CLASS = "ArtWorksCollect";
+   public static String PROP_ID = "id";
+   public static String PROP_COLLECT_ID = "collectId";
+   public static String PROP_WORDS_ID = "wordsId";
+
+   public static String REF_TABLE = "art_works_collect";
+   public static String COL_ID = "id";
+   public static String COL_COLLECT_ID = "collect_id";
+   public static String COL_WORDS_ID = "words_id";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.works.model.ArtWorksCollect)) return false;
+      else {
+         com.golead.art.works.model.ArtWorksCollect o = (com.golead.art.works.model.ArtWorksCollect) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtWorksCollect:");
+		buffer.append(" id:").append(id);
+		buffer.append(" collectId:").append(dealNull(collectId));
+		buffer.append(" wordsId:").append(dealNull(wordsId));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"collectId\":\"").append(dealNull(collectId)).append("\"");
+		buffer.append(",\"wordsId\":\"").append(dealNull(wordsId)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

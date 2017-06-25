@@ -1,0 +1,137 @@
+package com.golead.art.auction.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_auction_place table.
+ */
+@Entity  
+@Table(name="art_auction_place")  
+public class ArtAuctionPlace implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+
+   @Column(name = "sale_name")
+   private java.lang.String saleName;   // 拍场
+
+   @Column(name = "sale_addr")
+   private java.lang.String saleAddr;   // 拍场地址
+
+   @Column(name = "linkman")
+   private java.lang.String linkman;   // 联系人
+
+   @Column(name = "link_tel")
+   private java.lang.String linkTel;   // 联系电话
+
+   // Constructors
+   public ArtAuctionPlace() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.String getSaleName() { 
+      return this.saleName; 
+   }
+   public void setSaleName(java.lang.String saleName) { 
+      this.saleName = saleName; 
+   }
+
+
+   public java.lang.String getSaleAddr() { 
+      return this.saleAddr; 
+   }
+   public void setSaleAddr(java.lang.String saleAddr) { 
+      this.saleAddr = saleAddr; 
+   }
+
+
+   public java.lang.String getLinkman() { 
+      return this.linkman; 
+   }
+   public void setLinkman(java.lang.String linkman) { 
+      this.linkman = linkman; 
+   }
+
+
+   public java.lang.String getLinkTel() { 
+      return this.linkTel; 
+   }
+   public void setLinkTel(java.lang.String linkTel) { 
+      this.linkTel = linkTel; 
+   }
+
+
+   public static String REF_CLASS = "ArtAuctionPlace";
+   public static String PROP_ID = "id";
+   public static String PROP_SALE_NAME = "saleName";
+   public static String PROP_SALE_ADDR = "saleAddr";
+   public static String PROP_LINKMAN = "linkman";
+   public static String PROP_LINK_TEL = "linkTel";
+
+   public static String REF_TABLE = "art_auction_place";
+   public static String COL_ID = "id";
+   public static String COL_SALE_NAME = "sale_name";
+   public static String COL_SALE_ADDR = "sale_addr";
+   public static String COL_LINKMAN = "linkman";
+   public static String COL_LINK_TEL = "link_tel";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.auction.model.ArtAuctionPlace)) return false;
+      else {
+         com.golead.art.auction.model.ArtAuctionPlace o = (com.golead.art.auction.model.ArtAuctionPlace) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtAuctionPlace:");
+		buffer.append(" id:").append(id);
+		buffer.append(" saleName:").append(dealNull(saleName));
+		buffer.append(" saleAddr:").append(dealNull(saleAddr));
+		buffer.append(" linkman:").append(dealNull(linkman));
+		buffer.append(" linkTel:").append(dealNull(linkTel));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"saleName\":\"").append(dealNull(saleName)).append("\"");
+		buffer.append(",\"saleAddr\":\"").append(dealNull(saleAddr)).append("\"");
+		buffer.append(",\"linkman\":\"").append(dealNull(linkman)).append("\"");
+		buffer.append(",\"linkTel\":\"").append(dealNull(linkTel)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}

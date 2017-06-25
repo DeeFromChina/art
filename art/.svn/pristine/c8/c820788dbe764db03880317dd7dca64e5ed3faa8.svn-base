@@ -1,0 +1,368 @@
+package com.golead.art.works;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
+
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.artist.service.ArtArtistService;
+import com.golead.art.works.model.ArtWorks;
+import com.golead.art.works.model.ArtWorksCase;
+import com.golead.art.works.model.ArtWorksSome;
+import com.golead.art.works.service.ArtWorksCaseService;
+import com.golead.art.works.service.ArtWorksService;
+import com.golead.art.works.service.ArtWorksSomeService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtWorksSomeAction extends BaseAction {
+   
+   private final Log                     logger      = LogFactory.getLog(ArtWorksSomeAction.class);
+   
+   private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+   
+   public static String FILE_PATH = ServletActionContext.getServletContext().getRealPath("");
+   private List<Map<String, String>> cookie = new ArrayList<Map<String, String>>();
+   private List<Map<String, String>> pic = new ArrayList<Map<String, String>>();
+   private List<File> files;
+   private String filesFileName;
+   private String filesContentType;
+   
+   @Resource
+   private ArtWorksSomeService artWorksSomeService;
+   
+   @Resource
+   private ArtWorksService artWorksService;
+   
+   @Resource
+   private ArtArtistService artArtistService;
+   
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = form.getAction();
+
+      if (action == null) action = LIST;
+      if (logger.isDebugEnabled()) logger.debug("action:" + action);
+      try {
+         initForm();
+         if (LIST.equalsIgnoreCase(action)) forward = LIST;
+         else if (PAGE.equalsIgnoreCase(action)) forward = getPageDate();
+         else if (ADD.equalsIgnoreCase(action)) forward = addSome();
+         else if ("ADDPAGE".equalsIgnoreCase(action)) forward = getAddSome();
+         else if (SAVE.equalsIgnoreCase(action)) forward = saveSome();
+         else if (EDIT.equalsIgnoreCase(action)) forward = editSome();
+         else if (UPDATE.equalsIgnoreCase(action)) forward = updateSome();
+         else if (VIEW.equalsIgnoreCase(action)) forward = view();
+         else if (DELETE.equalsIgnoreCase(action)) forward = delete();
+         else if ("ARTIST".equalsIgnoreCase(action)) forward = artist();
+         else if ("SHOW".equalsIgnoreCase(action)) forward = show();
+      }
+      catch (Exception e) {// 其他系统出错
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   public void initForm() throws Exception {
+      List<ArtArtist> artArtists = artArtistService.findAllArtArtist();
+      setCode(form, "ART_TYPE,DATE_YEAR,MEDIUM_TYPE,SIGNATURE,PERIOD_TYPE,EVAL_TYPE");
+      setCode(form, "artist", artArtists, ArtArtist.PROP_C_NAME, ArtArtist.PROP_ID, true);
+   }
+   
+   private String getPageDate() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'getPageDate' method");
+      try {
+         initForm();
+         String worksId = form.getRecord().get("id");
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         PageQuery pageQuery = form.getQuery();
+         pageQuery.getParameters().put("worksId", worksId);
+         pageQuery = artWorksSomeService.queryArtWorksSome(pageQuery);
+         if(pageQuery.getRecordSet() != null){
+            for(Map<String, Object> item : pageQuery.getRecordSet()){
+               Map<String, Object> map = new HashMap<String, Object>();
+               map.put("id", item.get("id"));
+               String link = "^javascript:view(" + item.get("someWorksId") + ");^_self";
+               map.put("data", new Object[]{
+                     "",
+                     item.get("worksName") + link,
+                     item.get("year"),
+                     findCodeName(form, "MEDIUM_TYPE", item.get("medium").toString())
+               });
+               list.add(map);
+            }
+         }
+         String res = genGridJson(pageQuery, list);
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+   
+   private String addSome() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'addWorks' method");
+      String forward = null;
+      try {
+         initForm();
+         return ADD;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   private String getAddSome() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'getAddSome' method");
+      try {
+         initForm();
+         String worksId = form.getRecord().get("worksId");
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         List<ArtWorksSome> artWorksSomes = artWorksSomeService.findByWorksId(Integer.valueOf(worksId));
+         PageQuery pageQuery = form.getQuery();
+         pageQuery = artWorksService.queryArtWorks(pageQuery);
+         if(pageQuery.getRecordSet() != null){
+            for(Map<String, Object> item : pageQuery.getRecordSet()){
+               Map<String, Object> map = new HashMap<String, Object>();
+               String artistlink = "^javascript:artistview(" + item.get("artistId") + ");^_self";
+               String worklink = "^javascript:workview(" + item.get("id") + ");^_self";
+               map.put("id", item.get("id"));
+               map.put("data", new Object[]{
+                     "", item.get("c_name") + "(" + item.get("e_name") + ")" + artistlink,
+                     item.get("chineseName")+ "(" + item.get("englishName") + ")",
+                     findCodeName(form, "ART_TYPE", item.get("worksCategory").toString()),
+                     item.get("worksSeries"), item.get("worksTheme"), sdf.format(item.get("createTime"))
+               });
+               boolean isPass = true;
+               for(ArtWorksSome some : artWorksSomes){
+                  if(some.getSomeWorksId() == Integer.valueOf(item.get("id").toString())){
+                      isPass = false;
+                  }
+               }
+               if(isPass){
+                  list.add(map);
+               }
+            }
+         }
+         String res = genGridJson(list);
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+   
+   private String saveSome() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'saveSome' method");
+      try {
+         String worksId = form.getRecord().get("worksId");
+         String[] idlist = ids.split(",");
+         Integer[] dels = new Integer[idlist.length];
+         for(int i = 0; i<idlist.length; i++){
+            dels[i] = Integer.valueOf(idlist[i]);
+         }
+         artWorksSomeService.createArtWorksSome(dels, worksId);
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         addMessage(form, e.getMessage());
+         initForm();
+         return ADD;
+      }
+   }
+   
+   private String editSome() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'editWorks' method");
+      String forward = null;
+      try {
+         initForm();
+         String id = form.getRecord().get("id");
+//         ArtWorksCase artWorksCase = artWorksCaseService.getArtWorksCase(Integer.valueOf(id));
+//         ConvertUtil.objectToMap(form.getRecord(), artWorksCase);
+//         String picture = artWorksCase.getAttachment();
+//         if(picture != null && !"".equals(picture)){
+//            String[] pictures = picture.split(",");
+//            for(String str : pictures){
+//               Map<String, String> map = new HashMap<String, String>();
+//               map.put("name", str.split("/")[0]);
+//               map.put("realName", str.split("/")[1]);
+//               pic.add(map);
+//            }
+//         }
+         return EDIT;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   private String updateSome() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'updateWorks' method");
+      try {
+         String path = FILE_PATH + File.separator +"upload" + File.separator + "works" + File.separator + "case" + File.separator + form.getRecord().get("worksId");
+//         artWorksCaseService.updateArtWorksCase(form.getRecord(), files, form.getRecord().get("fileName"), getFilesFileName(), path);
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         addMessage(form, e.getMessage());
+         initForm();
+         return EDIT;
+      }
+   }
+   
+   private String view() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'view' method");
+      try {
+         initForm();
+         String id = form.getRecord().get("id");
+         ArtWorks works = artWorksService.getArtWorks(Integer.valueOf(id));
+         ConvertUtil.objectToMap(getForm().getRecord(), works);
+         ArtArtist artist = artArtistService.getArtArtist(works.getArtistId());
+         form.getRecord().put("artArtistName", artist.getCname());
+         form.getRecord().put("artArtistId", artist.getId().toString());
+         form.getRecord().put("chineseName", works.getWorksCName());
+         form.getRecord().put("englishName", works.getWorksEName());
+         form.getRecord().put("no", works.getWorksNo());
+         String partSize = works.getPartSize();
+         String[] partSizes = partSize.split(";");
+         for(int i =0; i<partSizes.length; i++){
+            Map<String, String> map = new HashMap<String, String>();
+            String size = partSizes[i];
+            String[] sizes = size.split("\\*");
+            String partSize_l = sizes[0];
+            String partSize_w = sizes[1];
+            map.put("l_"+String.valueOf(i), partSize_l);
+            map.put("w_"+String.valueOf(i), partSize_w);
+            map.put("id", String.valueOf(i));
+//            partSizeList.add(map);
+         }
+      }
+      catch (Exception e) {
+         initForm();
+         return ERROR;
+      }
+      return VIEW;
+   }
+   
+   private String delete() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'delete' method");
+      try {
+         String[] idlist = ids.split(",");
+         Integer[] dels = new Integer[idlist.length];
+         for(int i = 0; i<idlist.length; i++){
+            dels[i] = Integer.valueOf(idlist[i]);
+         }
+         artWorksSomeService.deleteArtWorksSomes(dels);
+         setResponse("{exit:0}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         return ERROR;
+      }
+      return null;
+   }
+   
+   private String artist() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'artist' method");
+      try {
+         List<ArtArtist> artArtists = artArtistService.findAllArtArtist();
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         for (ArtArtist artArtist : artArtists) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            ConvertUtil.objectToMap(map, artArtist);
+            if ((";" + ids).indexOf(";" + map.get("id") + ";") > -1) map.put("CHECKED", "checked");
+            else map.put("CHECKED", "");
+            list.add(map);
+         }
+         form.getQuery().setRecordSet(list);
+         return "ARTIST";
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         return ERROR;
+      }
+   }
+   
+   private String show() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'show' method");
+      try {
+         return "SHOW";
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         return ERROR;
+      }
+   }
+
+   public List<Map<String, String>> getCookie() {
+      return cookie;
+   }
+
+   public void setCookie(List<Map<String, String>> cookie) {
+      this.cookie = cookie;
+   }
+
+   public List<File> getFiles() {
+      return files;
+   }
+
+   public void setFiles(List<File> files) {
+      this.files = files;
+   }
+
+   public String getFilesFileName() {
+      return filesFileName;
+   }
+
+   public void setFilesFileName(String filesFileName) {
+      this.filesFileName = filesFileName;
+   }
+
+   public String getFilesContentType() {
+      return filesContentType;
+   }
+
+   public void setFilesContentType(String filesContentType) {
+      this.filesContentType = filesContentType;
+   }
+
+   public List<Map<String, String>> getPic() {
+      return pic;
+   }
+
+   public void setPic(List<Map<String, String>> pic) {
+      this.pic = pic;
+   }
+
+}

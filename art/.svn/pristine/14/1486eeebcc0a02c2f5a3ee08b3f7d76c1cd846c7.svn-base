@@ -1,0 +1,52 @@
+package com.golead.art.literature.dao.impl;
+
+import java.io.Serializable;
+import com.golead.core.exception.DAOException;
+import com.golead.core.dao.impl.HibernateDaoImpl;
+import com.golead.art.literature.model.ArtLiteratureActivity;
+import com.golead.art.literature.dao.ArtLiteratureActivityDao;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public class ArtLiteratureActivityDaoImpl extends HibernateDaoImpl<ArtLiteratureActivity> implements ArtLiteratureActivityDao {
+
+	public Class getReferenceClass() {
+		return ArtLiteratureActivity.class;
+	}
+
+	public ArtLiteratureActivity cast(Object object) {
+		return (ArtLiteratureActivity) object;
+	}
+
+	public ArtLiteratureActivity get(Serializable id)  throws DAOException{
+		return (ArtLiteratureActivity) super.get(id);
+	}
+
+	public ArtLiteratureActivity load(Serializable id)  throws DAOException{
+		return (ArtLiteratureActivity) super.load(id);
+	}
+
+	public Serializable save(ArtLiteratureActivity artLiteratureActivity)  throws DAOException{
+		return super.save(artLiteratureActivity);
+	}
+
+	public void saveOrUpdate(ArtLiteratureActivity artLiteratureActivity)  throws DAOException{
+		super.saveOrUpdate(artLiteratureActivity);
+	}
+
+	public void update(ArtLiteratureActivity artLiteratureActivity)  throws DAOException{
+		super.update(artLiteratureActivity);
+	}
+
+	public void delete(ArtLiteratureActivity artLiteratureActivity)  throws DAOException{
+		super.delete(artLiteratureActivity);
+	}
+
+	public void refresh(ArtLiteratureActivity artLiteratureActivity)  throws DAOException{
+		super.refresh(artLiteratureActivity);
+	}
+
+	public String getTableName() {
+		return ArtLiteratureActivity.REF_TABLE;
+	}
+}

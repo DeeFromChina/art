@@ -1,0 +1,28 @@
+#Update values
+#Wed Jul 06 18:08:34 CST 2016
+GenDao=true
+db.Column.sale_addr=sale_addr,VARCHAR,saleAddr,string,200, ,N,N,Y,\u62CD\u573A\u5730\u5740,
+GenWeb=false
+db.Column.id=id,INTEGER,id,integer,10,0,Y,N,N, ,
+FilePath.Annotation=1
+db.Column.link_tel=link_tel,VARCHAR,linkTel,string,20, ,N,N,Y,\u8054\u7CFB\u7535\u8BDD,
+FilePath.JspPath=
+FilePath.Dao=com.golead.art.auction.dao
+java.ClassName=ArtAuctionPlace
+FilePath.SpringCfgFile=
+db.SequenceName=
+projectAnnotation=1
+db.Table=art_auction_place
+FilePath.Service=com.golead.art.auction.service
+GenService=true
+db.Column.linkman=linkman,VARCHAR,linkman,string,32, ,N,N,Y,\u8054\u7CFB\u4EBA,
+db.Schema=
+FilePath.JavaDaoPath=/src/dao
+db.PKGenerator=native
+db.Column.sale_name=sale_name,VARCHAR,saleName,string,64, ,N,N,Y,\u62CD\u573A,
+FilePath.Vo=com.golead.art.auction.model
+FilePath.SpringDaoCfgFile=
+FilePath.ActionPath=
+FilePath.ActionPackage=
+FilePath.StrutsCfgFile=
+FilePath.JavaServicePath=/src/service

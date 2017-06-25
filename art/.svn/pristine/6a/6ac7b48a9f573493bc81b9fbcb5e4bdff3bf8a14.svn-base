@@ -1,0 +1,301 @@
+package com.golead.art.appManager;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
+
+import com.golead.art.app.artistPage.model.ArtArtistPage;
+import com.golead.art.app.artistPage.model.ArtArtistPageResearch;
+import com.golead.art.app.artistPage.service.ArtArtistPageResearchService;
+import com.golead.art.app.artistPage.service.ArtArtistPageService;
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.artist.service.ArtArtistService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class AppArtistPageAction extends BaseAction {
+
+   private Log                          log                   = LogFactory.getLog(AppArtistPageAction.class);
+
+   @Resource
+   private ArtArtistPageService         artArtistPageService;
+   @Resource
+   private ArtArtistService             artArtistService;
+   @Resource
+   private ArtArtistPageResearchService artArtistPageResearchService;
+
+   private final String                 ARTIST_LIST           = "ARTIST_LIST";
+
+   private final String                 ARTIST_PAGE           = "ARTIST_PAGE";
+
+   private String                       path                  = ServletActionContext.getServletContext().getRealPath("/upload/app/artistpage");
+
+   private String                       imgPath               = "/upload/app/artistpage/";
+
+   /**
+    * 艺术家照片缩略图地址
+    */
+   private String                       thumbnailPathFormat   = "%supload/photo/%s/thumbnails/%s";
+
+   /**
+    * 艺术家照片地址
+    */
+   private String                       artistPhotoPathFormat = "%supload/photo/%s/%s";
+
+   private String                       cellImgFormat         = "<a href='%s' target='_blank'><img width='100px' height='100px' src='%s' /></a>";
+
+   private File                         file;
+
+   private String                       fileFileName;
+
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = getForm().getAction();
+      initForm();
+      if (action == null) {
+         forward = LIST;
+      }
+      try {
+         if (LIST.equalsIgnoreCase(action)) forward = list();
+         else if (PAGE.equalsIgnoreCase(action)) forward = page();
+         else if (ADD.equalsIgnoreCase(action)) forward = add();
+         else if (SAVE.equalsIgnoreCase(action)) forward = save();
+         else if (EDIT.equalsIgnoreCase(action)) forward = edit();
+         else if (UPDATE.equalsIgnoreCase(action)) forward = update();
+         else if (DELETE.equalsIgnoreCase(action)) forward = delete();
+
+         else if (ARTIST_LIST.equalsIgnoreCase(action)) forward = artistList();
+         else if (ARTIST_PAGE.equalsIgnoreCase(action)) forward = artistPage();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   private void initForm() {
+      setCode(form, "ARTISRT_PAGE");
+   }
+
+   public String artistList() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'list()' method");
+      return ARTIST_LIST;
+   }
+
+   public String artistPage() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'pageExperience()' method");
+      try {
+         PageQuery pageQuery = form.getQuery();
+         pageQuery = artArtistPageService.queryArtArtist(pageQuery);
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         for (Map<String, Object> item : pageQuery.getRecordSet()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            String contextPath = request.get("CONTEXT_PATH").toString();
+            String folderName;
+            if (item.get("folderName") != null) {
+               folderName = item.get("folderName").toString();
+            }
+            else {
+               folderName = "";
+            }
+            String photoName;
+            if (item.get("photo") != null) {
+               String[] split = item.get("photo").toString().split("/");
+               if (split.length > 1) {
+                  photoName = split[1];
+               }
+               else {
+                  photoName = split[0];
+               }
+
+            }
+            else {
+               photoName = "";
+            }
+            String imgPath = String.format(artistPhotoPathFormat, contextPath, folderName, photoName);
+            String thumbnailPath = String.format(thumbnailPathFormat, contextPath, folderName, photoName);
+            String cell = String.format(cellImgFormat, imgPath, thumbnailPath);
+
+            String cName = item.get("cName") + "";
+            String eName = item.get("eName") + "";
+
+            map.put("id", item.get("id"));
+            map.put("data", new Object[] { "", cell, cName, eName });
+            list.add(map);
+         }
+         String res = genGridJson(pageQuery, list);
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+
+   public String list() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'list()' method");
+      return LIST;
+   }
+
+   public String page() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'pageExperience()' method");
+      try {
+         PageQuery pageQuery = form.getQuery();
+         pageQuery = artArtistPageService.queryArtArtistPage(pageQuery);
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         for (Map<String, Object> item : pageQuery.getRecordSet()) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            String cell = "";
+            if (item.get("photo") != null) {
+               String img = request.get("CONTEXT_PATH") + imgPath + item.get("folderName") + "/" + item.get("photo").toString().split("/")[1];
+               cell = String.format(cellImgFormat, img, img);
+            }
+
+            String seqNo = this.findCodeName(form, "ARTISRT_PAGE", item.get("seqNo") + "");
+            map.put("id", item.get("id"));
+            map.put("data", new Object[] { "", cell, item.get("color"), item.get("colorSelf"), seqNo, item.get("remark") });
+            list.add(map);
+         }
+         String res = genGridJson(pageQuery, list);
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+
+   public String add() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'add()' method");
+      String forward = null;
+      try {
+         return ADD;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   public String save() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'save()' method");
+      try {
+         Map<String, String> record = form.getRecord();
+         String artistId = record.get("artistId");
+         ArtArtist artist = artArtistService.getArtArtist(Integer.valueOf(artistId));
+         ArtArtistPage artArtistPage = new ArtArtistPage();
+         ConvertUtil.convertToModel(artArtistPage, record);
+         artArtistPageService.createArtArtistPage(artArtistPage, file, fileFileName, path + File.separator + artist.getFolderName());
+         ArtArtistPageResearch artArtistPageResearch = new ArtArtistPageResearch();
+         artArtistPageResearch.setArtistId(Integer.valueOf(artistId));
+         artArtistPageResearch.setPageId(artArtistPage.getId());
+         artArtistPageResearchService.createArtArtistPageResearch(artArtistPageResearch);
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (ServiceException e) {
+         addMessage(getForm(), e.getMessage());
+         return ADD;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         addMessage(getForm(), "保存操作失败!");
+         return ADD;
+      }
+   }
+
+   public String edit() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'edit()' method");
+      String forward = null;
+      try {
+         int id = Integer.valueOf(ids);
+         Map<String, String> record = form.getRecord();
+         Integer artistId = Integer.valueOf(record.get("artistId"));
+         ArtArtistPage artArtistPage = artArtistPageService.getArtArtistPage(id);
+         ConvertUtil.objectToMap(record, artArtistPage);
+         String imgName = artArtistPage.getPhoto().split("/")[1];
+         String folderName = artArtistService.getArtArtist(artistId).getFolderName();
+         String img = request.get("CONTEXT_PATH") + imgPath + folderName + "/" + imgName;
+         record.put("img", img);
+         return EDIT;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+
+   public String update() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'update()' method");
+      try {
+         Map<String, String> record = form.getRecord();
+         String artistId = record.get("artistId");
+         ArtArtist artist = artArtistService.getArtArtist(Integer.valueOf(artistId));
+         artArtistPageService.updateArtArtistPage(record, file, fileFileName, path + File.separator + artist.getFolderName());
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         addMessage(form, e.getMessage());
+         initForm();
+         return EDIT;
+      }
+   }
+
+   public String delete() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'delete()' method");
+      try {
+         Map<String, String> record = form.getRecord();
+         String artistId = record.get("artistId");
+         ArtArtist artist = artArtistService.getArtArtist(Integer.valueOf(artistId));
+         Integer id = Integer.valueOf(ids);
+         List<ArtArtistPageResearch> artArtistPageResearchs = artArtistPageResearchService.queryArtArtistPageResearch(id, artist.getId());
+         artArtistPageResearchService.deleteArtArtistPageResearchs(artArtistPageResearchs);
+         artArtistPageService.deleteArtArtistPages(id, path + File.separator + artist.getFolderName());
+         setResponse("{exit:0}");
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         setResponse("{exit:1,message:\"删除操作失败!\"}");
+      }
+      return null;
+   }
+
+   public File getFile() {
+      return file;
+   }
+
+   public void setFile(File file) {
+      this.file = file;
+   }
+
+   public String getFileFileName() {
+      return fileFileName;
+   }
+
+   public void setFileFileName(String fileFileName) {
+      this.fileFileName = fileFileName;
+   }
+}

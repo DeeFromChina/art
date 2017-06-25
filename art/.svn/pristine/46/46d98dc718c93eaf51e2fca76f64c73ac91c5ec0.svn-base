@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN" "http://struts.apache.org/dtds/struts-2.0.dtd">
+<struts>
+	<package name="artist" extends="default" namespace="/artist">
+		<action name="ArtistInformation" class="com.golead.art.artist.ArtistInformationAction">
+			<result name="LIST">/jsp/artist/information/listArtist.jsp</result>
+			<result name="ADD">/jsp/artist/information/addArtist.jsp</result>
+			<result name="EDIT">/jsp/artist/information/editArtist.jsp</result>
+			<result name="VIEW">/jsp/artist/information/viewArtist.jsp</result>
+			<result name="PLACE">/jsp/artist/information/place.jsp</result>
+			<result name="SHOW">/jsp/artist/information/showPhoto.jsp</result>
+			<result name="IMPORT">/jsp/artist/information/importArtist.jsp</result>
+		</action>
+		<action name="ArtistExperience" class="com.golead.art.artist.ArtistExperienceAction">
+			<result name="LIST">/jsp/artist/experience/listExperience.jsp</result>
+			<result name="ADD">/jsp/artist/experience/addExperience.jsp</result>
+			<result name="EDIT">/jsp/artist/experience/editExperience.jsp</result>
+			<result name="VIEW">/jsp/artist/experience/viewExperience.jsp</result>
+			<result name="IMPORT">/jsp/artist/experience/importExperience.jsp</result>
+		</action>
+		<action name="ArtistAlbum" class="com.golead.art.artist.ArtistAlbumAction">
+			<result name="LIST">/jsp/artist/album/listAlbum.jsp</result>
+			<result name="ADD">/jsp/artist/album/addAlbum.jsp</result>
+			<result name="EDIT">/jsp/artist/album/editAlbum.jsp</result>
+			<result name="VIEW">/jsp/artist/album/viewAlbum.jsp</result>
+			<result name="SHOW">/jsp/artist/album/showAlbum.jsp</result>
+		</action>
+		<action name="ArtistEdu" class="com.golead.art.artist.ArtistEduAction">
+			<result name="LIST">/jsp/artist/edu/listEdu.jsp</result>
+			<result name="ADD">/jsp/artist/edu/addEdu.jsp</result>
+			<result name="EDIT">/jsp/artist/edu/editEdu.jsp</result>
+			<result name="VIEW">/jsp/artist/edu/viewEdu.jsp</result>
+			<result name="IMPORT">/jsp/artist/edu/importEdu.jsp</result>
+		</action>
+		<action name="ArtistHonors" class="com.golead.art.artist.ArtistHonorsAction">
+			<result name="LIST">/jsp/artist/honors/listHonors.jsp</result>
+			<result name="ADD">/jsp/artist/honors/addHonors.jsp</result>
+			<result name="EDIT">/jsp/artist/honors/editHonors.jsp</result>
+			<result name="VIEW">/jsp/artist/honors/viewHonors.jsp</result>
+			<result name="IMPORT">/jsp/artist/honors/importHonors.jsp</result>
+		</action>
+		<action name="ArtistCollector" class="com.golead.art.artist.ArtistCollectorAction">
+			<result name="LIST">/jsp/artist/collect/listCollect.jsp</result>
+			<result name="ADD">/jsp/artist/collect/addCollect.jsp</result>
+			<result name="EDIT">/jsp/artist/collect/editCollect.jsp</result>
+			<result name="VIEW">/jsp/artist/collect/viewCollect.jsp</result>
+			<result name="IMPORT">/jsp/artist/collect/importCollect.jsp</result>
+		</action>
+		<action name="ArtistCoop" class="com.golead.art.artist.ArtistCoopAction">
+			<result name="LIST">/jsp/artist/coop/listCoop.jsp</result>
+			<result name="ADD">/jsp/artist/coop/addCoop.jsp</result>
+			<result name="EDIT">/jsp/artist/coop/editCoop.jsp</result>
+			<result name="VIEW">/jsp/artist/coop/viewCoop.jsp</result>
+			<result name="IMPORT">/jsp/artist/coop/importCoop.jsp</result>
+		</action>
+		<action name="ArtistDonation" class="com.golead.art.artist.ArtistDonationAction">
+			<result name="LIST">/jsp/artist/donation/listDonation.jsp</result>
+			<result name="ADD">/jsp/artist/donation/addDonation.jsp</result>
+			<result name="EDIT">/jsp/artist/donation/editDonation.jsp</result>
+			<result name="VIEW">/jsp/artist/donation/viewDonation.jsp</result>
+			<result name="IMPORT">/jsp/artist/donation/importDonation.jsp</result>
+		</action>
+		<action name="medium" class="com.golead.art.artist.ArtMediumAction">
+			<result name="LIST">/jsp/artist/medium/art_medium_list.jsp</result>
+			<result name="ADD">/jsp/artist/medium/art_medium_add.jsp</result>
+			<result name="EDIT">/jsp/artist/medium/art_medium_edit.jsp</result>
+			<result name="VIEW">/jsp/artist/medium/art_medium_view.jsp</result>
+			<result name="ARTIST">/jsp/artist/medium/art_artist.jsp</result>
+		</action>
+	</package>
+</struts>

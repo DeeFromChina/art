@@ -1,0 +1,299 @@
+package com.golead.art.works;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.annotation.Resource;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.golead.art.artist.model.ArtArtist;
+import com.golead.art.artist.service.ArtArtistService;
+import com.golead.art.works.model.ArtWorks;
+import com.golead.art.works.service.ArtWorksService;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.util.ConvertUtil;
+import com.golead.core.web.action.BaseAction;
+
+public class ArtWorksMediumAction extends BaseAction {
+   
+   private final Log                     logger      = LogFactory.getLog(ArtWorksMediumAction.class);
+   
+   private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+   
+   private List<Map<String, String>> partSizeList = new ArrayList<Map<String, String>>();
+   
+   @Resource
+   private ArtWorksService artWorksService;
+   
+   @Resource
+   private ArtArtistService artArtistService;
+   
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = form.getAction();
+
+      if (action == null) action = LIST;
+      if (logger.isDebugEnabled()) logger.debug("action:" + action);
+      try {
+         initForm();
+         if (LIST.equalsIgnoreCase(action)) forward = LIST;
+         else if (PAGE.equalsIgnoreCase(action)) forward = getPageDate();
+         else if (ADD.equalsIgnoreCase(action)) forward = addWorks();
+         else if (SAVE.equalsIgnoreCase(action)) forward = saveWorks();
+         else if (EDIT.equalsIgnoreCase(action)) forward = editWorks();
+         else if (UPDATE.equalsIgnoreCase(action)) forward = updateWorks();
+         else if (VIEW.equalsIgnoreCase(action)) forward = view();
+         else if (DELETE.equalsIgnoreCase(action)) forward = delete();
+         else if ("ARTIST".equalsIgnoreCase(action)) forward = artist();
+      }
+      catch (Exception e) {// 其他系统出错
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   public void initForm() throws Exception {
+      setCode(form, "ART_TYPE,DATE_YEAR,MEDIUM_TYPE,SIGNATURE");
+   }
+   
+   private String getPageDate() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'getPageDate' method");
+      try {
+         initForm();
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         PageQuery pageQuery = form.getQuery();
+         pageQuery = artWorksService.queryArtWorks(pageQuery);
+         if(pageQuery.getRecordSet() != null){
+            for(Map<String, Object> item : pageQuery.getRecordSet()){
+               Map<String, Object> map = new HashMap<String, Object>();
+               String artistlink = "^javascript:artistview(" + item.get("artistId") + ");^_self";
+               String worklink = "^javascript:workview(" + item.get("id") + ");^_self";
+               map.put("id", item.get("id"));
+               map.put("data", new Object[]{
+                     "", item.get("c_name") + "(" + item.get("e_name") + ")" + artistlink,
+                     item.get("no") + worklink, item.get("chineseName"), item.get("englishName"),
+                     item.get("worksCategory").toString(),
+                     item.get("worksSeries"), item.get("worksTheme"), sdf.format(item.get("createTime")), item.get("sizeIn")
+               });
+               list.add(map);
+            }
+         }
+         String res = genGridJson(pageQuery, list);
+         setResponse(res);
+      }
+      catch (ServiceException e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+   
+   private String addWorks() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'addWorks' method");
+      String forward = null;
+      try {
+         initForm();
+         return ADD;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   private String saveWorks() throws Exception {
+      try {
+         initForm();
+         String partSize_l = form.getRecord().get("partSize_l");
+         partSize_l = partSize_l.replace(" ", "");
+         String partSize_w = form.getRecord().get("partSize_w");
+         partSize_w = partSize_w.replace(" ", "");
+         String[] partSize_ls = partSize_l.split(",");
+         String[] partSize_ws = partSize_w.split(",");
+         String partSize = "";
+         for(int i = 0; i<partSize_ls.length; i++){
+            partSize = partSize + partSize_ls[i] + "*" + partSize_ws[i] + ";";
+         }
+         ArtWorks artWorks = new ArtWorks();
+         artWorks.setPartSize(partSize);
+         artWorks.setWorksNo(form.getRecord().get("no"));
+         artWorks.setArtistId(Integer.valueOf(form.getRecord().get("artArtistId")));
+         artWorks.setWorksCName(form.getRecord().get("chineseName"));
+         artWorks.setWorksEName(form.getRecord().get("englishName"));
+         artWorks.setCreateTime(sdf.parse(form.getRecord().get("createTime")));
+         artWorks.setCreateFrom(form.getRecord().get("createFrom"));
+         artWorks.setCreateTo(form.getRecord().get("createTo"));
+         artWorks.setWorksSeries(form.getRecord().get("worksSeries"));
+         artWorks.setWorksTheme(form.getRecord().get("worksTheme"));
+         artWorks.setSizeCm(form.getRecord().get("sizeCm"));
+         artWorks.setSizeIn(form.getRecord().get("sizeIn"));
+         artWorks.setSizeRule(form.getRecord().get("sizeRule"));
+         artWorks.setThumbnail(form.getRecord().get("thumbnailName"));
+//         artWorks.setMedium(form.getRecord().get("medium"));
+         artWorks.setSignature(form.getRecord().get("signature"));
+         artWorks.setStyleContent(form.getRecord().get("styleContent"));
+         artWorks.setCreatePlace(form.getRecord().get("createPlace"));
+         artWorks.setCreatePeriod(form.getRecord().get("createPeriod"));
+         artWorks.setStyleType(form.getRecord().get("styleType"));
+         artWorks.setWorksStatus(form.getRecord().get("worksStatus"));
+         artWorks.setCreateCause(form.getRecord().get("createCause"));
+         artWorks.setBackStory(form.getRecord().get("backStory"));
+         artWorksService.createArtWorks(artWorks);
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         addMessage(form, e.getMessage());
+         initForm();
+         return ADD;
+      }
+   }
+   
+   private String editWorks() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'editWorks' method");
+      String forward = null;
+      try {
+         initForm();
+         String id = form.getRecord().get("id");
+         ArtWorks works = artWorksService.getArtWorks(Integer.valueOf(id));
+         ConvertUtil.objectToMap(getForm().getRecord(), works);
+         ArtArtist artist = artArtistService.getArtArtist(works.getArtistId());
+         form.getRecord().put("artArtistName", artist.getCname());
+         form.getRecord().put("artArtistId", artist.getId().toString());
+         form.getRecord().put("chineseName", works.getWorksCName());
+         form.getRecord().put("englishName", works.getWorksEName());
+         form.getRecord().put("no", works.getWorksNo());
+         String partSize = works.getPartSize();
+         String[] partSizes = partSize.split(";");
+         for(int i =0; i<partSizes.length; i++){
+            Map<String, String> map = new HashMap<String, String>();
+            String size = partSizes[i];
+            String[] sizes = size.split("\\*");
+            String partSize_l = sizes[0];
+            String partSize_w = sizes[1];
+            map.put("l_"+String.valueOf(i), partSize_l);
+            map.put("w_"+String.valueOf(i), partSize_w);
+            map.put("id", String.valueOf(i));
+            partSizeList.add(map);
+         }
+         return EDIT;
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         forward = ERROR;
+      }
+      return forward;
+   }
+   
+   private String updateWorks() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'updateWorks' method");
+      try {
+         initForm();
+         form.getRecord().put("artistId", form.getRecord().get("artArtistId"));
+         form.getRecord().put("worksCName", form.getRecord().get("chineseName"));
+         form.getRecord().put("worksEName", form.getRecord().get("englishName"));
+         form.getRecord().put("worksNo", form.getRecord().get("no"));
+         artWorksService.updateArtWorks(form.getRecord());
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         addMessage(form, e.getMessage());
+         initForm();
+         return EDIT;
+      }
+   }
+   
+   private String view() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'view' method");
+      try {
+         initForm();
+         String id = form.getRecord().get("id");
+         ArtWorks works = artWorksService.getArtWorks(Integer.valueOf(id));
+         ConvertUtil.objectToMap(getForm().getRecord(), works);
+         ArtArtist artist = artArtistService.getArtArtist(works.getArtistId());
+         form.getRecord().put("artArtistName", artist.getCname());
+         form.getRecord().put("artArtistId", artist.getId().toString());
+         form.getRecord().put("chineseName", works.getWorksCName());
+         form.getRecord().put("englishName", works.getWorksEName());
+         form.getRecord().put("no", works.getWorksNo());
+         String partSize = works.getPartSize();
+         String[] partSizes = partSize.split(";");
+         for(int i =0; i<partSizes.length; i++){
+            Map<String, String> map = new HashMap<String, String>();
+            String size = partSizes[i];
+            String[] sizes = size.split("\\*");
+            String partSize_l = sizes[0];
+            String partSize_w = sizes[1];
+            map.put("l_"+String.valueOf(i), partSize_l);
+            map.put("w_"+String.valueOf(i), partSize_w);
+            map.put("id", String.valueOf(i));
+            partSizeList.add(map);
+         }
+      }
+      catch (Exception e) {
+         initForm();
+         return ERROR;
+      }
+      return VIEW;
+   }
+   
+   private String delete() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'delete' method");
+      try {
+         String[] idlist = ids.split(";");
+         Integer[] dels = new Integer[idlist.length];
+         for(int i = 0; i<idlist.length; i++){
+            dels[i] = Integer.valueOf(idlist[i]);
+         }
+         artWorksService.deleteArtWorkss(dels);
+         return returnForward(RETURN_NORMAL);
+      }
+      catch (Exception e) {
+         initForm();
+         return ERROR;
+      }
+   }
+   
+   private String artist() throws Exception {
+      if (logger.isDebugEnabled()) logger.debug("Entering 'artist' method");
+      try {
+         List<ArtArtist> artArtists = artArtistService.findAllArtArtist();
+         List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+         for (ArtArtist artArtist : artArtists) {
+            Map<String, Object> map = new HashMap<String, Object>();
+            ConvertUtil.objectToMap(map, artArtist);
+            if ((";" + ids).indexOf(";" + map.get("id") + ";") > -1) map.put("CHECKED", "checked");
+            else map.put("CHECKED", "");
+            list.add(map);
+         }
+         form.getQuery().setRecordSet(list);
+         return "ARTIST";
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         return ERROR;
+      }
+   }
+   
+   public List<Map<String, String>> getPartSizeList() {
+      return partSizeList;
+   }
+
+   public void setPartSizeList(List<Map<String, String>> partSizeList) {
+      this.partSizeList = partSizeList;
+   }
+
+}

@@ -1,0 +1,19 @@
+package com.golead.art.job.service.impl;
+
+import com.golead.art.job.service.CheckArtAuction;
+
+/**
+ * 统计作品完整度,作品基本信息占50分，子表数据每条10分
+ * @author 尹湘
+ * @version 1.0
+ * @since  2016年12月8日 下午5:41:41
+ */
+public class ArtCountWorksIntegrityImpl implements CheckArtAuction {
+
+   @Override
+   public void executeCheck() throws Exception {
+     
+
+   }
+
+}

@@ -1,0 +1,342 @@
+<%@page language="java" pageEncoding="UTF-8"%>
+<%@taglib uri="/struts-tags" prefix="s" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@taglib uri="/WEB-INF/tag/gl-tag.tld" prefix="gl"%>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<%@include file="/common/header.jsp" %>
+<script language="javascript">		
+	var contextpath = "<%=CONTEXT_PATH%>";
+	var fulllink = contextpath + "works/artWorks.do";	
+	var periodlink = contextpath + "works/artPeriod.do";	
+	var evaluatelink = contextpath + "works/artEvaluate.do";	
+	var caselink = contextpath + "works/artCase.do";	
+	var somelink = contextpath + "works/artSome.do";	
+	var exhibitlink = contextpath + "activity/ArtWorksExhibit.do";	
+	var abmblink = contextpath + "works/ArtWorksAbmb.do";	
+	var wordlink = contextpath + "works/ArtWorksWords.do";	
+	var networklink = contextpath + "works/ArtWorksNetwork.do";	
+	var mediumlink = contextpath + "works/artMedium.do";	
+	var auctionlink = contextpath + "auction/ArtAuction.do";	
+
+	function goCancel(){
+		parent.closedialog('true');
+	}
+
+	function init(){
+		showMessage('<s:property value="errorMessage" escape="false"/>');
+		hidebtn();
+	}
+
+	function hidebtn(){
+		$(".dhxtabbar_tab_text").each(function(){
+			this.addEventListener('click',function(){
+				if(this.innerHTML != "作品基本信息"){
+					document.getElementById("btnDiv").style.display="none";
+				}else{
+					document.getElementById("btnDiv").style.display="";
+				}
+			});
+		});
+	}
+	
+	</script>
+<style type="text/css"> 
+   html, body {width:100%; height:100%; margin:0px; padding:0px; overflow:hidden;}
+</style>
+</head>
+ 
+<body onload="init()">
+	<s:form action="artWorks" id="artWorksForm" method="post" namespace="/works" enctype="multipart/form-data">
+			<s:hidden name="record.id" id="id"/>
+			<s:hidden name="record.next" id="next"/>
+			<s:hidden name="record.Psize" id="Psize"/>
+			<div id="tblForm"></div>
+			<div id="page_0">
+			<div id="formDiv" class="formDiv" style="padding:0px;">
+			<table cellpadding="0" cellspacing="0" width="90%" class="formTable">
+				<tr>
+					<td width="15%" class="textR">作品编号：</td>
+					<td width="35%" class="textL"><s:property value="record.worksNo"/></td>
+					<td width="15%" class="textR">艺术家：</td>
+					<td width="35%" class="textL"><s:property value="record.artArtistName"/><s:hidden name="record.artistId" id="artistId"/></td>
+				</tr>
+				<tr>
+					<td class="textR">作品名称：</td>
+					<td class="textL"><s:property value="record.worksCName"/></td>
+					<td class="textR">英文名称：</td>
+					<td class="textL"><s:property value="record.worksEName"/></td>
+				</tr>
+				<tr>
+					<td class="textR">创作时间：</td>
+					<td class="textL">
+						<s:property value="record.createYear"/><s:if test="'record.createYear'==''"> 年</s:if>
+						&nbsp;&nbsp;<s:property value="record.createMonth"/><s:if test="'record.createMonth'==''"> 月</s:if>
+						&nbsp;&nbsp;<s:property value="record.createDay"/><s:if test="'record.createDay'==''"> 日</s:if>
+					</td>
+					<td class="textR">创作时间段：</td>
+					<td class="textL">
+						
+						<s:property value="record.createFrom"/>&nbsp;<s:if test="'record.createFrom'==''">年
+						&nbsp;&nbsp;&nbsp;~&nbsp;&nbsp;&nbsp;</s:if>
+						<s:property value="record.createTo"/>&nbsp;<s:if test="'record.createTo'==''">年</s:if>
+					</td>
+				</tr>
+				<tr>
+					<td class="textR">尺寸（cm）：</td>
+					<td class="textL">
+						<table cellpadding="0" cellspacing="0" width="100%" class="tbnBtnStyle" border="0">
+					        <tr>
+					            <td><s:property value="record.sizeCmLength"/></td>
+					            <td width="10%" class="textC"><s:if test="'record.sizeCmLength'==''">X</s:if></td>
+					            <td><s:property value="record.sizeCmWidth"/></td>
+					            <td width="10%" class="textC"><s:if test="'record.sizeCmWidth'==''">X</s:if></td>
+					            <td><s:property value="record.sizeCmHeight"/></td>
+					            <td width="10%" class="textC"></td>
+					        </tr>
+					    </table>
+					</td>
+					<td class="textR">尺寸（in）：</td>
+					<td class="textL">
+						<table cellpadding="0" cellspacing="0" width="100%" class="tbnBtnStyle" border="0">
+					        <tr>
+					            <td><s:property value="record.sizeInLength"/></td>
+					            <td width="10%" class="textC"><s:if test="'record.sizeInLength'==''">X</s:if></td>
+					            <td><s:property value="record.sizeInWidth"/></td>
+					            <td width="10%" class="textC"><s:if test="'record.sizeInWidth'==''">X</s:if></td>
+					            <td><s:property value="record.sizeInHeight"/></td>
+					            <td width="10%" class="textC"></td>
+					        </tr>
+					    </table>
+					</td>
+				</tr>
+				<tr>
+					<td class="textR">尺寸（尺）：</td>
+					<td class="textL">
+						<table cellpadding="0" cellspacing="0" width="100%" class="tbnBtnStyle" border="0">
+					        <tr>
+					            <td><s:property value="record.sizeRuleLength"/></td>
+					            <td width="10%" class="textC"><s:if test="'record.sizeRuleLength'==''">X</s:if></td>
+					            <td><s:property value="record.sizeRuleWidth"/></td>
+					            <td width="10%" class="textC"><s:if test="'record.sizeRuleWidth'==''">X</s:if></td>
+					            <td><s:property value="record.sizeRuleHeight"/></td>
+					            <td width="10%" class="textC"></td>
+					        </tr>
+					    </table>
+					</td>
+					<td/><td/>
+				</tr>
+				<tr >
+					<td>局部尺寸：</td>
+					<td colspan="3" class="textL">
+					<table  id="tblUpload" cellpadding="0" cellspacing="0" width="100%"  class="tbnBtnStyle" align="left">
+					<s:if test="record.Psize.toString() == 'no'">
+					</s:if>
+						   <s:iterator value="partSizeList" id="partSize" status="ps">
+							   <s:if  test='#partSize.id != undefined'>
+							   	<c:set var='name' value="name_${ps.index}" scope="page"/>
+							   	<c:set var='unit' value="unit_${ps.index}" scope="page"/>
+							   	<c:set var='l' value="l_${ps.index}" scope="page"/>
+							   	<c:set var='w' value="w_${ps.index}" scope="page"/>
+							   		<tr>
+								      <td class="textL">
+										   ${partSize[name]}&nbsp;&nbsp;:&nbsp;&nbsp;&nbsp;
+										   ${partSize[l]}&nbsp;&nbsp;&nbsp;*&nbsp;&nbsp;&nbsp;
+										   ${partSize[w]}&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+										   ${partSize[unit]}
+									   </td>
+								   </tr>
+							   </s:if>
+						 </s:iterator>
+					</table>
+					</td>
+				</tr>
+				<tr>
+					<td width="10%" class="textR">媒介材料：</td>
+					<td width="20%" class="sel">
+		               <s:property value="record.mediumMaterialName"/>
+  	                </td>
+					<td width="10%" class="textR">媒介形式：</td>
+					<td width="20%" class="textL">
+		               <s:property value="record.mediumShapeName"/>
+  	                </td>
+				</tr>
+				<tr>
+					<td class="textR">作品系列：</td>
+					<td class="textL">
+		               <s:property value="record.worksSeriesName"/>
+					</td>
+					<td></td><td></td>
+				</tr>
+				<tr>
+					<td class="textR">签名位置1：</td>
+					<td class="textL"><s:property value="record.signature"/></td>
+					<td class="textR">签名内容1：</td>
+					<td class="textL"><s:property value="record.signatureContent"/></td>
+				</tr>
+				<tr>
+					<td class="textR">签名位置2：</td>
+					<td class="textL"><s:property value="record.signature2"/></td>
+					<td class="textR">签名内容2：</td>
+					<td class="textL"><s:property value="record.signatureContent2"/></td>
+				</tr>
+				<tr>
+					<td class="textR">签名位置3：</td>
+					<td class="textL"><s:property value="record.signature3"/></td>
+					<td class="textR">签名内容3：</td>
+					<td class="textL"><s:property value="record.signatureContent3"/></td>
+				</tr>
+				<tr>
+					<td>附件：</td>
+					<td colspan="3" class="textL">
+						<table  id="tblUpload1" cellpadding="0" cellspacing="0" width="100%"  class="tbnBtnStyle" align="left">
+						   <tr>
+						      <td width="10%"></td>
+								<s:iterator value="thumbnailList" id="tl" status="tltl">
+									<tr>
+									<td class="textL">
+										<input type="hidden" class="fileName" id="${tl.key}"/>
+										${tl.value}
+									</td>
+									</tr>
+								</s:iterator>
+						   </tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td class="textR">创作地点：</td>
+					<td colspan="3"  class="textL">
+		               <s:property value="record.createCountryName"/>
+		            	<s:property value="record.createPlace"/>
+					</td>
+					
+				</tr>
+				<tr>
+					<td class="textR">作品题材：</td>
+					<td colspan="3" class="textL">
+		               <s:property value="record.worksThemeName1"/>
+		               <s:property value="record.worksThemeName2"/>
+		               <s:property value="record.worksThemeName3"/>
+					</td>
+				</tr>
+				<tr>
+					<td class="textR">风格类型：</td>
+					<td colspan="3" class="textL">
+		               <s:property value="record.worksStyle"/>
+  	                </td>
+  	            </tr>
+				<tr>
+					<td class="textR">内容关键词</td>
+					<td colspan="3" class="textL">
+						<s:if test="'record.keywordAddr'!=''">地点:</s:if><s:property value="record.keywordAddr"/>
+						<s:if test="'record.keywordCharacter'!=''">人物:</s:if><s:property value="record.keywordCharacter"/>
+						<s:if test="'record.keywordEvent'!=''">事件:</s:if><s:property value="record.keywordEvent"/>
+						<s:if test="'record.keywordThing'!=''">物件:</s:if><s:property value="record.keywordThing"/>
+						<s:if test="'record.keywordOther1'!=''">关键词1:</s:if><s:property value="record.keywordOther1"/>
+						<s:if test="'record.keywordOther2'!=''">关键词2:</s:if><s:property value="record.keywordOther2"/>
+					</td>
+				</tr>
+				<tr>
+					<td class="textR" valign="top">作品描述：</td>
+					<td colspan="3" valign="top">
+						<s:property value="record.worksStatus"/>
+					</td>
+				</tr>
+				<tr><td/><td colspan="3"/></tr>
+				<tr></tr>
+		 	</table>
+		 </div>
+		 </div>
+		 <iframe  id="page_1" width="100%" height="110%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_2" width="100%" height="110%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_3" width="100%" height="110%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_4" width="100%" height="110%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_5" width="100%" height="120%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_6" width="100%" height="120%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_7" width="100%" height="120%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_8" width="100%" height="120%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_9" width="100%" height="120%" scrolling="no" frameborder="0"></iframe> 
+		 <iframe  id="page_10" width="100%" height="100%" scrolling="no" frameborder="0"></iframe> 
+</s:form>
+<div id="btnDiv" class="btnDiv">
+	 <gl:button name="btnAdd" onClick="goCancel()" >关闭</gl:button>
+</div>
+
+
+<script type="text/javascript"> 
+ 
+</script>
+<%@include file="/common/dialog.jsp"%>
+<script type="text/javascript"> 
+var mainbody=window.document.body;
+if(window.addEventListener) {
+	     window.addEventListener("resize",goResize,false); 
+}
+else {
+	     window.attachEvent('onresize',goResize);
+}
+
+var fDiv=window.document.getElementById('formDiv');
+var bDiv=window.document.getElementById('btnDiv');
+var btbl=window.document.getElementById('tblForm');
+
+function goResize(){
+   fDiv.style.width=mainbody.offsetWidth-fDiv.offsetLeft*2+"px";
+   bDiv.style.width=mainbody.offsetWidth-bDiv.offsetLeft*2+"px";
+   fDiv.style.height=mainbody.offsetHeight-bDiv.offsetHeight-fDiv.offsetTop*2+10+"px";
+   bDiv.style.top=fDiv.offsetHeight+fDiv.offsetTop*2-5+"px";
+   if(btbl){
+	   btbl.style.width=fDiv.offsetWidth-fDiv.offsetLeft-9+"px";
+	   btbl.style.height=fDiv.offsetHeight-fDiv.offsetTop-12+"px";
+   }
+}
+goResize();  
+
+var tabbar = new dhtmlXTabBar("tblForm", "top");
+tabbar.setSkin('dhx_terrace');
+tabbar.setArrowsMode("auto");
+tabbar.addTab("a0", "作品基本信息", "120px");
+tabbar.addTab("a1", "作品时期", "90px");
+tabbar.addTab("a2", "意义与评价", "90px");
+tabbar.addTab("a3", "个案研究", "90px");
+tabbar.addTab("a4", "相关作品", "90px");
+tabbar.addTab("a5", "相关展览", "90px");
+tabbar.addTab("a6", "相关艺博会", "90px");
+tabbar.addTab("a7", "相关纸媒", "100px");
+tabbar.addTab("a8", "相关网媒", "100px");
+tabbar.addTab("a9", "相关音视频", "100px");
+tabbar.addTab("a10", "拍卖信息", "100px");
+tabbar.tabs("a0").attachObject("formDiv");
+tabbar.tabs("a0").setActive();
+if(document.getElementById('next').value=="true"){
+	tabbar.tabs("a1").setActive();
+	document.getElementById("save").style.display="none";
+} 
+tabbar.tabs("a1").attachObject("page_1");
+tabbar.tabs("a2").attachObject("page_2");
+tabbar.tabs("a3").attachObject("page_3");
+tabbar.tabs("a4").attachObject("page_4");
+tabbar.tabs("a5").attachObject("page_5");
+tabbar.tabs("a6").attachObject("page_6");
+tabbar.tabs("a7").attachObject("page_7");
+tabbar.tabs("a8").attachObject("page_8");
+tabbar.tabs("a9").attachObject("page_9");
+tabbar.tabs("a10").attachObject("page_10");
+tabbar.enableAutoReSize(true);
+tabbar.enableTabCloseButton(true);
+var hide = "&record.hide=1";
+window.frames["page_1"].location.href=periodlink+'?action=LIST&record.id='+$$('id').value+'&record.artistId='+$$('artistId').value+hide;
+window.frames["page_2"].location.href=evaluatelink+'?action=LIST&record.id='+$$('id').value+'&record.artistId='+$$('artistId').value+hide;
+window.frames["page_3"].location.href=caselink+'?action=LIST&record.id='+$$('id').value+'&record.artistId='+$$('artistId').value+hide;
+window.frames["page_4"].location.href=somelink+'?action=LIST&record.id='+$$('id').value+'&record.artistId='+$$('artistId').value+hide;
+window.frames["page_5"].location.href=exhibitlink+'?action=LIST&query.parameters.worksId='+$$('id').value+hide;
+window.frames["page_6"].location.href=abmblink+'?action=LIST&query.parameters.worksId='+$$('id').value+hide;
+window.frames["page_7"].location.href=wordlink+'?action=LIST&query.parameters.worksId='+$$('id').value+hide;
+window.frames["page_8"].location.href=networklink+'?action=LIST&query.parameters.worksId='+$$('id').value+hide;
+window.frames["page_9"].location.href=mediumlink+'?action=LIST&query.parameters.worksId='+$$('id').value+hide;
+window.frames["page_10"].location.href=auctionlink+'?action=LIST&query.parameters.worksId='+$$('id').value+"&record.view=view"+hide;
+</script>
+</body>
+</html>

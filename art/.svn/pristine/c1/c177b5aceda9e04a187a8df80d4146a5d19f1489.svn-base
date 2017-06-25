@@ -1,0 +1,182 @@
+package com.golead.art.appManager;
+
+import java.util.*;
+
+import javax.annotation.Resource;
+
+import com.golead.core.dao.model.PageQuery;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import com.golead.art.app.appUser.model.ArtAppUser;
+import com.golead.art.app.appUser.service.ArtAppUserService;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.web.action.BaseAction;
+
+/**
+ * App用户管理
+ *
+ * @author JiaHua-Lan 2016/11/4
+ */
+public class AppUserManagerAction extends BaseAction {
+
+   private Log          log             = LogFactory.getLog(AppUserManagerAction.class);
+
+   private Calendar     calendar        = Calendar.getInstance();
+
+   /**
+    * 禁言
+    */
+   private final String PROHIBITION     = "1";
+
+   /**
+    * 非禁言
+    */
+   private final String NOT_PROHIBITION = "0";
+
+   /**
+    * 用户启用
+    */
+   private final String USER_ENABLE     = "1";
+
+   /**
+    * 用户停用
+    */
+   private final String USER_DISABLE    = "0";
+
+   @Override
+   public String doExecute() throws Exception {
+      String forward = "";
+      String action = getForm().getAction();
+      if (action == null) forward = LIST;
+      try {
+         if (LIST.equalsIgnoreCase(action)) forward = listAppUser();
+         else if (PAGE.equalsIgnoreCase(action)) forward = pageAppUser();
+         else if (PROHIBITION.equalsIgnoreCase(action)) forward = prohibitionOfSpeaking();
+         else if (NOT_PROHIBITION.equalsIgnoreCase(action)) forward = liftTheProhibition();
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         request.put("errMsg", e.getMessage());
+         return ERROR;
+      }
+      return forward;
+   }
+
+   private void initForm() {
+      setCode(form, "START_OR_STOP");
+      setCode(form, "YES_OR_NO");
+   }
+
+   /**
+    * 跳转到App用户管理页面
+    */
+   public String listAppUser() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'listAppUser()' method");
+      initForm();
+      return LIST;
+   }
+
+   /**
+    * 用户列表数据
+    */
+   public String pageAppUser() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'pageAppUser()' method");
+      try {
+         initForm();
+         PageQuery pageQuery = form.getQuery() == null ? new PageQuery() : form.getQuery();
+         pageQuery = artAppUserService.queryArtAppUser(pageQuery);
+         if (pageQuery != null) {
+            List<Map<String, Object>> recordSet = pageQuery.getRecordSet();
+            if (recordSet != null) {
+               List<Map<String, Object>> gridRowList = new ArrayList();
+               for (int i = 0; i < recordSet.size(); i++) {
+                  Map<String, Object> map = recordSet.get(i);
+                  Map<String, Object> row = new HashMap();
+                  String userStatus = this.findCodeName(form, "START_OR_STOP", map.get(ArtAppUser.PROP_USER_STATUS) + "");
+                  String isProhibition = this.findCodeName(form, "YES_OR_NO", map.get(ArtAppUser.PROP_NO_COMMENT) + "");
+                  row.put(ArtAppUser.PROP_ID, map.get(ArtAppUser.PROP_ID));
+                  row.put("data", new Object[] { map.get(ArtAppUser.PROP_ID), map.get(ArtAppUser.PROP_ACCOUNT_NAME), map.get(ArtAppUser.PROP_USER_NAME),
+                        userStatus, isProhibition });
+                  gridRowList.add(row);
+               }
+               String res = genGridJson(pageQuery, gridRowList);
+               setResponse(res);
+            }
+         }
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         e.printStackTrace();
+         setResponse("{exit:1,message:\"数据访问错误。\"}");
+      }
+      return null;
+   }
+
+   /**
+    * 用户禁言
+    */
+   public String prohibitionOfSpeaking() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'prohibitionOfSpeaking()' method");
+      return null;
+   }
+
+   /**
+    * 解除禁言
+    */
+   public String liftTheProhibition() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'liftTheProhibition()' method");
+      try {
+         ArtAppUser artAppUser = artAppUserService.getArtAppUser(Integer.valueOf(ids));
+         if (artAppUser.getNoComment().equals(PROHIBITION)) {
+            artAppUser.setRecommentTime(null);
+            artAppUser.setNoComment(NOT_PROHIBITION);
+            artAppUserService.updateArtAppUser(artAppUser);
+            setResponse("{exit:0}");
+         }
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         setResponse("{exit:1,message:\"删除操作失败!\"}");
+      }
+      return null;
+   }
+
+   /**
+    * 用户停用
+    */
+   public String userDisabled() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'userDisabled()' method");
+      return null;
+   }
+
+   /**
+    * 用户启用
+    */
+   public String userEnabled() throws Exception {
+      if (log.isDebugEnabled()) log.debug("Entering 'userEnabled()' method");
+      try {
+         ArtAppUser artAppUser = artAppUserService.getArtAppUser(Integer.valueOf(ids));
+         if (artAppUser.getUserStatus().equals(USER_DISABLE)) {
+            artAppUser.setReopenTime(null);
+            artAppUser.setUserStatus(USER_ENABLE);
+            artAppUserService.updateArtAppUser(artAppUser);
+            setResponse("{exit:0}");
+         }
+      }
+      catch (ServiceException e) {
+         setResponse("{exit:1,message:\"" + e.getMessage() + "\"}");
+      }
+      catch (Exception e) {
+         setResponse("{exit:1,message:\"删除操作失败!\"}");
+      }
+      return null;
+   }
+
+   @Resource
+   private ArtAppUserService artAppUserService;
+}

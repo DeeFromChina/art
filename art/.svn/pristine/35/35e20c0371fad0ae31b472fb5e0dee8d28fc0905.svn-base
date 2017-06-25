@@ -1,0 +1,24 @@
+package com.golead.art.activity.service;
+
+import java.io.Serializable;
+import java.util.Map;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.dao.model.PageQuery;
+
+import com.golead.art.activity.model.ArtActivityAbmb;
+
+public interface ArtActivityAbmbService {
+
+	public ArtActivityAbmb getArtActivityAbmb(Serializable id) throws ServiceException;
+
+	public void createArtActivityAbmb(ArtActivityAbmb artActivityAbmb) throws ServiceException;
+
+	public void updateArtActivityAbmb(Map<String, String> artActivityAbmbMap) throws ServiceException;
+
+	public void deleteArtActivityAbmb(Serializable id) throws ServiceException;
+
+	public PageQuery queryArtActivityAbmb(PageQuery pageQuery) throws ServiceException;
+
+	public void deleteArtActivityAbmbs(Serializable[] ids) throws ServiceException;  
+}
+

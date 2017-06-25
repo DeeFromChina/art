@@ -1,0 +1,126 @@
+package com.golead.art.literature.service.impl;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import com.golead.core.dao.model.PageQuery;
+import com.golead.core.exception.ServiceException;
+import com.golead.core.exception.DAOException;
+import com.golead.core.service.impl.BaseServiceImpl;
+import com.golead.core.util.ConvertUtil;
+
+import com.golead.art.literature.dao.ArtLiteratureWordsDao;
+import com.golead.art.literature.model.ArtLiteratureWords;
+import com.golead.art.literature.service.ArtLiteratureWordsService;
+import javax.annotation.Resource; 
+import org.springframework.stereotype.Service;
+
+@Service
+public class ArtLiteratureWordsServiceImpl extends BaseServiceImpl implements ArtLiteratureWordsService {
+	private static final long serialVersionUID = 1L;
+
+	public ArtLiteratureWords getArtLiteratureWords(Serializable id) throws ServiceException {
+		try {
+			return artLiteratureWordsDao.get(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void createArtLiteratureWords(ArtLiteratureWords artLiteratureWords) throws ServiceException {
+		try {
+			artLiteratureWordsDao.save(artLiteratureWords);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void updateArtLiteratureWords(Map<String, String> artLiteratureWordsMap) throws ServiceException {
+		try {
+            Integer pkId = new Integer(artLiteratureWordsMap.get(ArtLiteratureWords.PROP_ID));
+			ArtLiteratureWords tmp = artLiteratureWordsDao.get(pkId);
+			ConvertUtil.mapToObject(tmp, artLiteratureWordsMap, true);			
+			artLiteratureWordsDao.update(tmp);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtLiteratureWords(Serializable id) throws ServiceException {
+		try {
+			artLiteratureWordsDao.delete(id);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public void deleteArtLiteratureWordss(Serializable[] ids) throws ServiceException {
+		try {
+			artLiteratureWordsDao.deleteAll(ids);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+
+	public PageQuery queryArtLiteratureWords(PageQuery pageQuery) throws ServiceException {
+		try {
+		  createSqlFilter(pageQuery);
+          return jdbcDao.queryBySqlId("artLiteratureWordsList", pageQuery);
+        } catch (DAOException e) {
+          e.printStackTrace();
+          throw new ServiceException("数据库操作错误。");
+        } catch (ServiceException se) {
+          se.printStackTrace();
+          throw se;
+        } catch (Exception e) {
+          e.printStackTrace();
+          throw new ServiceException("系统错误。");
+        }
+	}
+	
+	private void createSqlFilter(PageQuery page) {
+	}
+	
+    @Resource
+	private ArtLiteratureWordsDao	artLiteratureWordsDao;
+
+	public void setArtLiteratureWordsDao(ArtLiteratureWordsDao artLiteratureWordsDao) {
+		this.artLiteratureWordsDao = artLiteratureWordsDao;
+	}
+}
+

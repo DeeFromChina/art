@@ -1,0 +1,257 @@
+package com.golead.art.literature.model;
+
+import java.io.Serializable;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+/**
+ * This is an object that contains data related to the art_literature_words table.
+ */
+@Entity  
+@Table(name="art_literature_words")  
+public class ArtLiteratureWords implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+   // primary key  
+   @Id  
+   @GeneratedValue(strategy=GenerationType.AUTO)  
+   @Column(name = "id", nullable = false)
+   private java.lang.Integer id;   //  
+
+   // properties
+
+   @Column(name = "words_source")
+   private java.lang.String wordsSource;   // 文字来源，1：评论，2：访谈，3：资讯
+
+   @Column(name = "relevant_pages")
+   private java.lang.String relevantPages;   // 相关页
+
+   @Column(name = "person_involved")
+   private java.lang.String personInvolved;   // 参与人物
+
+   @Column(name = "words_type")
+   private java.lang.String wordsType;   // 类型，1：纸本，2：网络，3：论文库，4：艺虎独家
+
+   @Column(name = "attachment")
+   private java.lang.String attachment;   // 附件
+
+   @Column(name = "page_count")
+   private java.lang.Integer pageCount;   // 总页数
+
+   @Column(name = "publication_info2")
+   private java.lang.String publicationInfo2;   // 出版信息2
+
+
+   @Column(name = "publication_name")
+   private java.lang.String publicationName;   // 出版物名称
+
+   @Column(name = "publication_info1")
+   private java.lang.String publicationInfo1;   // 出版信息1
+
+   @Column(name = "words_auther")
+   private java.lang.String wordsAuther;   // 作者
+
+   @Column(name = "write_time")
+   private java.util.Date writeTime;   // 撰文时间
+
+   @Column(name = "words_title")
+   private java.lang.String wordsTitle;   // 标题
+
+   // Constructors
+   public ArtLiteratureWords() {
+   }
+
+   public java.lang.Integer getId() { 
+      return this.id; 
+   }
+
+   public void setId(java.lang.Integer id) { 
+      this.id = id; 
+   }
+
+
+   public java.lang.String getWordsSource() { 
+      return this.wordsSource; 
+   }
+   public void setWordsSource(java.lang.String wordsSource) { 
+      this.wordsSource = wordsSource; 
+   }
+
+
+   public java.lang.String getRelevantPages() { 
+      return this.relevantPages; 
+   }
+   public void setRelevantPages(java.lang.String relevantPages) { 
+      this.relevantPages = relevantPages; 
+   }
+
+
+   public java.lang.String getPersonInvolved() { 
+      return this.personInvolved; 
+   }
+   public void setPersonInvolved(java.lang.String personInvolved) { 
+      this.personInvolved = personInvolved; 
+   }
+
+
+   public java.lang.String getWordsType() { 
+      return this.wordsType; 
+   }
+   public void setWordsType(java.lang.String wordsType) { 
+      this.wordsType = wordsType; 
+   }
+
+
+   public java.lang.String getAttachment() { 
+      return this.attachment; 
+   }
+   public void setAttachment(java.lang.String attachment) { 
+      this.attachment = attachment; 
+   }
+
+
+   public java.lang.Integer getPageCount() { 
+      return this.pageCount; 
+   }
+   public void setPageCount(java.lang.Integer pageCount) { 
+      this.pageCount = pageCount; 
+   }
+
+
+   public java.lang.String getPublicationInfo2() { 
+      return this.publicationInfo2; 
+   }
+   public void setPublicationInfo2(java.lang.String publicationInfo2) { 
+      this.publicationInfo2 = publicationInfo2; 
+   }
+
+
+   public java.lang.String getPublicationName() { 
+      return this.publicationName; 
+   }
+   public void setPublicationName(java.lang.String publicationName) { 
+      this.publicationName = publicationName; 
+   }
+
+
+   public java.lang.String getPublicationInfo1() { 
+      return this.publicationInfo1; 
+   }
+   public void setPublicationInfo1(java.lang.String publicationInfo1) { 
+      this.publicationInfo1 = publicationInfo1; 
+   }
+
+
+   public java.lang.String getWordsAuther() { 
+      return this.wordsAuther; 
+   }
+   public void setWordsAuther(java.lang.String wordsAuther) { 
+      this.wordsAuther = wordsAuther; 
+   }
+
+
+   public java.util.Date getWriteTime() { 
+      return this.writeTime; 
+   }
+   public void setWriteTime(java.util.Date writeTime) { 
+      this.writeTime = writeTime; 
+   }
+
+
+   public java.lang.String getWordsTitle() { 
+      return this.wordsTitle; 
+   }
+   public void setWordsTitle(java.lang.String wordsTitle) { 
+      this.wordsTitle = wordsTitle; 
+   }
+
+
+   public static String REF_CLASS = "ArtLiteratureWords";
+   public static String PROP_WORDS_SOURCE = "wordsSource";
+   public static String PROP_RELEVANT_PAGES = "relevantPages";
+   public static String PROP_PERSON_INVOLVED = "personInvolved";
+   public static String PROP_WORDS_TYPE = "wordsType";
+   public static String PROP_ATTACHMENT = "attachment";
+   public static String PROP_PAGE_COUNT = "pageCount";
+   public static String PROP_PUBLICATION_INFO2 = "publicationInfo2";
+   public static String PROP_ID = "id";
+   public static String PROP_PUBLICATION_NAME = "publicationName";
+   public static String PROP_PUBLICATION_INFO1 = "publicationInfo1";
+   public static String PROP_WORDS_AUTHER = "wordsAuther";
+   public static String PROP_WRITE_TIME = "writeTime";
+   public static String PROP_WORDS_TITLE = "wordsTitle";
+
+   public static String REF_TABLE = "art_literature_words";
+   public static String COL_WORDS_SOURCE = "words_source";
+   public static String COL_RELEVANT_PAGES = "relevant_pages";
+   public static String COL_PERSON_INVOLVED = "person_involved";
+   public static String COL_WORDS_TYPE = "words_type";
+   public static String COL_ATTACHMENT = "attachment";
+   public static String COL_PAGE_COUNT = "page_count";
+   public static String COL_PUBLICATION_INFO2 = "publication_info2";
+   public static String COL_ID = "id";
+   public static String COL_PUBLICATION_NAME = "publication_name";
+   public static String COL_PUBLICATION_INFO1 = "publication_info1";
+   public static String COL_WORDS_AUTHER = "words_auther";
+   public static String COL_WRITE_TIME = "write_time";
+   public static String COL_WORDS_TITLE = "words_title";
+   
+   public boolean equals(Object obj) {
+      if (null == obj) return false;
+      if (!(obj instanceof com.golead.art.literature.model.ArtLiteratureWords)) return false;
+      else {
+         com.golead.art.literature.model.ArtLiteratureWords o = (com.golead.art.literature.model.ArtLiteratureWords) obj;
+         if (null == this.getId() || null == o.getId()) return false;
+         else return (this.getId().equals(o.getId()));
+      }
+   }
+
+   public String toString() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("[ArtLiteratureWords:");
+		buffer.append(" id:").append(id);
+		buffer.append(" wordsSource:").append(dealNull(wordsSource));
+		buffer.append(" relevantPages:").append(dealNull(relevantPages));
+		buffer.append(" personInvolved:").append(dealNull(personInvolved));
+		buffer.append(" wordsType:").append(dealNull(wordsType));
+		buffer.append(" attachment:").append(dealNull(attachment));
+		buffer.append(" pageCount:").append(dealNull(pageCount));
+		buffer.append(" publicationInfo2:").append(dealNull(publicationInfo2));
+		buffer.append(" publicationName:").append(dealNull(publicationName));
+		buffer.append(" publicationInfo1:").append(dealNull(publicationInfo1));
+		buffer.append(" wordsAuther:").append(dealNull(wordsAuther));
+		buffer.append(" writeTime:").append(dealNull(writeTime));
+		buffer.append(" wordsTitle:").append(dealNull(wordsTitle));
+		buffer.append("]");
+		return buffer.toString();
+   }
+
+   public String toJson() {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append("{");
+		buffer.append("\"id\":\"").append(id).append("\"");
+		buffer.append(",\"wordsSource\":\"").append(dealNull(wordsSource)).append("\"");
+		buffer.append(",\"relevantPages\":\"").append(dealNull(relevantPages)).append("\"");
+		buffer.append(",\"personInvolved\":\"").append(dealNull(personInvolved)).append("\"");
+		buffer.append(",\"wordsType\":\"").append(dealNull(wordsType)).append("\"");
+		buffer.append(",\"attachment\":\"").append(dealNull(attachment)).append("\"");
+		buffer.append(",\"pageCount\":\"").append(dealNull(pageCount)).append("\"");
+		buffer.append(",\"publicationInfo2\":\"").append(dealNull(publicationInfo2)).append("\"");
+		buffer.append(",\"publicationName\":\"").append(dealNull(publicationName)).append("\"");
+		buffer.append(",\"publicationInfo1\":\"").append(dealNull(publicationInfo1)).append("\"");
+		buffer.append(",\"wordsAuther\":\"").append(dealNull(wordsAuther)).append("\"");
+		buffer.append(",\"writeTime\":\"").append(dealNull(writeTime)).append("\"");
+		buffer.append(",\"wordsTitle\":\"").append(dealNull(wordsTitle)).append("\"");
+		buffer.append("}");
+		return buffer.toString();
+   }
+
+	private String dealNull(Object str) {
+		if(str==null) return ""; else return str.toString();
+	}
+}
